@@ -7,14 +7,28 @@
     "defaultBranch": "main"
   },
   "files": {
-    "includes": ["apps/**", "packages/**"]
+    "ignoreUnknown": false,
+    "includes": [
+      "apps/**",
+      "packages/**"
+    ]
   },
   "formatter": {
     "enabled": true,
+    "useEditorconfig": true,
+    "formatWithErrors": false,
     "indentStyle": "space",
     "indentWidth": 2,
+    "lineEnding": "lf",
     "lineWidth": 100,
-    "lineEnding": "lf"
+    "attributePosition": "auto"
+  },
+  "assist": {
+    "actions": {
+      "source": {
+        "organizeImports": "on"
+      }
+    }
   },
   "linter": {
     "enabled": true,
@@ -24,21 +38,32 @@
         "useExhaustiveDependencies": "warn",
         "useHookAtTopLevel": "error",
         "noUnusedImports": "warn",
-        "noUnusedVariables": "off",
+        "noUnusedVariables": "error",
         "noUnusedFunctionParameters": "warn"
       },
       "style": {
+        "noNonNullAssertion": "warn",
         "useComponentExportOnlyModules": {
           "level": "warn",
           "options": {
             "allowConstantExport": true
           }
+        },
+        "useFilenamingConvention": {
+          "level": "error",
+          "options": {
+            "filenameCases": ["kebab-case", "PascalCase"]
+          }
         }
       },
+      "suspicious": {
+        "noConsole": "warn",
+        "noArrayIndexKey": "warn"
+      },
       "a11y": {
+        "useSemanticElements": "off",
         "noLabelWithoutControl": "warn",
         "useFocusableInteractive": "warn",
-        "useSemanticElements": "warn",
         "useKeyWithClickEvents": "warn",
         "useValidAnchor": "warn",
         "useIframeTitle": "warn",
@@ -46,28 +71,61 @@
         "useButtonType": "warn",
         "noSvgWithoutTitle": "warn",
         "noAutofocus": "warn"
-      },
-      "suspicious": {
-        "noArrayIndexKey": "warn"
       }
     }
   },
-  "css": {
-    "linter": {
-      "enabled": true
+  "overrides": [
+    {
+      "includes": [
+        "**/components/ui/**"
+      ],
+      "linter": {
+        "rules": {
+          "style": {
+            "useComponentExportOnlyModules": "off"
+          }
+        }
+      }
     },
+    {
+      "includes": [
+        "**/components/ui/carousel.tsx"
+      ],
+      "linter": {
+        "rules": {
+          "a11y": {
+            "useAriaPropsSupportedByRole": "off"
+          }
+        }
+      }
+    }
+  ],
+  "css": {
     "parser": {
       "cssModules": false,
+      "allowWrongLineComments": true,
       "tailwindDirectives": true
+    },
+    "formatter": {
+      "enabled": true
+    },
+    "linter": {
+      "enabled": true
     }
   },
   "javascript": {
     "formatter": {
+      "jsxQuoteStyle": "double",
+      "quoteProperties": "asNeeded",
+      "trailingCommas": "es5",
+      "semicolons": "always",
+      "arrowParentheses": "always",
+      "bracketSameLine": false,
       "quoteStyle": "double",
-      "trailingCommas": "all",
-      "semicolons": "always"
+      "attributePosition": "auto"
     },
-    "jsxRuntime": "transparent"
+    "jsxRuntime": "transparent",
+    "globals": ["React", "JSX"]
   },
   "json": {
     "formatter": {

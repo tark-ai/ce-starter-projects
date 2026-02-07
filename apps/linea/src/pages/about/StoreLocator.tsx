@@ -52,8 +52,8 @@ const StoreLocator = () => {
 
           <ContentSection title="Our Locations">
             <div className="grid gap-8">
-              {stores.map((store, index) => (
-                <div key={index} className="bg-background rounded-lg p-8 border border-border">
+              {stores.map((store) => (
+                <div key={store.name} className="bg-background rounded-lg p-8 border border-border">
                   <div className="grid md:grid-cols-2 gap-8">
                     <div className="space-y-4">
                       <h3 className="text-xl font-light text-foreground">{store.name}</h3>
@@ -74,9 +74,9 @@ const StoreLocator = () => {
                     <div className="space-y-4">
                       <h4 className="text-lg font-light text-foreground">Available Services</h4>
                       <ul className="grid grid-cols-2 gap-2">
-                        {store.services.map((service, serviceIndex) => (
+                        {store.services.map((service) => (
                           <li
-                            key={serviceIndex}
+                            key={service}
                             className="text-sm text-muted-foreground flex items-center"
                           >
                             <span className="w-2 h-2 bg-primary rounded-full mr-3 flex-shrink-0"></span>

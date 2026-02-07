@@ -9,6 +9,8 @@ const CustomStar = ({ filled, className }: { filled: boolean; className?: string
     viewBox="0 0 20 20"
     fill="currentColor"
     className={`w-3 h-3 ${filled ? "text-foreground" : "text-muted-foreground/30"} ${className}`}
+    role="img"
+    aria-label={filled ? "Filled star" : "Empty star"}
   >
     <path
       fillRule="evenodd"

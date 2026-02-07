@@ -15,7 +15,7 @@ import ProductImageGallery from "../components/product/ProductImageGallery";
 import ProductInfo from "../components/product/ProductInfo";
 
 const ProductDetail = () => {
-  const { productId } = useParams();
+  const { productId: _productId } = useParams();
 
   return (
     <div className="min-h-screen bg-background">

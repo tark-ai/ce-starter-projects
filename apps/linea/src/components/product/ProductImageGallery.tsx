@@ -1,3 +1,4 @@
+import type * as React from "react";
 import { useRef, useState } from "react";
 import eclipseImage from "@/assets/eclipse.jpg";
 import haloImage from "@/assets/halo.jpg";
@@ -61,48 +62,69 @@ const ProductImageGallery = () => {
       {/* Desktop: Vertical scrolling gallery (1024px and above) */}
       <div className="hidden lg:block">
         <div className="space-y-4">
-          {productImages.map((image, index) => (
-            <div
-              key={index}
-              className="w-full aspect-square overflow-hidden cursor-pointer group"
-              onClick={() => handleImageClick(index)}
-            >
-              <img
-                src={image}
-                alt={`Product view ${index + 1}`}
-                className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-              />
-            </div>
-          ))}
+          {productImages.map((image, index) => {
+            const handleKeyDown = (e: React.KeyboardEvent) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleImageClick(index);
+              }
+            };
+            return (
+              <button
+                key={image}
+                type="button"
+                className="w-full aspect-square overflow-hidden cursor-pointer group border-0 p-0 bg-transparent"
+                onClick={() => handleImageClick(index)}
+                onKeyDown={handleKeyDown}
+                aria-label={`View product image ${index + 1}`}
+              >
+                <img
+                  src={image}
+                  alt={`Product view ${index + 1}`}
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                />
+              </button>
+            );
+          })}
         </div>
       </div>
 
       {/* Tablet/Mobile: Image slider (below 1024px) */}
       <div className="lg:hidden">
         <div className="relative">
-          <div
-            className="w-full aspect-square overflow-hidden cursor-pointer group touch-pan-y"
+          <button
+            type="button"
+            className="w-full aspect-square overflow-hidden cursor-pointer group touch-pan-y border-0 p-0 bg-transparent"
             onClick={() => handleImageClick(currentImageIndex)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                handleImageClick(currentImageIndex);
+              }
+            }}
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
+            aria-label={`View product image ${currentImageIndex + 1}`}
           >
             <img
               src={productImages[currentImageIndex]}
               alt={`Product view ${currentImageIndex + 1}`}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
             />
-          </div>
+          </button>
 
           {/* Dots indicator */}
           <div className="flex justify-center mt-4 gap-2">
-            {productImages.map((_, index) => (
+            {productImages.map((image, index) => (
               <button
-                key={index}
+                key={image}
+                type="button"
                 onClick={() => setCurrentImageIndex(index)}
                 className={`w-2 h-2 rounded-full transition-colors ${
                   index === currentImageIndex ? "bg-foreground" : "bg-muted"
                 }`}
+                aria-label={`Go to image ${index + 1}`}
               />
             ))}
           </div>

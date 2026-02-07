@@ -9,8 +9,10 @@
     "build:dev": "vite build --mode development",
     "preview": "vite preview",
     "lint": "biome lint ./src",
+    "lint:fix": "biome lint --write ./src",
     "format": "biome format --write ./src",
-    "check": "biome check ./src"
+    "check": "biome check ./src",
+    "check:fix": "biome check --write ./src"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.12",

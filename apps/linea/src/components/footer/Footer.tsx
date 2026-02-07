@@ -1,3 +1,5 @@
+import { Link } from "react-router-dom";
+
 const Footer = () => {
   return (
     <footer className="w-full bg-white text-black pt-8 pb-2 px-6 border-t border-[#e5e5e5] mt-48">
@@ -36,44 +38,44 @@ const Footer = () => {
               <h4 className="text-sm font-normal mb-4">Shop</h4>
               <ul className="space-y-2">
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/category/new-in"
                     className="text-sm font-light text-black/70 hover:text-black transition-colors"
                   >
                     New In
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/category/rings"
                     className="text-sm font-light text-black/70 hover:text-black transition-colors"
                   >
                     Rings
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/category/earrings"
                     className="text-sm font-light text-black/70 hover:text-black transition-colors"
                   >
                     Earrings
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/category/bracelets"
                     className="text-sm font-light text-black/70 hover:text-black transition-colors"
                   >
                     Bracelets
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/category/necklaces"
                     className="text-sm font-light text-black/70 hover:text-black transition-colors"
                   >
                     Necklaces
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -83,44 +85,44 @@ const Footer = () => {
               <h4 className="text-sm font-normal mb-4">Support</h4>
               <ul className="space-y-2">
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/about/size-guide"
                     className="text-sm font-light text-black/70 hover:text-black transition-colors"
                   >
                     Size Guide
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/about/customer-care"
                     className="text-sm font-light text-black/70 hover:text-black transition-colors"
                   >
                     Care Instructions
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/about/customer-care"
                     className="text-sm font-light text-black/70 hover:text-black transition-colors"
                   >
                     Returns
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/about/customer-care"
                     className="text-sm font-light text-black/70 hover:text-black transition-colors"
                   >
                     Shipping
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/about/customer-care"
                     className="text-sm font-light text-black/70 hover:text-black transition-colors"
                   >
                     Contact
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -131,7 +133,9 @@ const Footer = () => {
               <ul className="space-y-2">
                 <li>
                   <a
-                    href="#"
+                    href="https://instagram.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-sm font-light text-black/70 hover:text-black transition-colors"
                   >
                     Instagram
@@ -139,19 +143,21 @@ const Footer = () => {
                 </li>
                 <li>
                   <a
-                    href="#"
+                    href="https://pinterest.com"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="text-sm font-light text-black/70 hover:text-black transition-colors"
                   >
                     Pinterest
                   </a>
                 </li>
                 <li>
-                  <a
-                    href="#"
+                  <Link
+                    to="/about/customer-care"
                     className="text-sm font-light text-black/70 hover:text-black transition-colors"
                   >
                     Newsletter
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>

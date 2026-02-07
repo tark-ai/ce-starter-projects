@@ -20,11 +20,17 @@
     "lint": {
       "dependsOn": ["^build"]
     },
+    "lint:fix": {
+      "cache": false
+    },
     "format": {
       "cache": false
     },
     "check": {
       "dependsOn": ["^build"]
+    },
+    "check:fix": {
+      "cache": false
     },
     "preview": {
       "cache": false,

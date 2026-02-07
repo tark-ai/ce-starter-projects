@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import CategoryHeader from "../components/category/CategoryHeader";
 import FilterSortBar from "../components/category/FilterSortBar";
 import ProductGrid from "../components/category/ProductGrid";
@@ -8,7 +8,6 @@ import Header from "../components/header/Header";
 
 const Category = () => {
   const { category } = useParams();
-  const [searchParams] = useSearchParams();
   const [filtersOpen, setFiltersOpen] = useState(false);
 
   return (

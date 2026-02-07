@@ -57,7 +57,7 @@ const Navigation = () => {
       setCartItems((items) => items.filter((item) => item.id !== id));
     } else {
       setCartItems((items) =>
-        items.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item)),
+        items.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item))
       );
     }
   };
@@ -131,6 +131,7 @@ const Navigation = () => {
       <div className="flex items-center justify-between h-16 px-6">
         {/* Mobile hamburger button */}
         <button
+          type="button"
           className="lg:hidden p-2 mt-0.5 text-nav-foreground hover:text-nav-hover transition-colors duration-200"
           onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
           aria-label="Toggle menu"
@@ -160,6 +161,8 @@ const Navigation = () => {
             <div
               key={item.name}
               className="relative"
+              role="menuitem"
+              tabIndex={0}
               onMouseEnter={() => setActiveDropdown(item.name)}
               onMouseLeave={() => setActiveDropdown(null)}
             >
@@ -183,6 +186,7 @@ const Navigation = () => {
         {/* Right icons */}
         <div className="flex items-center space-x-2">
           <button
+            type="button"
             className="p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200"
             aria-label="Search"
             onClick={() => setIsSearchOpen(!isSearchOpen)}
@@ -194,6 +198,8 @@ const Navigation = () => {
               strokeWidth="1.5"
               stroke="currentColor"
               className="w-5 h-5"
+              role="img"
+              aria-label="Search icon"
             >
               <path
                 strokeLinecap="round"
@@ -203,6 +209,7 @@ const Navigation = () => {
             </svg>
           </button>
           <button
+            type="button"
             className="hidden lg:block p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200"
             aria-label="Favorites"
             onClick={() => setOffCanvasType("favorites")}
@@ -214,6 +221,8 @@ const Navigation = () => {
               strokeWidth="1.5"
               stroke="currentColor"
               className="w-5 h-5"
+              role="img"
+              aria-label="Favorites icon"
             >
               <path
                 strokeLinecap="round"
@@ -223,6 +232,7 @@ const Navigation = () => {
             </svg>
           </button>
           <button
+            type="button"
             className="p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200 relative"
             aria-label="Shopping bag"
             onClick={() => setIsShoppingBagOpen(true)}
@@ -234,6 +244,8 @@ const Navigation = () => {
               strokeWidth="1.5"
               stroke="currentColor"
               className="w-5 h-5"
+              role="img"
+              aria-label="Shopping bag icon"
             >
               <path
                 strokeLinecap="round"
@@ -254,6 +266,7 @@ const Navigation = () => {
       {activeDropdown && (
         <div
           className="absolute top-full left-0 right-0 bg-nav border-b border-border z-50"
+          role="menu"
           onMouseEnter={() => setActiveDropdown(activeDropdown)}
           onMouseLeave={() => setActiveDropdown(null)}
         >
@@ -264,8 +277,8 @@ const Navigation = () => {
                 <ul className="space-y-2">
                   {navItems
                     .find((item) => item.name === activeDropdown)
-                    ?.submenuItems.map((subItem, index) => (
-                      <li key={index}>
+                    ?.submenuItems.map((subItem) => (
+                      <li key={subItem}>
                         <Link
                           to={
                             activeDropdown === "About"
@@ -285,7 +298,7 @@ const Navigation = () => {
               <div className="flex space-x-6">
                 {navItems
                   .find((item) => item.name === activeDropdown)
-                  ?.images.map((image, index) => {
+                  ?.images.map((image) => {
                     // Determine the link destination based on dropdown and image
                     let linkTo = "/";
                     if (activeDropdown === "Shop") {
@@ -300,7 +313,7 @@ const Navigation = () => {
 
                     return (
                       <Link
-                        key={index}
+                        key={image.src}
                         to={linkTo}
                         className="w-[400px] h-[280px] cursor-pointer group relative overflow-hidden block"
                       >
@@ -341,6 +354,8 @@ const Navigation = () => {
                     strokeWidth="1.5"
                     stroke="currentColor"
                     className="w-5 h-5 text-nav-foreground mr-3"
+                    role="img"
+                    aria-label="Search icon"
                   >
                     <path
                       strokeLinecap="round"
@@ -352,7 +367,6 @@ const Navigation = () => {
                     type="text"
                     placeholder="Search for jewelry..."
                     className="flex-1 bg-transparent text-nav-foreground placeholder:text-nav-foreground/60 outline-none text-lg"
-                    autoFocus
                   />
                 </div>
               </div>
@@ -361,9 +375,10 @@ const Navigation = () => {
               <div>
                 <h3 className="text-nav-foreground text-sm font-light mb-4">Popular Searches</h3>
                 <div className="flex flex-wrap gap-3">
-                  {popularSearches.map((search, index) => (
+                  {popularSearches.map((search) => (
                     <button
-                      key={index}
+                      key={search}
+                      type="button"
                       className="text-nav-foreground hover:text-nav-hover text-sm font-light py-2 px-4 border border-border rounded-full transition-colors duration-200 hover:border-nav-hover"
                     >
                       {search}
@@ -381,7 +396,7 @@ const Navigation = () => {
         <div className="lg:hidden absolute top-full left-0 right-0 bg-nav border-b border-border z-50">
           <div className="px-6 py-8">
             <div className="space-y-6">
-              {navItems.map((item, _index) => (
+              {navItems.map((item) => (
                 <div key={item.name}>
                   <Link
                     to={item.href}
@@ -391,9 +406,9 @@ const Navigation = () => {
                     {item.name}
                   </Link>
                   <div className="mt-3 pl-4 space-y-2">
-                    {item.submenuItems.map((subItem, subIndex) => (
+                    {item.submenuItems.map((subItem) => (
                       <Link
-                        key={subIndex}
+                        key={subItem}
                         to={
                           item.name === "About"
                             ? `/about/${subItem.toLowerCase().replace(/\s+/g, "-")}`
@@ -429,9 +444,11 @@ const Navigation = () => {
       {offCanvasType === "favorites" && (
         <div className="fixed inset-0 z-50 h-screen">
           {/* Backdrop */}
-          <div
-            className="absolute inset-0 bg-black/50 h-screen"
+          <button
+            type="button"
+            className="absolute inset-0 bg-black/50 h-screen border-0 p-0 cursor-pointer"
             onClick={() => setOffCanvasType(null)}
+            aria-label="Close favorites panel"
           />
 
           {/* Off-canvas panel */}
@@ -440,6 +457,7 @@ const Navigation = () => {
             <div className="flex items-center justify-between p-6 border-b border-border">
               <h2 className="text-lg font-light text-foreground">Your Favorites</h2>
               <button
+                type="button"
                 onClick={() => setOffCanvasType(null)}
                 className="p-2 text-foreground hover:text-muted-foreground transition-colors"
                 aria-label="Close"

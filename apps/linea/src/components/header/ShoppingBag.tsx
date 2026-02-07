@@ -1,4 +1,5 @@
 import { Minus, Plus, X } from "lucide-react";
+import type * as React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 
@@ -33,10 +34,23 @@ const ShoppingBag = ({
     return sum + price * item.quantity;
   }, 0);
 
+  const handleBackdropKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onClose();
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 h-screen">
       {/* Backdrop */}
-      <div className="absolute inset-0 bg-black/50 h-screen" onClick={onClose} />
+      <button
+        type="button"
+        className="absolute inset-0 bg-black/50 h-screen border-0 p-0 cursor-pointer"
+        onClick={onClose}
+        onKeyDown={handleBackdropKeyDown}
+        aria-label="Close shopping bag"
+      />
 
       {/* Off-canvas panel */}
       <div className="absolute right-0 top-0 h-screen w-96 bg-background border-l border-border animate-slide-in-right flex flex-col">
@@ -44,6 +58,7 @@ const ShoppingBag = ({
         <div className="flex items-center justify-between p-6 border-b border-border">
           <h2 className="text-lg font-light text-foreground">Shopping Bag</h2>
           <button
+            type="button"
             onClick={onClose}
             className="p-2 text-foreground hover:text-muted-foreground transition-colors"
             aria-label="Close"
@@ -58,6 +73,7 @@ const ShoppingBag = ({
           {onViewFavorites && (
             <div className="md:hidden mb-6 pb-6 border-b border-border">
               <button
+                type="button"
                 onClick={onViewFavorites}
                 className="w-full flex items-center justify-center gap-2 py-3 px-4 border border-border rounded-lg text-nav-foreground hover:text-nav-hover hover:border-nav-hover transition-colors duration-200"
               >
@@ -68,6 +84,8 @@ const ShoppingBag = ({
                   strokeWidth="1.5"
                   stroke="currentColor"
                   className="w-5 h-5"
+                  role="img"
+                  aria-label="Favorites icon"
                 >
                   <path
                     strokeLinecap="round"
@@ -114,6 +132,7 @@ const ShoppingBag = ({
                       <div className="flex items-center gap-2 mt-3">
                         <div className="flex items-center border border-border">
                           <button
+                            type="button"
                             onClick={() => updateQuantity(item.id, item.quantity - 1)}
                             className="p-2 hover:bg-muted/50 transition-colors"
                             aria-label="Decrease quantity"
@@ -124,6 +143,7 @@ const ShoppingBag = ({
                             {item.quantity}
                           </span>
                           <button
+                            type="button"
                             onClick={() => updateQuantity(item.id, item.quantity + 1)}
                             className="p-2 hover:bg-muted/50 transition-colors"
                             aria-label="Increase quantity"

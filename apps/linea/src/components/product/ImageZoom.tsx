@@ -1,4 +1,5 @@
 import { X } from "lucide-react";
+import type * as React from "react";
 import { useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 
@@ -42,10 +43,23 @@ const ImageZoom = ({ images, initialIndex, isOpen, onClose }: ImageZoomProps) =>
 
   if (!isOpen) return null;
 
+  const handleBackdropKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      onClose();
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 bg-black/90 backdrop-blur-sm animate-fade-in">
       {/* Backdrop */}
-      <div className="absolute inset-0" onClick={onClose} />
+      <button
+        type="button"
+        className="absolute inset-0 border-0 p-0 cursor-pointer bg-transparent"
+        onClick={onClose}
+        onKeyDown={handleBackdropKeyDown}
+        aria-label="Close image zoom"
+      />
 
       {/* Close button */}
       <Button
@@ -60,11 +74,11 @@ const ImageZoom = ({ images, initialIndex, isOpen, onClose }: ImageZoomProps) =>
       {/* Scrollable image container */}
       <div ref={scrollRef} className="relative w-full h-full overflow-y-auto">
         <div className="space-y-4">
-          {images.map((image, index) => (
-            <div key={index} className="w-full flex justify-center">
+          {images.map((image) => (
+            <div key={image} className="w-full flex justify-center">
               <img
                 src={image}
-                alt={`Product view ${index + 1}`}
+                alt="Product view"
                 className="w-full max-w-none object-cover animate-scale-in"
               />
             </div>

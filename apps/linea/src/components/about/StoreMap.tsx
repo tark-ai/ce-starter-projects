@@ -47,14 +47,15 @@ const StoreMap = () => {
         loading="lazy"
         referrerPolicy="no-referrer-when-downgrade"
         className="w-full h-full"
+        title="Store locations map"
       />
 
       {/* Overlay with store markers */}
       <div className="absolute top-4 left-4 bg-background/90 backdrop-blur-sm rounded-lg p-4 max-w-xs">
         <h4 className="text-sm font-medium text-foreground mb-3">Our Locations</h4>
         <div className="space-y-2">
-          {stores.map((store, index) => (
-            <div key={index} className="text-xs">
+          {stores.map((store) => (
+            <div key={store.name} className="text-xs">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-2 h-2 bg-primary rounded-full flex-shrink-0"></div>
                 <span className="font-medium text-foreground">{store.name}</span>

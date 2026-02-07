@@ -74,8 +74,8 @@ const SizeGuide = () => {
                       { us: "8", uk: "P", eu: "56", diameter: "18.0", circumference: "56.5" },
                       { us: "8.5", uk: "Q", eu: "57", diameter: "18.4", circumference: "57.8" },
                       { us: "9", uk: "R", eu: "59", diameter: "18.8", circumference: "59.1" },
-                    ].map((size, index) => (
-                      <tr key={index} className="hover:bg-muted/10">
+                    ].map((size) => (
+                      <tr key={`${size.us}-${size.uk}-${size.eu}`} className="hover:bg-muted/10">
                         <td className="border border-border p-3">{size.us}</td>
                         <td className="border border-border p-3">{size.uk}</td>
                         <td className="border border-border p-3">{size.eu}</td>

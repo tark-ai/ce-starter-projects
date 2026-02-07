@@ -70,7 +70,7 @@ const Checkout = () => {
       setCartItems((items) => items.filter((item) => item.id !== id));
     } else {
       setCartItems((items) =>
-        items.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item)),
+        items.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item))
       );
     }
   };
@@ -95,8 +95,7 @@ const Checkout = () => {
   const total = subtotal + shipping;
 
   const handleDiscountSubmit = () => {
-    // Handle discount code submission
-    console.log("Discount code submitted:", discountCode);
+    // TODO: validate discountCode against backend
     setShowDiscountInput(false);
   };
 
@@ -186,6 +185,7 @@ const Checkout = () => {
                 <div className="mt-8 pt-6 border-t border-muted-foreground/20">
                   {!showDiscountInput ? (
                     <button
+                      type="button"
                       onClick={() => setShowDiscountInput(true)}
                       className="text-sm text-foreground underline hover:no-underline transition-all"
                     >
@@ -202,6 +202,7 @@ const Checkout = () => {
                           className="flex-1 rounded-none"
                         />
                         <button
+                          type="button"
                           onClick={handleDiscountSubmit}
                           className="text-sm text-foreground underline hover:no-underline transition-all px-2"
                         >

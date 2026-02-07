@@ -132,33 +132,56 @@ const CustomerCare = () => {
               <form className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-light text-foreground">First Name</label>
-                    <Input className="rounded-none" placeholder="Enter your first name" />
+                    <label htmlFor="first-name" className="text-sm font-light text-foreground">
+                      First Name
+                    </label>
+                    <Input
+                      id="first-name"
+                      className="rounded-none"
+                      placeholder="Enter your first name"
+                    />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-light text-foreground">Last Name</label>
-                    <Input className="rounded-none" placeholder="Enter your last name" />
+                    <label htmlFor="last-name" className="text-sm font-light text-foreground">
+                      Last Name
+                    </label>
+                    <Input
+                      id="last-name"
+                      className="rounded-none"
+                      placeholder="Enter your last name"
+                    />
                   </div>
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-light text-foreground">Email</label>
-                  <Input type="email" className="rounded-none" placeholder="Enter your email" />
+                  <label htmlFor="email" className="text-sm font-light text-foreground">
+                    Email
+                  </label>
+                  <Input
+                    id="email"
+                    type="email"
+                    className="rounded-none"
+                    placeholder="Enter your email"
+                  />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-light text-foreground">
+                  <label htmlFor="order-number" className="text-sm font-light text-foreground">
                     Order Number (Optional)
                   </label>
                   <Input
+                    id="order-number"
                     className="rounded-none"
                     placeholder="Enter your order number if applicable"
                   />
                 </div>
 
                 <div className="space-y-2">
-                  <label className="text-sm font-light text-foreground">How can we help you?</label>
+                  <label htmlFor="inquiry" className="text-sm font-light text-foreground">
+                    How can we help you?
+                  </label>
                   <Textarea
+                    id="inquiry"
                     className="rounded-none min-h-[120px]"
                     placeholder="Please describe your inquiry in detail"
                   />
