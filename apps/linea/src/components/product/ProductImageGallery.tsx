@@ -1,27 +1,28 @@
+import type { ProductImage } from "@commercengine/storefront-sdk";
 import type * as React from "react";
 import { useRef, useState } from "react";
-import eclipseImage from "@/assets/eclipse.jpg";
-import haloImage from "@/assets/halo.jpg";
-import linkBracelet from "@/assets/link-bracelet.png";
-import organicEarring from "@/assets/organic-earring.png";
-import pantheonImage from "@/assets/pantheon.jpg";
 import ImageZoom from "./ImageZoom";
 
-const productImages = [pantheonImage, organicEarring, eclipseImage, linkBracelet, haloImage];
+interface ProductImageGalleryProps {
+  images: ProductImage[];
+  productName: string;
+}
 
-const ProductImageGallery = () => {
+const ProductImageGallery = ({ images, productName }: ProductImageGalleryProps) => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isZoomOpen, setIsZoomOpen] = useState(false);
   const [zoomInitialIndex, setZoomInitialIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
 
+  const imageUrls = images.map((img) => img.url_zoom || img.url_standard);
+
   const nextImage = () => {
-    setCurrentImageIndex((prev) => (prev + 1) % productImages.length);
+    setCurrentImageIndex((prev) => (prev + 1) % images.length);
   };
 
   const prevImage = () => {
-    setCurrentImageIndex((prev) => (prev - 1 + productImages.length) % productImages.length);
+    setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
   };
 
   const handleImageClick = (index: number) => {
@@ -45,10 +46,8 @@ const ProductImageGallery = () => {
 
     if (Math.abs(difference) > minSwipeDistance) {
       if (difference > 0) {
-        // Swipe left - next image
         nextImage();
       } else {
-        // Swipe right - previous image
         prevImage();
       }
     }
@@ -57,12 +56,20 @@ const ProductImageGallery = () => {
     touchEndX.current = null;
   };
 
+  if (images.length === 0) {
+    return (
+      <div className="w-full aspect-square bg-muted/10 flex items-center justify-center">
+        <p className="text-sm text-muted-foreground">No images</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full">
-      {/* Desktop: Vertical scrolling gallery (1024px and above) */}
+      {/* Desktop: Vertical scrolling gallery */}
       <div className="hidden lg:block">
         <div className="space-y-4">
-          {productImages.map((image, index) => {
+          {images.map((image, index) => {
             const handleKeyDown = (e: React.KeyboardEvent) => {
               if (e.key === "Enter" || e.key === " ") {
                 e.preventDefault();
@@ -71,16 +78,16 @@ const ProductImageGallery = () => {
             };
             return (
               <button
-                key={image}
+                key={image.id}
                 type="button"
                 className="w-full aspect-square overflow-hidden cursor-pointer group border-0 p-0 bg-transparent"
                 onClick={() => handleImageClick(index)}
                 onKeyDown={handleKeyDown}
-                aria-label={`View product image ${index + 1}`}
+                aria-label={`View ${productName} image ${index + 1}`}
               >
                 <img
-                  src={image}
-                  alt={`Product view ${index + 1}`}
+                  src={image.url_standard}
+                  alt={image.alternate_text || `${productName} view ${index + 1}`}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </button>
@@ -89,7 +96,7 @@ const ProductImageGallery = () => {
         </div>
       </div>
 
-      {/* Tablet/Mobile: Image slider (below 1024px) */}
+      {/* Tablet/Mobile: Image slider */}
       <div className="lg:hidden">
         <div className="relative">
           <button
@@ -105,20 +112,23 @@ const ProductImageGallery = () => {
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            aria-label={`View product image ${currentImageIndex + 1}`}
+            aria-label={`View ${productName} image ${currentImageIndex + 1}`}
           >
             <img
-              src={productImages[currentImageIndex]}
-              alt={`Product view ${currentImageIndex + 1}`}
+              src={images[currentImageIndex].url_standard}
+              alt={
+                images[currentImageIndex].alternate_text ||
+                `${productName} view ${currentImageIndex + 1}`
+              }
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
             />
           </button>
 
           {/* Dots indicator */}
           <div className="flex justify-center mt-4 gap-2">
-            {productImages.map((image, index) => (
+            {images.map((image, index) => (
               <button
-                key={image}
+                key={image.id}
                 type="button"
                 onClick={() => setCurrentImageIndex(index)}
                 className={`w-2 h-2 rounded-full transition-colors ${
@@ -133,7 +143,7 @@ const ProductImageGallery = () => {
 
       {/* Image Zoom Modal */}
       <ImageZoom
-        images={productImages}
+        images={imageUrls}
         initialIndex={zoomInitialIndex}
         isOpen={isZoomOpen}
         onClose={() => setIsZoomOpen(false)}

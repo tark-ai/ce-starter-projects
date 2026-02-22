@@ -1,7 +1,38 @@
+import type { Pagination as PaginationType } from "@commercengine/storefront-sdk";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-const Pagination = () => {
+interface PaginationProps {
+  pagination: PaginationType;
+  onPageChange: (page: number) => void;
+}
+
+function getPageNumbers(totalPages: number, currentPage: number): (number | "ellipsis")[] {
+  if (totalPages <= 5) {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
+
+  const pages: (number | "ellipsis")[] = [1];
+
+  if (currentPage > 3) pages.push("ellipsis");
+
+  const start = Math.max(2, currentPage - 1);
+  const end = Math.min(totalPages - 1, currentPage + 1);
+
+  for (let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+
+  if (currentPage < totalPages - 2) pages.push("ellipsis");
+
+  pages.push(totalPages);
+  return pages;
+}
+
+const Pagination = ({ pagination, onPageChange }: PaginationProps) => {
+  const currentPage = pagination.next_page ? pagination.next_page - 1 : pagination.total_pages;
+  const pages = getPageNumbers(pagination.total_pages, currentPage);
+
   return (
     <section className="w-full px-6 py-8">
       <div className="flex justify-start items-center gap-2">
@@ -9,44 +40,44 @@ const Pagination = () => {
           variant="ghost"
           size="sm"
           className="p-2 hover:bg-transparent hover:opacity-50 disabled:opacity-30 -ml-2"
-          disabled
+          disabled={!pagination.previous_page}
+          onClick={() => pagination.previous_page && onPageChange(pagination.previous_page)}
         >
           <ChevronLeft className="h-4 w-4" />
         </Button>
 
         <div className="flex items-center gap-1">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="min-w-8 h-8 hover:bg-transparent underline font-normal text-sm"
-          >
-            1
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="min-w-8 h-8 hover:bg-transparent hover:underline font-light text-sm"
-          >
-            2
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="min-w-8 h-8 hover:bg-transparent hover:underline font-light text-sm"
-          >
-            3
-          </Button>
-          <span className="mx-2 text-sm font-light text-muted-foreground">...</span>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="min-w-8 h-8 hover:bg-transparent hover:underline font-light text-sm"
-          >
-            8
-          </Button>
+          {pages.map((page, idx) =>
+            page === "ellipsis" ? (
+              <span
+                key={`ellipsis-${idx}`}
+                className="mx-2 text-sm font-light text-muted-foreground"
+              >
+                ...
+              </span>
+            ) : (
+              <Button
+                key={page}
+                variant="ghost"
+                size="sm"
+                className={`min-w-8 h-8 hover:bg-transparent hover:underline text-sm ${
+                  page === currentPage ? "underline font-normal" : "font-light"
+                }`}
+                onClick={() => onPageChange(page)}
+              >
+                {page}
+              </Button>
+            )
+          )}
         </div>
 
-        <Button variant="ghost" size="sm" className="p-2 hover:bg-transparent hover:opacity-50">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="p-2 hover:bg-transparent hover:opacity-50 disabled:opacity-30"
+          disabled={!pagination.next_page}
+          onClick={() => pagination.next_page && onPageChange(pagination.next_page)}
+        >
           <ChevronRight className="h-4 w-4" />
         </Button>
       </div>

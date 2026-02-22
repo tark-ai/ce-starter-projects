@@ -4,42 +4,42 @@
     "ce": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "13dcee3db3c8c5d7db6f7de9c819cfbbb0dc0fbfb63938b5945af21a9db17a9d"
+      "computedHash": "cd08db1e622858c0d6eb59bd31e966d3c79c548334d15e002713b70504bb45e4"
     },
     "ce-auth": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "d233767e70e6bee2e182650219d74a2dc088febb553d13d21b073f2b2887f30f"
+      "computedHash": "239562250d333a1d17fabe3eff3c01bb32a2940d95141c7dcad0b595eabd4e53"
     },
     "ce-cart-checkout": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "2401e439d1fe057717f5bfeee7e3e2bb6225ce1d4054df2b4fdca04e441ea293"
+      "computedHash": "21c89aeeaa926fc4b16f0b76317cafba9e40447b18478ec7f6a593128acbe5f5"
     },
     "ce-catalog": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "1a17be833d4185868443be3b47ba81a07e9f634e4d453c0eb28caa794bf0b7e5"
+      "computedHash": "cab1f5e133e18bad0bf6a5bde1c100f9c5f87e028c80b2fc1c73fa981d1d8c38"
     },
     "ce-nextjs-patterns": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "7b43828d88876b883ddfa45d7eb86e29d7cfcedd63411c88899736d886481431"
+      "computedHash": "af1ae830343468d5e2fe124ad41f656bd7e85f3ec4929eca3d363643bcf289c1"
     },
     "ce-orders": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "27deb7d9dc31f2ab951bb9b7c830343236475b3ab09976ad633ced424d69164f"
+      "computedHash": "8c30cb9b9b8976d45ccef8d038ba6e3ee2b35e006a1afc188c642b3fd96b0e06"
     },
     "ce-setup": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "0c85d6002542dd43aa260b244cd3e370df6c9cf4080e5ef593c7d5a4e8c8ff88"
+      "computedHash": "d86d2bd6cb58a43982981167b8ea419c92673362322f5f2b6a56fba1d8b4c2c7"
     },
     "ce-webhooks": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "e789243a368b26405364edbfd6b65e253f58ccbb2f84dbc7b0c6e8516159b8a8"
+      "computedHash": "9726411934f1f6b0b108d6b847f31141ad1b4418dc5df2dadd1364dffb42536f"
     }
   }
 }

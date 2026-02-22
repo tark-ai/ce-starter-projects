@@ -1,7 +1,12 @@
+import type { Product } from "@commercengine/storefront-sdk";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import ReviewProduct from "./ReviewProduct";
+
+interface ProductDescriptionProps {
+  product: Product;
+}
 
 const CustomStar = ({ filled, className }: { filled: boolean; className?: string }) => (
   <svg
@@ -20,43 +25,41 @@ const CustomStar = ({ filled, className }: { filled: boolean; className?: string
   </svg>
 );
 
-const ProductDescription = () => {
+const ProductDescription = ({ product }: ProductDescriptionProps) => {
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
   const [isCareOpen, setIsCareOpen] = useState(false);
   const [isReviewsOpen, setIsReviewsOpen] = useState(false);
 
+  const averageRating =
+    product.reviews_count > 0 ? product.reviews_rating_sum / product.reviews_count : 0;
+
   return (
     <div className="space-y-0 mt-8 border-t border-border">
       {/* Description */}
-      <div className="border-b border-border">
-        <Button
-          variant="ghost"
-          onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
-          className="w-full h-14 px-0 justify-between hover:bg-transparent font-light rounded-none"
-        >
-          <span>Description</span>
-          {isDescriptionOpen ? (
-            <ChevronUp className="h-4 w-4" />
-          ) : (
-            <ChevronDown className="h-4 w-4" />
+      {product.short_description && (
+        <div className="border-b border-border">
+          <Button
+            variant="ghost"
+            onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
+            className="w-full h-14 px-0 justify-between hover:bg-transparent font-light rounded-none"
+          >
+            <span>Description</span>
+            {isDescriptionOpen ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </Button>
+          {isDescriptionOpen && (
+            <div className="pb-6 space-y-4">
+              <p className="text-sm font-light text-muted-foreground leading-relaxed">
+                {product.short_description}
+              </p>
+            </div>
           )}
-        </Button>
-        {isDescriptionOpen && (
-          <div className="pb-6 space-y-4">
-            <p className="text-sm font-light text-muted-foreground leading-relaxed">
-              The Pantheon earrings embody architectural elegance with their clean, geometric
-              design. Inspired by classical Roman architecture, these statement pieces feature a
-              sophisticated interplay of curves and angles that catch and reflect light beautifully.
-            </p>
-            <p className="text-sm font-light text-muted-foreground leading-relaxed">
-              Each earring is meticulously crafted from premium sterling silver with an 18k gold
-              plating, ensuring both durability and luxury. The minimalist aesthetic makes them
-              perfect for both everyday wear and special occasions.
-            </p>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Product Details */}
       <div className="border-b border-border">
@@ -70,22 +73,18 @@ const ProductDescription = () => {
         </Button>
         {isDetailsOpen && (
           <div className="pb-6 space-y-3">
-            <div className="flex justify-between">
-              <span className="text-sm font-light text-muted-foreground">SKU</span>
-              <span className="text-sm font-light text-foreground">LE-PTH-001</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm font-light text-muted-foreground">Collection</span>
-              <span className="text-sm font-light text-foreground">Architectural Series</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm font-light text-muted-foreground">Closure</span>
-              <span className="text-sm font-light text-foreground">Post and butterfly back</span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-sm font-light text-muted-foreground">Hypoallergenic</span>
-              <span className="text-sm font-light text-foreground">Yes</span>
-            </div>
+            {product.sku && (
+              <div className="flex justify-between">
+                <span className="text-sm font-light text-muted-foreground">SKU</span>
+                <span className="text-sm font-light text-foreground">{product.sku}</span>
+              </div>
+            )}
+            {product.attributes.map((attr) => (
+              <div key={attr.key} className="flex justify-between">
+                <span className="text-sm font-light text-muted-foreground">{attr.name}</span>
+                <span className="text-sm font-light text-foreground">{String(attr.value)}</span>
+              </div>
+            ))}
           </div>
         )}
       </div>
@@ -104,22 +103,18 @@ const ProductDescription = () => {
           <div className="pb-6 space-y-4">
             <ul className="space-y-2">
               <li className="text-sm font-light text-muted-foreground">
-                • Clean with a soft, dry cloth after each wear
+                - Clean with a soft, dry cloth after each wear
               </li>
               <li className="text-sm font-light text-muted-foreground">
-                • Avoid contact with perfumes, lotions, and cleaning products
+                - Avoid contact with perfumes, lotions, and cleaning products
               </li>
               <li className="text-sm font-light text-muted-foreground">
-                • Store in the provided jewelry pouch when not wearing
+                - Store in the provided jewelry pouch when not wearing
               </li>
               <li className="text-sm font-light text-muted-foreground">
-                • Remove before swimming, exercising, or showering
+                - Remove before swimming, exercising, or showering
               </li>
             </ul>
-            <p className="text-sm font-light text-muted-foreground">
-              For professional cleaning, visit your local jeweler or contact our customer service
-              team.
-            </p>
           </div>
         )}
       </div>
@@ -133,68 +128,27 @@ const ProductDescription = () => {
         >
           <div className="flex items-center gap-3">
             <span>Customer Reviews</span>
-            <div className="flex items-center">
-              {[1, 2, 3, 4, 5].map((star) => (
-                <CustomStar key={star} filled={star <= 4.8} />
-              ))}
-              <span className="text-sm font-light text-muted-foreground ml-1">4.8</span>
-            </div>
+            {product.reviews_count > 0 && (
+              <div className="flex items-center">
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <CustomStar key={star} filled={star <= Math.round(averageRating)} />
+                ))}
+                <span className="text-sm font-light text-muted-foreground ml-1">
+                  {averageRating.toFixed(1)}
+                </span>
+              </div>
+            )}
           </div>
           {isReviewsOpen ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
         </Button>
         {isReviewsOpen && (
           <div className="pb-6 space-y-6">
-            {/* Review Product Button */}
             <ReviewProduct />
-
-            {/* Reviews List */}
-            <div className="space-y-6">
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <CustomStar key={star} filled={true} />
-                    ))}
-                  </div>
-                  <span className="text-sm font-light text-muted-foreground">Sarah M.</span>
-                </div>
-                <p className="text-sm font-light text-muted-foreground leading-relaxed">
-                  "Absolutely stunning earrings! The quality is exceptional and they go with
-                  everything. The architectural design is so unique and I get compliments every time
-                  I wear them."
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <CustomStar key={star} filled={star <= 4} />
-                    ))}
-                  </div>
-                  <span className="text-sm font-light text-muted-foreground">Emma T.</span>
-                </div>
-                <p className="text-sm font-light text-muted-foreground leading-relaxed">
-                  "Beautiful craftsmanship and comfortable to wear all day. The gold plating has
-                  held up perfectly after months of regular wear. Highly recommend!"
-                </p>
-              </div>
-
-              <div className="space-y-3">
-                <div className="flex items-center gap-2">
-                  <div className="flex items-center">
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <CustomStar key={star} filled={true} />
-                    ))}
-                  </div>
-                  <span className="text-sm font-light text-muted-foreground">Jessica R.</span>
-                </div>
-                <p className="text-sm font-light text-muted-foreground leading-relaxed">
-                  "These earrings are a work of art. The minimalist design is elegant and
-                  sophisticated. Perfect weight and the packaging was beautiful too."
-                </p>
-              </div>
-            </div>
+            {product.reviews_count === 0 && (
+              <p className="text-sm font-light text-muted-foreground">
+                No reviews yet. Be the first to review this product.
+              </p>
+            )}
           </div>
         )}
       </div>

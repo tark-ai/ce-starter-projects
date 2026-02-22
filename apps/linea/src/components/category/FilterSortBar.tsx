@@ -1,29 +1,65 @@
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+
+interface FacetDistribution {
+  [key: string]: { [value: string]: number };
+}
+
+interface FacetStats {
+  [key: string]: { min: number; max: number };
+}
 
 interface FilterSortBarProps {
   filtersOpen: boolean;
   setFiltersOpen: (open: boolean) => void;
   itemCount: number;
+  facetDistribution: FacetDistribution;
+  facetStats: FacetStats;
+  filters: Record<string, unknown>;
+  onFiltersChange: (filters: Record<string, unknown>) => void;
 }
 
-const FilterSortBar = ({ filtersOpen, setFiltersOpen, itemCount }: FilterSortBarProps) => {
-  const [sortBy, setSortBy] = useState("featured");
+function formatFacetLabel(key: string): string {
+  return key.replace(/_/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+}
 
-  const categories = ["Earrings", "Bracelets", "Rings", "Necklaces"];
-  const priceRanges = ["Under €1,000", "€1,000 - €2,000", "€2,000 - €3,000", "Over €3,000"];
-  const materials = ["Gold", "Silver", "Rose Gold", "Platinum"];
+const FilterSortBar = ({
+  filtersOpen,
+  setFiltersOpen,
+  itemCount,
+  facetDistribution,
+  filters,
+  onFiltersChange,
+}: FilterSortBarProps) => {
+  const facetKeys = Object.keys(facetDistribution);
+
+  const isChecked = (facetKey: string, value: string): boolean => {
+    const current = filters[facetKey];
+    if (!Array.isArray(current)) return false;
+    return current.includes(value);
+  };
+
+  const toggleFilter = (facetKey: string, value: string) => {
+    const current = (filters[facetKey] as string[]) || [];
+    const next = current.includes(value) ? current.filter((v) => v !== value) : [...current, value];
+
+    const updated = { ...filters };
+    if (next.length === 0) {
+      delete updated[facetKey];
+    } else {
+      updated[facetKey] = next;
+    }
+    onFiltersChange(updated);
+  };
+
+  const clearAll = () => {
+    onFiltersChange({});
+  };
+
+  const hasActiveFilters = Object.keys(filters).length > 0;
 
   return (
     <section className="w-full px-6 mb-8 border-b border-border pb-4">
@@ -34,7 +70,7 @@ const FilterSortBar = ({ filtersOpen, setFiltersOpen, itemCount }: FilterSortBar
           <Sheet open={filtersOpen} onOpenChange={setFiltersOpen}>
             <SheetTrigger asChild>
               <Button variant="ghost" size="sm" className="font-light hover:bg-transparent">
-                Filters
+                Filters{hasActiveFilters ? " *" : ""}
               </Button>
             </SheetTrigger>
             <SheetContent side="right" className="w-80 bg-background border-none shadow-none">
@@ -43,132 +79,56 @@ const FilterSortBar = ({ filtersOpen, setFiltersOpen, itemCount }: FilterSortBar
               </SheetHeader>
 
               <div className="space-y-8">
-                {/* Category Filter */}
-                <div>
-                  <h3 className="text-sm font-light mb-4 text-foreground">Category</h3>
-                  <div className="space-y-3">
-                    {categories.map((category) => (
-                      <div key={category} className="flex items-center space-x-3">
-                        <Checkbox
-                          id={category}
-                          className="border-border data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
-                        />
-                        <Label
-                          htmlFor={category}
-                          className="text-sm font-light text-foreground cursor-pointer"
-                        >
-                          {category}
-                        </Label>
+                {facetKeys.map((facetKey, idx) => {
+                  const values = facetDistribution[facetKey];
+                  if (!values || Object.keys(values).length === 0) return null;
+
+                  return (
+                    <div key={facetKey}>
+                      {idx > 0 && <Separator className="border-border mb-8" />}
+                      <h3 className="text-sm font-light mb-4 text-foreground">
+                        {formatFacetLabel(facetKey)}
+                      </h3>
+                      <div className="space-y-3">
+                        {Object.entries(values).map(([value, count]) => (
+                          <div key={value} className="flex items-center space-x-3">
+                            <Checkbox
+                              id={`${facetKey}-${value}`}
+                              checked={isChecked(facetKey, value)}
+                              onCheckedChange={() => toggleFilter(facetKey, value)}
+                              className="border-border data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
+                            />
+                            <Label
+                              htmlFor={`${facetKey}-${value}`}
+                              className="text-sm font-light text-foreground cursor-pointer"
+                            >
+                              {value} ({count})
+                            </Label>
+                          </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </div>
+                    </div>
+                  );
+                })}
 
-                <Separator className="border-border" />
-
-                {/* Price Filter */}
-                <div>
-                  <h3 className="text-sm font-light mb-4 text-foreground">Price</h3>
-                  <div className="space-y-3">
-                    {priceRanges.map((range) => (
-                      <div key={range} className="flex items-center space-x-3">
-                        <Checkbox
-                          id={range}
-                          className="border-border data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
-                        />
-                        <Label
-                          htmlFor={range}
-                          className="text-sm font-light text-foreground cursor-pointer"
-                        >
-                          {range}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <Separator className="border-border" />
-
-                {/* Material Filter */}
-                <div>
-                  <h3 className="text-sm font-light mb-4 text-foreground">Material</h3>
-                  <div className="space-y-3">
-                    {materials.map((material) => (
-                      <div key={material} className="flex items-center space-x-3">
-                        <Checkbox
-                          id={material}
-                          className="border-border data-[state=checked]:bg-foreground data-[state=checked]:border-foreground"
-                        />
-                        <Label
-                          htmlFor={material}
-                          className="text-sm font-light text-foreground cursor-pointer"
-                        >
-                          {material}
-                        </Label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <Separator className="border-border" />
-
-                <div className="flex flex-col gap-2 pt-4">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full border-none hover:bg-transparent hover:underline font-normal text-left justify-start"
-                  >
-                    Apply Filters
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="w-full border-none hover:bg-transparent hover:underline font-light text-left justify-start"
-                  >
-                    Clear All
-                  </Button>
-                </div>
+                {hasActiveFilters && (
+                  <>
+                    <Separator className="border-border" />
+                    <div className="pt-4">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full border-none hover:bg-transparent hover:underline font-light text-left justify-start"
+                        onClick={clearAll}
+                      >
+                        Clear All
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
             </SheetContent>
           </Sheet>
-
-          <Select value={sortBy} onValueChange={setSortBy}>
-            <SelectTrigger className="w-auto border-none bg-transparent text-sm font-light shadow-none rounded-none pr-2">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent className="shadow-none border-none rounded-none bg-background">
-              <SelectItem
-                value="featured"
-                className="hover:bg-transparent hover:underline data-[state=checked]:bg-transparent data-[state=checked]:underline pl-2 [&>span:first-child]:hidden"
-              >
-                Featured
-              </SelectItem>
-              <SelectItem
-                value="price-low"
-                className="hover:bg-transparent hover:underline data-[state=checked]:bg-transparent data-[state=checked]:underline pl-2 [&>span:first-child]:hidden"
-              >
-                Price: Low to High
-              </SelectItem>
-              <SelectItem
-                value="price-high"
-                className="hover:bg-transparent hover:underline data-[state=checked]:bg-transparent data-[state=checked]:underline pl-2 [&>span:first-child]:hidden"
-              >
-                Price: High to Low
-              </SelectItem>
-              <SelectItem
-                value="newest"
-                className="hover:bg-transparent hover:underline data-[state=checked]:bg-transparent data-[state=checked]:underline pl-2 [&>span:first-child]:hidden"
-              >
-                Newest
-              </SelectItem>
-              <SelectItem
-                value="name"
-                className="hover:bg-transparent hover:underline data-[state=checked]:bg-transparent data-[state=checked]:underline pl-2 [&>span:first-child]:hidden"
-              >
-                Name A-Z
-              </SelectItem>
-            </SelectContent>
-          </Select>
         </div>
       </div>
     </section>

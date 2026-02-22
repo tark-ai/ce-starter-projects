@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Purpose
 
-Commerce Engine reference storefronts monorepo. Each app under `apps/` is a self-contained starter storefront showcasing e-commerce patterns using the Commerce Engine platform. All storefronts use `@commercengine/storefront-sdk` for data and Commerce Engine hosted checkout for the purchase flow.
+Commerce Engine reference storefronts monorepo. Each app under `apps/` is a self-contained starter storefront showcasing e-commerce patterns using the Commerce Engine platform. All storefronts use `@commercengine/storefront-sdk` for data and Commerce Engine hosted checkout for the purchase flow. Always use the `ce` skill when working with any CE feature.
 
 ## Commands
 
@@ -35,16 +35,6 @@ packages/            → Shared packages (future)
 biome.json           → Linting + formatting (root config, apps inherit)
 turbo.json           → Task pipeline definitions
 ```
-
-## Commerce Engine Integration
-
-Use the `commercengine` skill for SDK API reference. Key rules:
-
-- **Always import types from the SDK** — never define custom interfaces that duplicate API schemas: `import type { Cart, Product } from "@commercengine/storefront-sdk"`
-- **Look up schemas before generating code** — fetch exact TypeScript definitions from `llm-docs.commercengine.io/storefront/schemas/{SchemaName}`
-- **Hosted checkout** — do not build custom checkout flows; redirect to Commerce Engine hosted checkout
-- **Response pattern** — every SDK method returns `{ data, error }`, always check `error` before using `data`
-- **`variant_id` is always required** in cart item operations — pass `null` for products without variants
 
 ## App Architecture (Linea)
 

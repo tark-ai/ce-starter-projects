@@ -1,66 +1,19 @@
+import { useCheckout } from "@commercengine/checkout/react";
 import { ArrowRight, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import eclipseImage from "@/assets/eclipse.jpg";
-import haloImage from "@/assets/halo.jpg";
-import pantheonImage from "@/assets/pantheon.jpg";
-import ShoppingBag from "./ShoppingBag";
-
-interface CartItem {
-  id: number;
-  name: string;
-  price: string;
-  image: string;
-  quantity: number;
-  category: string;
-}
+import { useCategories } from "@/lib/hooks";
 
 const Navigation = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [offCanvasType, setOffCanvasType] = useState<"favorites" | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isShoppingBagOpen, setIsShoppingBagOpen] = useState(false);
 
-  // Shopping bag state with 3 mock items
-  const [cartItems, setCartItems] = useState<CartItem[]>([
-    {
-      id: 1,
-      name: "Pantheon",
-      price: "€2,850",
-      image: pantheonImage,
-      quantity: 1,
-      category: "Earrings",
-    },
-    {
-      id: 2,
-      name: "Eclipse",
-      price: "€3,200",
-      image: eclipseImage,
-      quantity: 1,
-      category: "Bracelets",
-    },
-    {
-      id: 3,
-      name: "Halo",
-      price: "€1,950",
-      image: haloImage,
-      quantity: 1,
-      category: "Earrings",
-    },
-  ]);
+  const { openCart, cartCount } = useCheckout();
+  const { categories } = useCategories();
 
-  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0);
-
-  const updateQuantity = (id: number, newQuantity: number) => {
-    if (newQuantity <= 0) {
-      setCartItems((items) => items.filter((item) => item.id !== id));
-    } else {
-      setCartItems((items) =>
-        items.map((item) => (item.id === id ? { ...item, quantity: newQuantity } : item))
-      );
-    }
-  };
+  const categoryNames = categories.map((c) => c.name);
 
   // Preload dropdown images for faster display
   useEffect(() => {
@@ -91,7 +44,7 @@ const Navigation = () => {
     {
       name: "Shop",
       href: "/category/shop",
-      submenuItems: ["Rings", "Necklaces", "Earrings", "Bracelets", "Watches"],
+      submenuItems: categoryNames.length > 0 ? categoryNames : ["All Products"],
       images: [
         { src: "/rings-collection.png", alt: "Rings Collection", label: "Rings" },
         { src: "/earrings-collection.png", alt: "Earrings Collection", label: "Earrings" },
@@ -120,6 +73,11 @@ const Navigation = () => {
     },
   ];
 
+  const getCategorySlug = (name: string) => {
+    const cat = categories.find((c) => c.name === name);
+    return cat?.slug || name.toLowerCase().replace(/\s+/g, "-");
+  };
+
   return (
     <nav
       className="relative"
@@ -141,17 +99,17 @@ const Navigation = () => {
               className={`absolute block w-5 h-px bg-current transform transition-all duration-300 ${
                 isMobileMenuOpen ? "rotate-45 top-2.5" : "top-1.5"
               }`}
-            ></span>
+            />
             <span
               className={`absolute block w-5 h-px bg-current transform transition-all duration-300 top-2.5 ${
                 isMobileMenuOpen ? "opacity-0" : "opacity-100"
               }`}
-            ></span>
+            />
             <span
               className={`absolute block w-5 h-px bg-current transform transition-all duration-300 ${
                 isMobileMenuOpen ? "-rotate-45 top-2.5" : "top-3.5"
               }`}
-            ></span>
+            />
           </div>
         </button>
 
@@ -235,7 +193,7 @@ const Navigation = () => {
             type="button"
             className="p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200 relative"
             aria-label="Shopping bag"
-            onClick={() => setIsShoppingBagOpen(true)}
+            onClick={() => openCart()}
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -253,9 +211,9 @@ const Navigation = () => {
                 d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
               />
             </svg>
-            {totalItems > 0 && (
+            {cartCount > 0 && (
               <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[30%] text-[0.5rem] font-semibold text-black pointer-events-none">
-                {totalItems}
+                {cartCount}
               </span>
             )}
           </button>
@@ -283,7 +241,9 @@ const Navigation = () => {
                           to={
                             activeDropdown === "About"
                               ? `/about/${subItem.toLowerCase().replace(/\s+/g, "-")}`
-                              : `/category/${subItem.toLowerCase()}`
+                              : activeDropdown === "Shop"
+                                ? `/category/${getCategorySlug(subItem)}`
+                                : `/category/${subItem.toLowerCase()}`
                           }
                           className="text-nav-foreground hover:text-nav-hover transition-colors duration-200 text-sm font-light block py-2"
                         >
@@ -299,7 +259,6 @@ const Navigation = () => {
                 {navItems
                   .find((item) => item.name === activeDropdown)
                   ?.images.map((image) => {
-                    // Determine the link destination based on dropdown and image
                     let linkTo = "/";
                     if (activeDropdown === "Shop") {
                       if (image.label === "Rings") linkTo = "/category/rings";
@@ -322,14 +281,10 @@ const Navigation = () => {
                           alt={image.alt}
                           className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-90"
                         />
-                        {(activeDropdown === "Shop" ||
-                          activeDropdown === "New in" ||
-                          activeDropdown === "About") && (
-                          <div className="absolute bottom-2 left-2 text-white text-xs font-light flex items-center gap-1">
-                            <span>{image.label}</span>
-                            <ArrowRight size={12} />
-                          </div>
-                        )}
+                        <div className="absolute bottom-2 left-2 text-white text-xs font-light flex items-center gap-1">
+                          <span>{image.label}</span>
+                          <ArrowRight size={12} />
+                        </div>
                       </Link>
                     );
                   })}
@@ -344,7 +299,6 @@ const Navigation = () => {
         <div className="absolute top-full left-0 right-0 bg-nav border-b border-border z-50">
           <div className="px-6 py-8">
             <div className="max-w-2xl mx-auto">
-              {/* Search input */}
               <div className="relative mb-8">
                 <div className="flex items-center border-b border-border pb-2">
                   <svg
@@ -371,7 +325,6 @@ const Navigation = () => {
                 </div>
               </div>
 
-              {/* Popular searches */}
               <div>
                 <h3 className="text-nav-foreground text-sm font-light mb-4">Popular Searches</h3>
                 <div className="flex flex-wrap gap-3">
@@ -412,7 +365,9 @@ const Navigation = () => {
                         to={
                           item.name === "About"
                             ? `/about/${subItem.toLowerCase().replace(/\s+/g, "-")}`
-                            : `/category/${subItem.toLowerCase()}`
+                            : item.name === "Shop"
+                              ? `/category/${getCategorySlug(subItem)}`
+                              : `/category/${subItem.toLowerCase()}`
                         }
                         className="text-nav-foreground/70 hover:text-nav-hover text-sm font-light block py-1"
                         onClick={() => setIsMobileMenuOpen(false)}
@@ -428,22 +383,9 @@ const Navigation = () => {
         </div>
       )}
 
-      {/* Shopping Bag Component */}
-      <ShoppingBag
-        isOpen={isShoppingBagOpen}
-        onClose={() => setIsShoppingBagOpen(false)}
-        cartItems={cartItems}
-        updateQuantity={updateQuantity}
-        onViewFavorites={() => {
-          setIsShoppingBagOpen(false);
-          setOffCanvasType("favorites");
-        }}
-      />
-
       {/* Favorites Off-canvas overlay */}
       {offCanvasType === "favorites" && (
         <div className="fixed inset-0 z-50 h-screen">
-          {/* Backdrop */}
           <button
             type="button"
             className="absolute inset-0 bg-black/50 h-screen border-0 p-0 cursor-pointer"
@@ -451,9 +393,7 @@ const Navigation = () => {
             aria-label="Close favorites panel"
           />
 
-          {/* Off-canvas panel */}
           <div className="absolute right-0 top-0 h-screen w-96 bg-background border-l border-border animate-slide-in-right flex flex-col">
-            {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-border">
               <h2 className="text-lg font-light text-foreground">Your Favorites</h2>
               <button
@@ -466,7 +406,6 @@ const Navigation = () => {
               </button>
             </div>
 
-            {/* Content */}
             <div className="p-6">
               <p className="text-muted-foreground text-sm mb-6">
                 You haven't added any favorites yet. Browse our collection and click the heart icon
