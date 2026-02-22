@@ -156,7 +156,7 @@ import StorefrontSDK, { Environment, BrowserTokenStorage } from "@commercengine/
 
 export const sdk = new StorefrontSDK({
   storeId: import.meta.env.VITE_STORE_ID,
-  environment: import.meta.env.PROD ? Environment.Production : Environment.Staging,
+  environment: import.meta.env.VITE_CE_ENV === "staging" ? Environment.Staging : Environment.Production,
   apiKey: import.meta.env.VITE_API_KEY,
   tokenStorage: new BrowserTokenStorage("myapp_"),
 });

@@ -4,9 +4,12 @@ import StorefrontSDK, { BrowserTokenStorage, Environment } from "@commercengine/
 
 const tokenStorage = new BrowserTokenStorage("linea_");
 
+/** Use staging when VITE_CE_ENV=staging (e.g. Vercel Preview) or when not production build. */
+const useStaging = import.meta.env.VITE_CE_ENV === "staging" || !import.meta.env.VITE_CE_ENV;
+
 export const sdk = new StorefrontSDK({
   storeId: import.meta.env.VITE_STORE_ID,
-  environment: import.meta.env.PROD ? Environment.Production : Environment.Staging,
+  environment: useStaging ? Environment.Staging : Environment.Production,
   apiKey: import.meta.env.VITE_API_KEY,
   tokenStorage,
   onTokensUpdated: (accessToken, refreshToken) => {
@@ -30,7 +33,7 @@ export async function initStorefront() {
   initCheckout({
     storeId: import.meta.env.VITE_STORE_ID,
     apiKey: import.meta.env.VITE_API_KEY,
-    environment: import.meta.env.PROD ? "production" : "staging",
+    environment: useStaging ? "staging" : "production",
     authMode: "provided",
     accessToken: accessToken ?? undefined,
     refreshToken: refreshToken ?? undefined,
