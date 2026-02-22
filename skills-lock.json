@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "skills": {
+    "ce": {
+      "source": "commercengine/skills",
+      "sourceType": "github",
+      "computedHash": "13dcee3db3c8c5d7db6f7de9c819cfbbb0dc0fbfb63938b5945af21a9db17a9d"
+    },
+    "ce-auth": {
+      "source": "commercengine/skills",
+      "sourceType": "github",
+      "computedHash": "d233767e70e6bee2e182650219d74a2dc088febb553d13d21b073f2b2887f30f"
+    },
+    "ce-cart-checkout": {
+      "source": "commercengine/skills",
+      "sourceType": "github",
+      "computedHash": "2401e439d1fe057717f5bfeee7e3e2bb6225ce1d4054df2b4fdca04e441ea293"
+    },
+    "ce-catalog": {
+      "source": "commercengine/skills",
+      "sourceType": "github",
+      "computedHash": "1a17be833d4185868443be3b47ba81a07e9f634e4d453c0eb28caa794bf0b7e5"
+    },
+    "ce-nextjs-patterns": {
+      "source": "commercengine/skills",
+      "sourceType": "github",
+      "computedHash": "7b43828d88876b883ddfa45d7eb86e29d7cfcedd63411c88899736d886481431"
+    },
+    "ce-orders": {
+      "source": "commercengine/skills",
+      "sourceType": "github",
+      "computedHash": "27deb7d9dc31f2ab951bb9b7c830343236475b3ab09976ad633ced424d69164f"
+    },
+    "ce-setup": {
+      "source": "commercengine/skills",
+      "sourceType": "github",
+      "computedHash": "0c85d6002542dd43aa260b244cd3e370df6c9cf4080e5ef593c7d5a4e8c8ff88"
+    },
+    "ce-webhooks": {
+      "source": "commercengine/skills",
+      "sourceType": "github",
+      "computedHash": "e789243a368b26405364edbfd6b65e253f58ccbb2f84dbc7b0c6e8516159b8a8"
+    }
+  }
+}
