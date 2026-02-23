@@ -4,27 +4,27 @@
     "ce": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "cd08db1e622858c0d6eb59bd31e966d3c79c548334d15e002713b70504bb45e4"
+      "computedHash": "3332c3ce0fdbb95fa2190c21afe2c533996280eb162117f45a98dffe69ada8ec"
     },
     "ce-auth": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "239562250d333a1d17fabe3eff3c01bb32a2940d95141c7dcad0b595eabd4e53"
+      "computedHash": "1efddb4536fa1edb3e6659d05514c77c45793d6a982e8cfbb7ab1b63111ef838"
     },
     "ce-cart-checkout": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "21c89aeeaa926fc4b16f0b76317cafba9e40447b18478ec7f6a593128acbe5f5"
+      "computedHash": "3eee7133894139e6d663538ab262f56fbf10a7748e15b7462b5420deab252aac"
     },
     "ce-catalog": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "cab1f5e133e18bad0bf6a5bde1c100f9c5f87e028c80b2fc1c73fa981d1d8c38"
+      "computedHash": "7018b1e327f32f089116cdcb81c7684dbc1e3f1a210fc5db1b27c170eaef2f36"
     },
     "ce-nextjs-patterns": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "af1ae830343468d5e2fe124ad41f656bd7e85f3ec4929eca3d363643bcf289c1"
+      "computedHash": "d2056730ce83c045288f8c3d86b214146e55602109f7bc33d75517080ddccd4f"
     },
     "ce-orders": {
       "source": "commercengine/skills",
@@ -34,7 +34,7 @@
     "ce-setup": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "d86d2bd6cb58a43982981167b8ea419c92673362322f5f2b6a56fba1d8b4c2c7"
+      "computedHash": "9d44adef2a41840fb324516b120b01d1de7b5ba1c06635c311117d64a9d7d19a"
     },
     "ce-webhooks": {
       "source": "commercengine/skills",
