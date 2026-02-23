@@ -13,11 +13,12 @@ interface ProductGridProps {
 
 const ProductGrid = ({ skus, isLoading, pagination, onPageChange }: ProductGridProps) => {
   if (isLoading) {
+    const skeletonIds = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"];
     return (
       <section className="w-full px-6 mb-16">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i}>
+          {skeletonIds.map((id) => (
+            <div key={id}>
               <div className="aspect-square bg-muted/20 animate-pulse mb-3" />
               <div className="h-4 w-20 bg-muted/20 animate-pulse mb-1" />
               <div className="h-4 w-32 bg-muted/20 animate-pulse" />

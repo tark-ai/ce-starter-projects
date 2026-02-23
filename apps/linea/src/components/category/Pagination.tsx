@@ -7,14 +7,17 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-function getPageNumbers(totalPages: number, currentPage: number): (number | "ellipsis")[] {
+function getPageNumbers(
+  totalPages: number,
+  currentPage: number
+): (number | { type: "ellipsis"; id: "start" | "end" })[] {
   if (totalPages <= 5) {
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
 
-  const pages: (number | "ellipsis")[] = [1];
+  const pages: (number | { type: "ellipsis"; id: "start" | "end" })[] = [1];
 
-  if (currentPage > 3) pages.push("ellipsis");
+  if (currentPage > 3) pages.push({ type: "ellipsis", id: "start" });
 
   const start = Math.max(2, currentPage - 1);
   const end = Math.min(totalPages - 1, currentPage + 1);
@@ -23,7 +26,7 @@ function getPageNumbers(totalPages: number, currentPage: number): (number | "ell
     pages.push(i);
   }
 
-  if (currentPage < totalPages - 2) pages.push("ellipsis");
+  if (currentPage < totalPages - 2) pages.push({ type: "ellipsis", id: "end" });
 
   pages.push(totalPages);
   return pages;
@@ -47,10 +50,10 @@ const Pagination = ({ pagination, onPageChange }: PaginationProps) => {
         </Button>
 
         <div className="flex items-center gap-1">
-          {pages.map((page, idx) =>
-            page === "ellipsis" ? (
+          {pages.map((page) =>
+            typeof page === "object" ? (
               <span
-                key={`ellipsis-${idx}`}
+                key={`ellipsis-${page.id}`}
                 className="mx-2 text-sm font-light text-muted-foreground"
               >
                 ...

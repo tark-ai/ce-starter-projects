@@ -8,11 +8,12 @@ const ProductCarousel = () => {
   const { products, isLoading } = useProducts({ limit: 6 });
 
   if (isLoading) {
+    const skeletonIds = ["c1", "c2", "c3", "c4"];
     return (
       <section className="w-full mb-16 px-6">
         <div className="flex gap-4">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="basis-1/2 md:basis-1/3 lg:basis-1/4 shrink-0">
+          {skeletonIds.map((id) => (
+            <div key={id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 shrink-0">
               <div className="aspect-square bg-muted/20 animate-pulse mb-3" />
               <div className="h-4 w-20 bg-muted/20 animate-pulse mb-1" />
               <div className="h-4 w-32 bg-muted/20 animate-pulse" />

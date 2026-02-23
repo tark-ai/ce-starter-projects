@@ -16,16 +16,13 @@ import { formatPrice } from "@/lib/format";
 
 interface ProductInfoProps {
   product: Product;
+  selectedVariantId: string | null;
+  onVariantChange: (variantId: string) => void;
 }
 
-const ProductInfo = ({ product }: ProductInfoProps) => {
+const ProductInfo = ({ product, selectedVariantId, onVariantChange }: ProductInfoProps) => {
   const { addToCart } = useCheckout();
   const [quantity, setQuantity] = useState(1);
-  const [selectedVariantId, setSelectedVariantId] = useState<string | null>(() => {
-    if (!product.has_variant) return null;
-    const defaultVariant = product.variants.find((v) => v.is_default);
-    return defaultVariant?.id || product.variants[0]?.id || null;
-  });
   const [adding, setAdding] = useState(false);
 
   const selectedVariant = product.has_variant
@@ -107,22 +104,30 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
                 {product.variants.map((variant) => {
                   const optionValue = variant.associated_options?.[option.key];
                   if (!optionValue) return null;
-                  const label =
-                    "value" in optionValue ? String(optionValue.value) : String(optionValue.name);
+                  const isColor = optionValue.type === "color";
+                  const label = isColor ? optionValue.value.name : optionValue.value;
                   const isSelected = variant.id === selectedVariantId;
 
                   return (
                     <button
                       key={variant.id}
                       type="button"
-                      onClick={() => setSelectedVariantId(variant.id)}
-                      className={`px-4 py-2 text-sm font-light border transition-colors ${
-                        isSelected
-                          ? "border-foreground bg-foreground text-background"
-                          : "border-border text-foreground hover:border-foreground"
-                      } ${!variant.stock_available ? "opacity-50 line-through" : ""}`}
+                      onClick={() => onVariantChange(variant.id)}
+                      title={label}
+                      className={`text-sm font-light border transition-colors ${
+                        isColor ? "size-9 rounded-full p-0.5" : "px-4 py-2"
+                      } ${
+                        isSelected ? "border-foreground" : "border-border hover:border-foreground"
+                      } ${!variant.stock_available ? "opacity-50" : ""}`}
                     >
-                      {label}
+                      {isColor ? (
+                        <span
+                          className="block size-full rounded-full"
+                          style={{ backgroundColor: optionValue.value.hexcode }}
+                        />
+                      ) : (
+                        label
+                      )}
                     </button>
                   );
                 })}

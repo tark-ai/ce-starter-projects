@@ -1,73 +1,81 @@
-# Welcome to your Lovable project
+# Commerce Engine Starter Projects
 
-## Project info
+A collection of production-ready e-commerce storefront templates built with [Commerce Engine](https://www.commercengine.io). Each starter is a fully functional storefront you can clone, customize, and deploy.
 
-**URL**: https://lovable.dev/projects/a8e59680-e4fc-4735-a797-36af2f7e2875
+## Starters
 
-## How can I edit this code?
+| Starter | Description | Stack |
+| ------- | ----------- | ----- |
+| [**Linea**](./apps/linea/) | Jewelry store template with product catalog, cart, and hosted checkout | Vite + React + TypeScript + Tailwind CSS v4 + shadcn/ui |
 
-There are several ways of editing your application.
+## Quick Start
 
-**Use Lovable**
+### Prerequisites
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/a8e59680-e4fc-4735-a797-36af2f7e2875) and start prompting.
+- [Bun](https://bun.sh) v1.3.8+
+- A [Commerce Engine](https://www.commercengine.io) account with API credentials
 
-Changes made via Lovable will be committed automatically to this repo.
-
-**Use your preferred IDE**
-
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
+### Setup
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+# Clone the repo
+git clone https://github.com/commercengine/ce-starter-projects.git
+cd ce-starter-projects
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+# Install dependencies
+bun install
 
-# Step 3: Install the necessary dependencies.
-npm i
+# Copy the environment file and add your Commerce Engine credentials
+cp apps/linea/.env.example apps/linea/.env
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+# Start the dev server
+bun run dev
 ```
 
-**Edit a file directly in GitHub**
+The Linea storefront will be available at `http://localhost:8080`.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Running a Single Starter
 
-**Use GitHub Codespaces**
+```sh
+bunx turbo run dev --filter=@ce/linea
+```
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+## Monorepo Structure
 
-## What technologies are used for this project?
+```
+ce-starter-projects/
+├── apps/
+│   └── linea/           # Jewelry store starter
+├── packages/            # Shared packages (future)
+├── turbo.json           # Turborepo task pipelines
+├── biome.json           # Linting & formatting config
+└── package.json         # Workspace root
+```
 
-This project is built with:
+## Available Commands
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+All commands run from the repo root via [Turborepo](https://turbo.build):
 
-## How can I deploy this project?
+```sh
+bun run dev          # Start all dev servers
+bun run build        # Production build
+bun run check        # Lint & format check (Biome)
+bun run check:fix    # Auto-fix lint & format issues
+bun run typecheck    # TypeScript type checking
+```
 
-Simply open [Lovable](https://lovable.dev/projects/a8e59680-e4fc-4735-a797-36af2f7e2875) and click on Share -> Publish.
+## Tech Stack
 
-## Can I connect a custom domain to my Lovable project?
+Every starter follows a consistent stack:
 
-Yes, you can!
+- **[Vite](https://vite.dev)** — Build tool & dev server
+- **[React](https://react.dev)** — UI framework
+- **[TypeScript](https://typescriptlang.org)** — Type safety
+- **[Tailwind CSS v4](https://tailwindcss.com)** — Utility-first styling
+- **[shadcn/ui](https://ui.shadcn.com)** — Component primitives
+- **[@commercengine/storefront-sdk](https://www.npmjs.com/package/@commercengine/storefront-sdk)** — Commerce Engine SDK for product data, cart, and auth
+- **[Commerce Engine Hosted Checkout](https://www.npmjs.com/package/@commercengine/checkout)** — Secure, pre-built drop-in customizable checkout
+- **[Commerce Engine Checkout Studio](https://studio.checkout.commercengine.io)** - A no-code playground to customize hosted checkout with feature flags and remote config
+## License
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+MIT

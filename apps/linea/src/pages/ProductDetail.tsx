@@ -1,4 +1,5 @@
-import { Link, useParams } from "react-router-dom";
+import { useCallback, useMemo } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -17,7 +18,31 @@ import { useProductDetail } from "../lib/hooks";
 
 const ProductDetail = () => {
   const { productId } = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { product, isLoading } = useProductDetail(productId || "");
+
+  const selectedVariantId = useMemo(() => {
+    if (!product?.has_variant) return null;
+    const fromUrl = searchParams.get("variant");
+    if (fromUrl && product.variants.some((v) => v.id === fromUrl)) return fromUrl;
+    const defaultVariant = product.variants.find((v) => v.is_default);
+    return defaultVariant?.id || product.variants[0]?.id || null;
+  }, [product, searchParams]);
+
+  const selectedVariant = product?.has_variant
+    ? product.variants.find((v) => v.id === selectedVariantId)
+    : null;
+
+  const handleVariantChange = useCallback(
+    (variantId: string) => {
+      setSearchParams({ variant: variantId }, { replace: true });
+    },
+    [setSearchParams]
+  );
+
+  const displayImages = selectedVariant?.images?.length
+    ? selectedVariant.images
+    : (product?.images ?? []);
 
   const categoryName = product?.categories?.[0]?.name;
   const categorySlug = product?.categories?.[0]?.slug;
@@ -86,10 +111,14 @@ const ProductDetail = () => {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-0">
-            <ProductImageGallery images={product.images} productName={product.name} />
+            <ProductImageGallery images={displayImages} productName={product.name} />
 
             <div className="lg:pl-12 mt-8 lg:mt-0 lg:sticky lg:top-6 lg:h-fit">
-              <ProductInfo product={product} />
+              <ProductInfo
+                product={product}
+                selectedVariantId={selectedVariantId}
+                onVariantChange={handleVariantChange}
+              />
               <ProductDescription product={product} />
             </div>
           </div>
