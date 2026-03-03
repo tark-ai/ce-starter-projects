@@ -1,4 +1,10 @@
-import type { Category, Item, Pagination, Product } from "@commercengine/storefront-sdk";
+import type {
+  Category,
+  Item,
+  Pagination,
+  Product,
+  SearchProductsBody,
+} from "@commercengine/storefront-sdk";
 import { useQuery } from "@tanstack/react-query";
 import { sdk } from "./storefront";
 
@@ -35,14 +41,51 @@ export function useProducts(options: UseProductsOptions = {}): UseProductsResult
   };
 }
 
-// --- Search Products (category/shop pages with faceted filters) ---
+// --- List SKUs (category pages, flat grid without facets) ---
+
+interface UseListSkusOptions {
+  page?: number;
+  limit?: number;
+  category_id?: string[];
+  enabled?: boolean;
+}
+
+interface UseListSkusResult {
+  skus: Item[];
+  pagination: Pagination | undefined;
+  isLoading: boolean;
+}
+
+export function useListSkus(options: UseListSkusOptions = {}): UseListSkusResult {
+  const { page = 1, limit = 20, category_id, enabled = true } = options;
+
+  const rqQuery = useQuery({
+    queryKey: ["listSkus", { page, limit, category_id }],
+    queryFn: async () => {
+      const { data, error } = await sdk.catalog.listSkus({ page, limit, category_id });
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    enabled,
+  });
+
+  return {
+    skus: rqQuery.data?.skus ?? [],
+    pagination: rqQuery.data?.pagination,
+    isLoading: rqQuery.isLoading,
+  };
+}
+
+// --- Search Products (faceted filtering) ---
 
 interface UseSearchProductsOptions {
   query?: string;
   page?: number;
   limit?: number;
   facets?: string[];
-  filters?: Record<string, unknown>;
+  filter?: SearchProductsBody["filter"];
+  sort?: SearchProductsBody["sort"];
+  enabled?: boolean;
 }
 
 interface FacetDistribution {
@@ -62,23 +105,28 @@ interface UseSearchProductsResult {
 }
 
 export function useSearchProducts(options: UseSearchProductsOptions = {}): UseSearchProductsResult {
-  const { query: searchQuery = "", page = 1, limit = 20, facets = ["*"], filters } = options;
+  const {
+    query: searchQuery = "",
+    page = 1,
+    limit = 20,
+    facets = ["*"],
+    filter,
+    sort,
+    enabled = true,
+  } = options;
 
   const rqQuery = useQuery({
-    queryKey: ["searchProducts", { searchQuery, page, limit, facets, filters }],
+    queryKey: ["searchProducts", { searchQuery, page, limit, facets, filter, sort }],
     queryFn: async () => {
-      const body: Record<string, unknown> = {
-        query: searchQuery,
-        page,
-        limit,
-        facets,
-      };
-      if (filters) body.filters = filters;
+      const body: SearchProductsBody = { query: searchQuery, page, limit, facets };
+      if (filter) body.filter = filter;
+      if (sort) body.sort = sort;
 
-      const { data, error } = await sdk.catalog.searchProducts(body as never);
+      const { data, error } = await sdk.catalog.searchProducts(body);
       if (error) throw new Error(error.message);
       return data;
     },
+    enabled,
   });
 
   return {
@@ -90,22 +138,22 @@ export function useSearchProducts(options: UseSearchProductsOptions = {}): UseSe
   };
 }
 
-// --- Product Detail (by ID) ---
+// --- Product Detail (by slug or ID) ---
 
 interface UseProductDetailResult {
   product: Product | undefined;
   isLoading: boolean;
 }
 
-export function useProductDetail(productId: string): UseProductDetailResult {
+export function useProductDetail(slug: string): UseProductDetailResult {
   const query = useQuery({
-    queryKey: ["productDetail", productId],
+    queryKey: ["productDetail", slug],
     queryFn: async () => {
-      const { data, error } = await sdk.catalog.getProductDetail({ product_id_or_slug: productId });
+      const { data, error } = await sdk.catalog.getProductDetail({ product_id_or_slug: slug });
       if (error) throw new Error(error.message);
       return data;
     },
-    enabled: !!productId,
+    enabled: !!slug,
   });
 
   return {

@@ -4,7 +4,7 @@
     "ce": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "3332c3ce0fdbb95fa2190c21afe2c533996280eb162117f45a98dffe69ada8ec"
+      "computedHash": "90c49dfcb6fc8d661f58d230cc48b0cd326d6cb0a82717f011460047d0ae7cd2"
     },
     "ce-auth": {
       "source": "commercengine/skills",
@@ -19,7 +19,7 @@
     "ce-catalog": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "7018b1e327f32f089116cdcb81c7684dbc1e3f1a210fc5db1b27c170eaef2f36"
+      "computedHash": "99440d4f448242335828a3fe7c825a6de12869e6a7291ac59af9378e2a3683ea"
     },
     "ce-nextjs-patterns": {
       "source": "commercengine/skills",

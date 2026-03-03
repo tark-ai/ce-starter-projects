@@ -1,12 +1,14 @@
 import { useCheckout } from "@commercengine/checkout/react";
 import { ArrowRight, X } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCategories } from "@/lib/hooks";
 
 const Navigation = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
   const [offCanvasType, setOffCanvasType] = useState<"favorites" | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -14,6 +16,14 @@ const Navigation = () => {
   const { categories } = useCategories();
 
   const categoryNames = categories.map((c) => c.name);
+
+  const submitSearch = (query: string) => {
+    const trimmed = query.trim();
+    if (!trimmed) return;
+    setIsSearchOpen(false);
+    setSearchQuery("");
+    navigate(`/search?q=${encodeURIComponent(trimmed)}`);
+  };
 
   // Preload dropdown images for faster display
   useEffect(() => {
@@ -321,6 +331,11 @@ const Navigation = () => {
                     type="text"
                     placeholder="Search for jewelry..."
                     className="flex-1 bg-transparent text-nav-foreground placeholder:text-nav-foreground/60 outline-none text-lg"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") submitSearch(searchQuery);
+                    }}
                   />
                 </div>
               </div>
@@ -333,6 +348,7 @@ const Navigation = () => {
                       key={search}
                       type="button"
                       className="text-nav-foreground hover:text-nav-hover text-sm font-light py-2 px-4 border border-border rounded-full transition-colors duration-200 hover:border-nav-hover"
+                      onClick={() => submitSearch(search)}
                     >
                       {search}
                     </button>

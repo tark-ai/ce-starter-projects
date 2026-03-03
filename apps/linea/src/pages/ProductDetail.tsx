@@ -17,9 +17,9 @@ import ProductInfo from "../components/product/ProductInfo";
 import { useProductDetail } from "../lib/hooks";
 
 const ProductDetail = () => {
-  const { productId } = useParams();
+  const { slug } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
-  const { product, isLoading } = useProductDetail(productId || "");
+  const { product, isLoading } = useProductDetail(slug || "");
 
   const selectedVariantId = useMemo(() => {
     if (!product?.has_variant) return null;

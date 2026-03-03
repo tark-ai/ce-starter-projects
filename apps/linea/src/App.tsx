@@ -16,6 +16,7 @@ import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ProductDetail from "./pages/ProductDetail";
+import Search from "./pages/Search";
 import TermsOfService from "./pages/TermsOfService";
 
 const queryClient = new QueryClient();
@@ -46,7 +47,8 @@ const App = () => {
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/category/:category" element={<Category />} />
-            <Route path="/product/:productId" element={<ProductDetail />} />
+            <Route path="/search" element={<Search />} />
+            <Route path="/product/:slug" element={<ProductDetail />} />
             <Route path="/about/our-story" element={<OurStory />} />
             <Route path="/about/sustainability" element={<Sustainability />} />
             <Route path="/about/size-guide" element={<SizeGuide />} />
