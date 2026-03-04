@@ -9,6 +9,10 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "dev:linea": "turbo run dev --filter=@ce/linea",
+    "dev:linea-ssr": "turbo run dev --filter=@ce/linea-ssr",
+    "build:linea": "turbo run build --filter=@ce/linea",
+    "build:linea-ssr": "turbo run build --filter=@ce/linea-ssr",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "format": "turbo run format",
