@@ -1,13 +1,48 @@
+import type { Item, Product } from "@commercengine/storefront-sdk";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import WishlistButton from "@/components/WishlistButton";
 import { formatPrice } from "@/lib/format";
-import { useProducts } from "@/lib/hooks";
+import { useProducts, useSimilarProducts } from "@/lib/hooks";
 import { useWishlist } from "@/lib/wishlist";
 
-const ProductCarousel = () => {
-  const { products, isLoading } = useProducts({ limit: 6 });
+interface ProductCarouselProps {
+  productId?: string;
+}
+
+function isItem(p: Product | Item): p is Item {
+  return "product_id" in p;
+}
+
+function getDisplayProps(p: Product | Item) {
+  if (isItem(p)) {
+    return {
+      id: p.product_id,
+      name: p.product_name,
+      linkParam: p.product_id,
+      images: p.images,
+      categoryName: p.categories?.[0]?.name,
+      price: p.pricing.selling_price,
+      currency: p.pricing.currency,
+    };
+  }
+  return {
+    id: p.id,
+    name: p.name,
+    linkParam: p.slug,
+    images: p.images,
+    categoryName: p.categories?.[0]?.name,
+    price: p.pricing.selling_price,
+    currency: p.pricing.currency,
+  };
+}
+
+const ProductCarousel = ({ productId }: ProductCarouselProps) => {
+  const similar = useSimilarProducts(productId ?? "");
+  const fallback = useProducts({ limit: 6, enabled: !productId });
+  const items: (Product | Item)[] = productId ? similar.items : fallback.products;
+  const isLoading = productId ? similar.isLoading : fallback.isLoading;
   const { isInWishlist, toggleWishlist } = useWishlist();
 
   if (isLoading) {
@@ -37,55 +72,53 @@ const ProductCarousel = () => {
         className="w-full"
       >
         <CarouselContent className="">
-          {products.map((product) => (
-            <CarouselItem
-              key={product.id}
-              className="basis-1/2 md:basis-1/3 lg:basis-1/4 pr-2 md:pr-4"
-            >
-              <Link to={`/product/${product.slug}`}>
-                <Card className="border-none shadow-none bg-transparent group">
-                  <CardContent className="p-0">
-                    <div className="aspect-square mb-3 overflow-hidden bg-muted/10 relative">
-                      <img
-                        src={product.images?.[0]?.url_standard}
-                        alt={product.images?.[0]?.alternate_text || product.name}
-                        className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-0"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <img
-                        src={product.images?.[1]?.url_standard || product.images?.[0]?.url_standard}
-                        alt={`${product.name} alternate`}
-                        className="absolute inset-0 w-full h-full object-cover transition-all duration-300 opacity-0 group-hover:opacity-100"
-                        loading="lazy"
-                        decoding="async"
-                      />
-                      <div className="absolute inset-0 bg-black/[0.03]" />
-                      <WishlistButton
-                        active={isInWishlist(product.id)}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          toggleWishlist(product.id);
-                        }}
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <p className="text-sm font-light text-foreground">
-                        {product.categories?.[0]?.name}
-                      </p>
-                      <div className="flex justify-between items-center">
-                        <h3 className="text-sm font-medium text-foreground">{product.name}</h3>
-                        <p className="text-sm font-light text-foreground">
-                          {formatPrice(product.pricing.selling_price, product.pricing.currency)}
-                        </p>
+          {items.map((product) => {
+            const d = getDisplayProps(product);
+            return (
+              <CarouselItem key={d.id} className="basis-1/2 md:basis-1/3 lg:basis-1/4 pr-2 md:pr-4">
+                <Link to={`/product/${d.linkParam}`}>
+                  <Card className="border-none shadow-none bg-transparent group">
+                    <CardContent className="p-0">
+                      <div className="aspect-square mb-3 overflow-hidden bg-muted/10 relative">
+                        <img
+                          src={d.images?.[0]?.url_standard}
+                          alt={d.images?.[0]?.alternate_text || d.name}
+                          className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-0"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <img
+                          src={d.images?.[1]?.url_standard || d.images?.[0]?.url_standard}
+                          alt={`${d.name} alternate`}
+                          className="absolute inset-0 w-full h-full object-cover transition-all duration-300 opacity-0 group-hover:opacity-100"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                        <div className="absolute inset-0 bg-black/[0.03]" />
+                        <WishlistButton
+                          active={isInWishlist(d.id)}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleWishlist(d.id);
+                          }}
+                        />
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            </CarouselItem>
-          ))}
+                      <div className="space-y-1">
+                        <p className="text-sm font-light text-foreground">{d.categoryName}</p>
+                        <div className="flex justify-between items-center">
+                          <h3 className="text-sm font-medium text-foreground">{d.name}</h3>
+                          <p className="text-sm font-light text-foreground">
+                            {formatPrice(d.price, d.currency)}
+                          </p>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </CarouselItem>
+            );
+          })}
         </CarouselContent>
       </Carousel>
     </section>

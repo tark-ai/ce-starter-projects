@@ -449,7 +449,7 @@ const Navigation = () => {
                   {wishlistItems.map((item) => (
                     <div key={item.sku} className="flex gap-4 group/item">
                       <Link
-                        to={`/product/${item.slug}`}
+                        to={`/product/${item.product_id}`}
                         onClick={() => setOffCanvasType(null)}
                         className="shrink-0"
                       >
@@ -461,7 +461,7 @@ const Navigation = () => {
                       </Link>
                       <div className="flex-1 min-w-0">
                         <Link
-                          to={`/product/${item.slug}`}
+                          to={`/product/${item.product_id}`}
                           onClick={() => setOffCanvasType(null)}
                           className="block"
                         >

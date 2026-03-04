@@ -128,7 +128,7 @@ const ProductDetail = () => {
           <div className="mb-4 px-6">
             <h2 className="text-sm font-light text-foreground">You might also like</h2>
           </div>
-          <ProductCarousel />
+          <ProductCarousel productId={product.id} />
         </section>
       </main>
 

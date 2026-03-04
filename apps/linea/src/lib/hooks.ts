@@ -14,6 +14,7 @@ interface UseProductsOptions {
   page?: number;
   limit?: number;
   category_id?: string[];
+  enabled?: boolean;
 }
 
 interface UseProductsResult {
@@ -23,7 +24,7 @@ interface UseProductsResult {
 }
 
 export function useProducts(options: UseProductsOptions = {}): UseProductsResult {
-  const { page = 1, limit = 6, category_id } = options;
+  const { page = 1, limit = 6, category_id, enabled = true } = options;
 
   const query = useQuery({
     queryKey: ["products", { page, limit, category_id }],
@@ -32,6 +33,7 @@ export function useProducts(options: UseProductsOptions = {}): UseProductsResult
       if (error) throw new Error(error.message);
       return data;
     },
+    enabled,
   });
 
   return {
@@ -135,6 +137,32 @@ export function useSearchProducts(options: UseSearchProductsOptions = {}): UseSe
     facetStats: (rqQuery.data?.facet_stats as FacetStats) ?? {},
     pagination: rqQuery.data?.pagination,
     isLoading: rqQuery.isLoading,
+  };
+}
+
+// --- Similar Products ---
+
+interface UseSimilarProductsResult {
+  items: Item[];
+  isLoading: boolean;
+}
+
+export function useSimilarProducts(productId: string): UseSimilarProductsResult {
+  const query = useQuery({
+    queryKey: ["similarProducts", productId],
+    queryFn: async () => {
+      const { data, error } = await sdk.catalog.listSimilarProducts({
+        product_id: [productId],
+      });
+      if (error) throw new Error(error.message);
+      return data;
+    },
+    enabled: !!productId,
+  });
+
+  return {
+    items: query.data?.products ?? [],
+    isLoading: query.isLoading,
   };
 }
 
