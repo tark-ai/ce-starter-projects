@@ -16,7 +16,11 @@ export default defineConfig({
         filter: ({ path }) => !path.startsWith("/search") && !path.endsWith(".xml"),
       },
     }),
-    nitro(),
+    nitro(
+      process.env.VERCEL
+        ? { preset: "vercel", vercel: { entryFormat: "node" } }
+        : {}
+    ),
     react(),
   ],
 });
