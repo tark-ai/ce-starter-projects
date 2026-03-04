@@ -16,13 +16,7 @@ export default defineConfig({
         filter: ({ path }) => !path.startsWith("/search") && !path.endsWith(".xml"),
       },
     }),
-    nitro({
-      vercel: {
-        functions: {
-          runtime: "bun1.x",
-        },
-      },
-    }),
+    nitro(),
     react(),
   ],
 });
