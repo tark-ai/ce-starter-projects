@@ -19,7 +19,7 @@
     "ce-catalog": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "99440d4f448242335828a3fe7c825a6de12869e6a7291ac59af9378e2a3683ea"
+      "computedHash": "86bc23f0cf56643c443487af221ad9800dd728fbdffe8d32f989862b75abbca8"
     },
     "ce-nextjs-patterns": {
       "source": "commercengine/skills",
