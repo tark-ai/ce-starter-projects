@@ -11,7 +11,8 @@
         "tsconfig.json",
         "tsconfig.app.json",
         "postcss.config.js"
-      ]
+      ],
+      "env": ["VITE_STORE_ID", "VITE_API_KEY", "VITE_CE_ENV"]
     },
     "dev": {
       "cache": false,
