@@ -5,10 +5,37 @@ import OneThirdTwoThirdsSection from "../components/content/OneThirdTwoThirdsSec
 import ProductCarousel from "../components/content/ProductCarousel";
 import Footer from "../components/footer/Footer";
 import Header from "../components/header/Header";
+import SEO, { SITE_NAME, SITE_URL } from "../components/Seo";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        canonical={SITE_URL}
+        jsonLd={[
+          {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            name: SITE_NAME,
+            url: SITE_URL,
+            potentialAction: {
+              "@type": "SearchAction",
+              target: {
+                "@type": "EntryPoint",
+                urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
+              },
+              "query-input": "required name=search_term_string",
+            },
+          },
+          {
+            "@context": "https://schema.org",
+            "@type": "Organization",
+            name: SITE_NAME,
+            url: SITE_URL,
+            logo: `${SITE_URL}/favicon.svg`,
+          },
+        ]}
+      />
       <Header />
 
       <main className="pt-6">

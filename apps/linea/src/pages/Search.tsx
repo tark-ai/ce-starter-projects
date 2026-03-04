@@ -12,6 +12,7 @@ import FilterSortBar from "../components/category/FilterSortBar";
 import ProductGrid from "../components/category/ProductGrid";
 import Footer from "../components/footer/Footer";
 import Header from "../components/header/Header";
+import SEO, { SITE_URL } from "../components/Seo";
 import { useSearchProducts } from "../lib/hooks";
 
 function buildFilter(userFilters: Record<string, unknown>): (string | string[])[] {
@@ -111,6 +112,19 @@ const Search = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={query ? `Search results for "${query}"` : "Search"}
+        description={
+          query ? `Search results for "${query}" on Linea.` : "Search Linea's jewelry collection."
+        }
+        canonical={`${SITE_URL}/search`}
+        noindex
+        jsonLd={{
+          "@context": "https://schema.org",
+          "@type": "SearchResultsPage",
+          url: `${SITE_URL}/search${query ? `?q=${encodeURIComponent(query)}` : ""}`,
+        }}
+      />
       <Header />
 
       <main className="pt-6">

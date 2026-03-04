@@ -1,7 +1,7 @@
 import { useCheckout } from "@commercengine/checkout/react";
-import type { Product } from "@commercengine/storefront-sdk";
+import type { Product, VariantOption } from "@commercengine/storefront-sdk";
 import { Heart, Minus, Plus } from "lucide-react";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import {
   Breadcrumb,
@@ -13,15 +13,94 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/format";
+import { getOptionSelectionValue, getVariantOption } from "@/lib/variants";
 import { useWishlist } from "@/lib/wishlist";
 
 interface ProductInfoProps {
   product: Product;
   selectedVariantId: string | null;
-  onVariantChange: (variantId: string) => void;
+  selectedOptions: Record<string, string>;
+  allOptionsSelected: boolean;
+  onOptionChange: (optionKey: string, optionValue: string) => void;
 }
 
-const ProductInfo = ({ product, selectedVariantId, onVariantChange }: ProductInfoProps) => {
+type OptionGroup = {
+  option: VariantOption;
+  values: Array<{
+    selectionValue: string;
+    label: string;
+    hexcode?: string;
+    isPurchasable: boolean;
+  }>;
+};
+
+const isVariantPurchasable = (variant: Product["variants"][number]): boolean => {
+  return variant.stock_available || Boolean(variant.backorder);
+};
+
+const isColorVariantOptionValue = (
+  value: unknown
+): value is {
+  name: string;
+  hexcode: string;
+} => {
+  if (typeof value !== "object" || value === null) return false;
+
+  const maybeColor = value as { name?: unknown; hexcode?: unknown };
+  return typeof maybeColor.name === "string" && typeof maybeColor.hexcode === "string";
+};
+
+const getVariantOptionValues = (
+  option: VariantOption
+): Array<{
+  selectionValue: string;
+  label: string;
+  hexcode?: string;
+}> => {
+  const values: Array<{
+    selectionValue: string;
+    label: string;
+    hexcode?: string;
+  }> = [];
+  const seen = new Set<string>();
+
+  if (option.type === "color") {
+    for (const rawValue of option.value) {
+      if (!isColorVariantOptionValue(rawValue)) continue;
+      const selectionValue = rawValue.name;
+      if (seen.has(selectionValue)) continue;
+
+      seen.add(selectionValue);
+      values.push({
+        selectionValue,
+        label: rawValue.name,
+        hexcode: rawValue.hexcode,
+      });
+    }
+    return values;
+  }
+
+  for (const rawValue of option.value) {
+    if (typeof rawValue !== "string") continue;
+    if (seen.has(rawValue)) continue;
+
+    seen.add(rawValue);
+    values.push({
+      selectionValue: rawValue,
+      label: rawValue,
+    });
+  }
+
+  return values;
+};
+
+const ProductInfo = ({
+  product,
+  selectedVariantId,
+  selectedOptions,
+  allOptionsSelected,
+  onOptionChange,
+}: ProductInfoProps) => {
   const { addToCart } = useCheckout();
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [quantity, setQuantity] = useState(1);
@@ -32,9 +111,63 @@ const ProductInfo = ({ product, selectedVariantId, onVariantChange }: ProductInf
     ? product.variants.find((v) => v.id === selectedVariantId)
     : null;
 
+  const optionGroups = useMemo(() => {
+    if (!product.has_variant || !product.variant_options) return [];
+
+    const optionKeys = product.variant_options.map((option) => option.key);
+    const baseSelection = optionKeys.reduce<Record<string, string>>((acc, key) => {
+      const value = selectedOptions[key];
+      if (value) acc[key] = value;
+      return acc;
+    }, {});
+
+    const matchesSelection = (
+      variant: Product["variants"][number],
+      selection: Record<string, string>
+    ) => {
+      return Object.entries(selection).every(([key, expectedValue]) => {
+        const option = getVariantOption(variant, key);
+        return option ? getOptionSelectionValue(option) === expectedValue : false;
+      });
+    };
+
+    const groups: OptionGroup[] = product.variant_options.map((option) => {
+      const resolvedValues = getVariantOptionValues(option).map((optionValue) => {
+        const candidateSelection = {
+          ...baseSelection,
+          [option.key]: optionValue.selectionValue,
+        };
+        const isPurchasable = product.variants.some((variant) => {
+          return matchesSelection(variant, candidateSelection) && isVariantPurchasable(variant);
+        });
+
+        return {
+          selectionValue: optionValue.selectionValue,
+          label: optionValue.label,
+          hexcode: optionValue.hexcode,
+          isPurchasable,
+        };
+      });
+
+      return {
+        option,
+        values: resolvedValues,
+      };
+    });
+
+    return groups;
+  }, [product, selectedOptions]);
+
   const displayPrice = selectedVariant?.pricing?.selling_price ?? product.pricing.selling_price;
   const displayCurrency = selectedVariant?.pricing?.currency ?? product.pricing.currency;
-  const isInStock = selectedVariant ? selectedVariant.stock_available : product.stock_available;
+  const hasCompleteVariantSelection =
+    !product.has_variant || (allOptionsSelected && !!selectedVariant);
+  const isPurchasable = product.has_variant
+    ? selectedVariant
+      ? isVariantPurchasable(selectedVariant)
+      : false
+    : product.stock_available || Boolean(product.backorder);
+  const canAddToCart = hasCompleteVariantSelection && isPurchasable && !adding;
 
   const categoryName = product.categories?.[0]?.name;
   const categorySlug = product.categories?.[0]?.slug;
@@ -43,6 +176,8 @@ const ProductInfo = ({ product, selectedVariantId, onVariantChange }: ProductInf
   const decrementQuantity = () => setQuantity((prev) => Math.max(1, prev - 1));
 
   const handleAddToCart = async () => {
+    if (product.has_variant && !selectedVariantId) return;
+
     setAdding(true);
     try {
       await addToCart(product.id, selectedVariantId, quantity);
@@ -100,33 +235,32 @@ const ProductInfo = ({ product, selectedVariantId, onVariantChange }: ProductInf
       {/* Variant selector */}
       {product.has_variant && product.variant_options && (
         <div className="space-y-4 py-4 border-b border-border">
-          {product.variant_options.map((option) => (
+          {optionGroups.map(({ option, values }) => (
             <div key={option.key} className="space-y-2">
-              <h3 className="text-sm font-light text-foreground">{option.name}</h3>
+              <h3 className="text-sm font-light text-foreground capitalize">{option.name}</h3>
               <div className="flex flex-wrap gap-2">
-                {product.variants.map((variant) => {
-                  const optionValue = variant.associated_options?.[option.key];
-                  if (!optionValue) return null;
-                  const isColor = optionValue.type === "color";
-                  const label = isColor ? optionValue.value.name : optionValue.value;
-                  const isSelected = variant.id === selectedVariantId;
+                {values.map(({ selectionValue, label, hexcode, isPurchasable }) => {
+                  const isColor = option.type === "color";
+                  const isSelected = selectedOptions[option.key] === selectionValue;
 
                   return (
                     <button
-                      key={variant.id}
+                      key={`${option.key}-${selectionValue}`}
                       type="button"
-                      onClick={() => onVariantChange(variant.id)}
+                      onClick={() => onOptionChange(option.key, selectionValue)}
+                      aria-disabled={!isPurchasable}
+                      disabled={!isPurchasable}
                       title={label}
                       className={`text-sm font-light border transition-colors ${
                         isColor ? "size-9 rounded-full p-0.5" : "px-4 py-2"
                       } ${
                         isSelected ? "border-foreground" : "border-border hover:border-foreground"
-                      } ${!variant.stock_available ? "opacity-50" : ""}`}
+                      } ${!isPurchasable ? "opacity-50 cursor-not-allowed" : ""}`}
                     >
                       {isColor ? (
                         <span
                           className="block size-full rounded-full"
-                          style={{ backgroundColor: optionValue.value.hexcode }}
+                          style={{ backgroundColor: hexcode }}
                         />
                       ) : (
                         label
@@ -145,7 +279,7 @@ const ProductInfo = ({ product, selectedVariantId, onVariantChange }: ProductInf
         <div className="space-y-4 py-4 border-b border-border">
           {product.attributes.map((attr) => (
             <div key={attr.key} className="space-y-2">
-              <h3 className="text-sm font-light text-foreground">{attr.name}</h3>
+              <h3 className="text-sm font-light text-foreground capitalize">{attr.name}</h3>
               <p className="text-sm font-light text-muted-foreground">{String(attr.value)}</p>
             </div>
           ))}
@@ -183,9 +317,15 @@ const ProductInfo = ({ product, selectedVariantId, onVariantChange }: ProductInf
           <Button
             className="flex-1 h-12 bg-foreground text-background hover:bg-foreground/90 font-light rounded-none"
             onClick={handleAddToCart}
-            disabled={!isInStock || adding}
+            disabled={!canAddToCart}
           >
-            {!isInStock ? "Out of Stock" : adding ? "Adding..." : "Add to Bag"}
+            {!hasCompleteVariantSelection
+              ? "Select options"
+              : !isPurchasable
+                ? "Out of Stock"
+                : adding
+                  ? "Adding..."
+                  : "Add to Bag"}
           </Button>
           <Button
             variant="outline"

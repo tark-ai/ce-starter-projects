@@ -81,7 +81,9 @@ const ProductDescription = ({ product }: ProductDescriptionProps) => {
             )}
             {product.attributes.map((attr) => (
               <div key={attr.key} className="flex justify-between">
-                <span className="text-sm font-light text-muted-foreground">{attr.name}</span>
+                <span className="text-sm font-light text-muted-foreground capitalize">
+                  {attr.name}
+                </span>
                 <span className="text-sm font-light text-foreground">{String(attr.value)}</span>
               </div>
             ))}

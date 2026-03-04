@@ -5,6 +5,7 @@ import FilterSortBar from "../components/category/FilterSortBar";
 import ProductGrid from "../components/category/ProductGrid";
 import Footer from "../components/footer/Footer";
 import Header from "../components/header/Header";
+import SEO, { SITE_NAME, SITE_URL } from "../components/Seo";
 import { useCategories, useListSkus, useSearchProducts } from "../lib/hooks";
 
 /**
@@ -122,8 +123,48 @@ const Category = () => {
     setPage(1);
   };
 
+  const displayName = categoryName ?? category ?? "All Products";
+  const categoryUrl = `${SITE_URL}/category/${category}`;
+  const categoryDescription = `Shop ${displayName} from ${SITE_NAME}. Discover our curated collection of minimalist jewelry crafted for the modern individual.`;
+
+  const breadcrumbSchema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+      { "@type": "ListItem", position: 2, name: displayName },
+    ],
+  };
+
+  const collectionSchema: Record<string, unknown> = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: displayName,
+    description: categoryDescription,
+    url: categoryUrl,
+    ...(skus.length > 0
+      ? {
+          mainEntity: {
+            "@type": "ItemList",
+            itemListElement: skus.slice(0, 20).map((item, i) => ({
+              "@type": "ListItem",
+              position: i + 1,
+              url: `${SITE_URL}/product/${item.slug}`,
+              name: item.product_name,
+            })),
+          },
+        }
+      : {}),
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title={displayName}
+        description={categoryDescription}
+        canonical={categoryUrl}
+        jsonLd={[collectionSchema, breadcrumbSchema]}
+      />
       <Header />
 
       <main className="pt-6">
