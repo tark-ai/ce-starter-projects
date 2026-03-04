@@ -7,7 +7,7 @@ import Footer from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
 import { Button } from "@/components/ui/button";
 
-const SITE_URL = "https://linea-static.demo.commercengine.com";
+const SITE_URL = "https://linea-static.demo.commercengine.io";
 const SITE_NAME = "Linea";
 
 export const Route = createFileRoute("/about/store-locator")({

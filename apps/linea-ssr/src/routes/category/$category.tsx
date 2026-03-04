@@ -8,7 +8,7 @@ import Header from "@/components/header/Header";
 import { useCategories, useListSkus, useSearchProducts } from "@/lib/hooks";
 import { fetchCategories, fetchListSkus } from "@/lib/server-fns/catalog";
 
-const SITE_URL = "https://linea-static.demo.commercengine.com";
+const SITE_URL = "https://linea-static.demo.commercengine.io";
 const SITE_NAME = "Linea";
 
 function buildFilter(
@@ -50,7 +50,12 @@ export const Route = createFileRoute("/category/$category")({
     const categories = await fetchCategories();
     const matched = (categories ?? []).find((c) => c.slug === params.category);
     if (!matched)
-      return { serverSkus: [], serverPagination: undefined, categoryId: undefined, categoryName: undefined };
+      return {
+        serverSkus: [],
+        serverPagination: undefined,
+        categoryId: undefined,
+        categoryName: undefined,
+      };
     const result = await fetchListSkus({
       data: { category_id: [matched.id], page: 1, limit: 20 },
     });
@@ -173,7 +178,7 @@ function CategoryPage() {
     : listSkusResult.skus;
   const skus = hasUserFilters ? searchResult.skus : clientSkus;
   const clientPagination = shouldUseServerFallback
-    ? listSkusResult.pagination ?? loaderData.serverPagination
+    ? (listSkusResult.pagination ?? loaderData.serverPagination)
     : listSkusResult.pagination;
   const pagination = hasUserFilters ? searchResult.pagination : clientPagination;
   const isLoading = hasUserFilters

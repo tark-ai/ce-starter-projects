@@ -5,7 +5,7 @@ import PageHeader from "@/components/about/PageHeader";
 import Footer from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
 
-const SITE_URL = "https://linea-static.demo.commercengine.com";
+const SITE_URL = "https://linea-static.demo.commercengine.io";
 const SITE_NAME = "Linea";
 
 export const Route = createFileRoute("/about/sustainability")({

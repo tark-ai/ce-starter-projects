@@ -13,16 +13,16 @@ Linea is an online jewelry store offering curated collections of rings, necklace
 
 ## Key Pages
 
-- Homepage: https://linea-static.demo.commercengine.com/
-- Shop All: https://linea-static.demo.commercengine.com/category/shop
-- Rings: https://linea-static.demo.commercengine.com/category/rings
-- Earrings: https://linea-static.demo.commercengine.com/category/earrings
-- Necklaces: https://linea-static.demo.commercengine.com/category/necklaces
-- Bracelets: https://linea-static.demo.commercengine.com/category/bracelets
-- Our Story: https://linea-static.demo.commercengine.com/about/our-story
-- Sustainability: https://linea-static.demo.commercengine.com/about/sustainability
-- Size Guide: https://linea-static.demo.commercengine.com/about/size-guide
-- Customer Care: https://linea-static.demo.commercengine.com/about/customer-care
+- Homepage: https://linea-static.demo.commercengine.io/
+- Shop All: https://linea-static.demo.commercengine.io/category/shop
+- Rings: https://linea-static.demo.commercengine.io/category/rings
+- Earrings: https://linea-static.demo.commercengine.io/category/earrings
+- Necklaces: https://linea-static.demo.commercengine.io/category/necklaces
+- Bracelets: https://linea-static.demo.commercengine.io/category/bracelets
+- Our Story: https://linea-static.demo.commercengine.io/about/our-story
+- Sustainability: https://linea-static.demo.commercengine.io/about/sustainability
+- Size Guide: https://linea-static.demo.commercengine.io/about/size-guide
+- Customer Care: https://linea-static.demo.commercengine.io/about/customer-care
 
 ## Brand Information
 

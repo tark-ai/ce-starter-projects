@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { useSearchProducts } from "@/lib/hooks";
 
-const SITE_URL = "https://linea-static.demo.commercengine.com";
+const SITE_URL = "https://linea-static.demo.commercengine.io";
 
 function buildFilter(userFilters: Record<string, unknown>): (string | string[])[] {
   const conditions: (string | string[])[] = [];

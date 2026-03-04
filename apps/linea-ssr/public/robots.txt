@@ -14,4 +14,4 @@ User-agent: *
 Allow: /
 Disallow: /search
 
-Sitemap: https://linea-static.demo.commercengine.com/sitemap.xml
+Sitemap: https://linea-static.demo.commercengine.io/sitemap.xml

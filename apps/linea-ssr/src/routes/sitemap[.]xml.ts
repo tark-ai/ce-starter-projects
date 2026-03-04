@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { ensureAuth, sdk } from "@/lib/storefront";
 
-const SITE_URL = "https://linea-static.demo.commercengine.com";
+const SITE_URL = "https://linea-static.demo.commercengine.io";
 
 export const Route = createFileRoute("/sitemap.xml")({
   server: {

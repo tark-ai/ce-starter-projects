@@ -8,6 +8,25 @@ import { createIsomorphicFn } from "@tanstack/react-start";
 import { deleteClientCookie, getClientCookie, setClientCookie } from "./cookies.client";
 import { deleteServerCookie, getServerCookie, setServerCookie } from "./cookies.server";
 
+// Cloudflare Workers/workerd doesn't send a User-Agent by default.
+// The CE API requires one, so patch global fetch on the server to inject it.
+if (typeof window === "undefined") {
+  const _fetch = globalThis.fetch;
+  globalThis.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
+    if (input instanceof Request) {
+      if (!input.headers.has("User-Agent")) {
+        input.headers.set("User-Agent", "linea-ssr/1.0");
+      }
+      return _fetch(input, init);
+    }
+    const headers = new Headers(init?.headers);
+    if (!headers.has("User-Agent")) {
+      headers.set("User-Agent", "linea-ssr/1.0");
+    }
+    return _fetch(input, { ...init, headers });
+  };
+}
+
 /**
  * Isomorphic cookie operations using createIsomorphicFn().
  *
