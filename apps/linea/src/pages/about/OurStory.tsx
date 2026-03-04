@@ -1,3 +1,4 @@
+import founders from "@/assets/founders.jpg";
 import AboutSidebar from "../../components/about/AboutSidebar";
 import ContentSection from "../../components/about/ContentSection";
 import ImageTextBlock from "../../components/about/ImageTextBlock";
@@ -23,7 +24,7 @@ const OurStory = () => {
 
           <ContentSection>
             <ImageTextBlock
-              image="/founders.png"
+              image={founders}
               imageAlt="Company founders"
               title="Founded on Passion"
               content="LINEA Jewelry was born from a shared vision of creating timeless pieces that transcend fleeting trends. Our founders, united by their passion for exceptional craftsmanship and sustainable practices, established the brand with a commitment to creating jewelry that tells a story - your story."

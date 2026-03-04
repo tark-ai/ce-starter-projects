@@ -1,6 +1,6 @@
 import { useCheckout } from "@commercengine/checkout/react";
 import type { Product } from "@commercengine/storefront-sdk";
-import { Minus, Plus } from "lucide-react";
+import { Heart, Minus, Plus } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import {
@@ -13,6 +13,7 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { formatPrice } from "@/lib/format";
+import { useWishlist } from "@/lib/wishlist";
 
 interface ProductInfoProps {
   product: Product;
@@ -22,8 +23,10 @@ interface ProductInfoProps {
 
 const ProductInfo = ({ product, selectedVariantId, onVariantChange }: ProductInfoProps) => {
   const { addToCart } = useCheckout();
+  const { isInWishlist, toggleWishlist } = useWishlist();
   const [quantity, setQuantity] = useState(1);
   const [adding, setAdding] = useState(false);
+  const wishlisted = isInWishlist(product.id);
 
   const selectedVariant = product.has_variant
     ? product.variants.find((v) => v.id === selectedVariantId)
@@ -176,13 +179,25 @@ const ProductInfo = ({ product, selectedVariantId, onVariantChange }: ProductInf
           </div>
         </div>
 
-        <Button
-          className="w-full h-12 bg-foreground text-background hover:bg-foreground/90 font-light rounded-none"
-          onClick={handleAddToCart}
-          disabled={!isInStock || adding}
-        >
-          {!isInStock ? "Out of Stock" : adding ? "Adding..." : "Add to Bag"}
-        </Button>
+        <div className="flex gap-3">
+          <Button
+            className="flex-1 h-12 bg-foreground text-background hover:bg-foreground/90 font-light rounded-none"
+            onClick={handleAddToCart}
+            disabled={!isInStock || adding}
+          >
+            {!isInStock ? "Out of Stock" : adding ? "Adding..." : "Add to Bag"}
+          </Button>
+          <Button
+            variant="outline"
+            className="h-12 w-12 shrink-0 rounded-none border-border hover:bg-transparent"
+            onClick={() => toggleWishlist(product.id, selectedVariantId)}
+            aria-label={wishlisted ? "Remove from favorites" : "Add to favorites"}
+          >
+            <Heart
+              className={`h-5 w-5 transition-colors ${wishlisted ? "fill-red-500 text-red-500" : "text-foreground"}`}
+            />
+          </Button>
+        </div>
       </div>
     </div>
   );

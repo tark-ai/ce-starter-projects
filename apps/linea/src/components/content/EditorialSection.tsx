@@ -1,6 +1,6 @@
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import founders from "@/assets/founders.png";
+import founders from "@/assets/founders.jpg";
 
 const EditorialSection = () => {
   return (
@@ -31,6 +31,8 @@ const EditorialSection = () => {
               src={founders}
               alt="Linea founders - two women in minimalist jewelry"
               className="w-full h-full object-cover"
+              loading="lazy"
+              decoding="async"
             />
           </div>
         </div>

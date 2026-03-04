@@ -89,6 +89,9 @@ const ProductImageGallery = ({ images, productName }: ProductImageGalleryProps) 
                   src={image.url_standard}
                   alt={image.alternate_text || `${productName} view ${index + 1}`}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : undefined}
+                  decoding="async"
                 />
               </button>
             );
@@ -121,6 +124,8 @@ const ProductImageGallery = ({ images, productName }: ProductImageGalleryProps) 
                 `${productName} view ${currentImageIndex + 1}`
               }
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
+              fetchPriority="high"
+              decoding="async"
             />
           </button>
 

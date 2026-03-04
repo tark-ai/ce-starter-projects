@@ -2,7 +2,14 @@ import { useCheckout } from "@commercengine/checkout/react";
 import { ArrowRight, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import arcusBracelet from "@/assets/arcus-bracelet.jpg";
+import earringsCollection from "@/assets/earrings-collection.jpg";
+import founders from "@/assets/founders.jpg";
+import ringsCollection from "@/assets/rings-collection.jpg";
+import spanBracelet from "@/assets/span-bracelet.jpg";
+import { formatPrice } from "@/lib/format";
 import { useCategories } from "@/lib/hooks";
+import { useWishlist } from "@/lib/wishlist";
 
 const Navigation = () => {
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -14,6 +21,9 @@ const Navigation = () => {
 
   const { openCart, cartCount } = useCheckout();
   const { categories } = useCategories();
+  const { items: wishlistItems, count: wishlistCount, removeFromWishlist, onAdd } = useWishlist();
+
+  useEffect(() => onAdd(() => setOffCanvasType("favorites")), [onAdd]);
 
   const categoryNames = categories.map((c) => c.name);
 
@@ -28,11 +38,11 @@ const Navigation = () => {
   // Preload dropdown images for faster display
   useEffect(() => {
     const imagesToPreload = [
-      "/rings-collection.png",
-      "/earrings-collection.png",
-      "/arcus-bracelet.png",
-      "/span-bracelet.png",
-      "/founders.png",
+      ringsCollection,
+      earringsCollection,
+      arcusBracelet,
+      spanBracelet,
+      founders,
     ];
 
     imagesToPreload.forEach((src) => {
@@ -56,8 +66,8 @@ const Navigation = () => {
       href: "/category/shop",
       submenuItems: categoryNames.length > 0 ? categoryNames : ["All Products"],
       images: [
-        { src: "/rings-collection.png", alt: "Rings Collection", label: "Rings" },
-        { src: "/earrings-collection.png", alt: "Earrings Collection", label: "Earrings" },
+        { src: ringsCollection, alt: "Rings Collection", label: "Rings" },
+        { src: earringsCollection, alt: "Earrings Collection", label: "Earrings" },
       ],
     },
     {
@@ -71,15 +81,15 @@ const Navigation = () => {
         "Pre-Orders",
       ],
       images: [
-        { src: "/arcus-bracelet.png", alt: "Arcus Bracelet", label: "Arcus Bracelet" },
-        { src: "/span-bracelet.png", alt: "Span Bracelet", label: "Span Bracelet" },
+        { src: arcusBracelet, alt: "Arcus Bracelet", label: "Arcus Bracelet" },
+        { src: spanBracelet, alt: "Span Bracelet", label: "Span Bracelet" },
       ],
     },
     {
       name: "About",
       href: "/about/our-story",
       submenuItems: ["Our Story", "Sustainability", "Size Guide", "Customer Care", "Store Locator"],
-      images: [{ src: "/founders.png", alt: "Company Founders", label: "Read our story" }],
+      images: [{ src: founders, alt: "Company Founders", label: "Read our story" }],
     },
   ];
 
@@ -178,7 +188,7 @@ const Navigation = () => {
           </button>
           <button
             type="button"
-            className="hidden lg:block p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200"
+            className="p-2 text-nav-foreground hover:text-nav-hover transition-colors duration-200 relative"
             aria-label="Favorites"
             onClick={() => setOffCanvasType("favorites")}
           >
@@ -198,6 +208,11 @@ const Navigation = () => {
                 d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
               />
             </svg>
+            {wishlistCount > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 bg-foreground text-background text-[0.5rem] font-semibold rounded-full size-4 flex items-center justify-center pointer-events-none">
+                {wishlistCount}
+              </span>
+            )}
           </button>
           <button
             type="button"
@@ -290,6 +305,7 @@ const Navigation = () => {
                           src={image.src}
                           alt={image.alt}
                           className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-90"
+                          decoding="async"
                         />
                         <div className="absolute bottom-2 left-2 text-white text-xs font-light flex items-center gap-1">
                           <span>{image.label}</span>
@@ -422,11 +438,52 @@ const Navigation = () => {
               </button>
             </div>
 
-            <div className="p-6">
-              <p className="text-muted-foreground text-sm mb-6">
-                You haven't added any favorites yet. Browse our collection and click the heart icon
-                to save items you love.
-              </p>
+            <div className="flex-1 overflow-y-auto p-6">
+              {wishlistItems.length === 0 ? (
+                <p className="text-muted-foreground text-sm">
+                  You haven't added any favorites yet. Browse our collection and click the heart
+                  icon to save items you love.
+                </p>
+              ) : (
+                <div className="space-y-4">
+                  {wishlistItems.map((item) => (
+                    <div key={item.sku} className="flex gap-4 group/item">
+                      <Link
+                        to={`/product/${item.slug}`}
+                        onClick={() => setOffCanvasType(null)}
+                        className="shrink-0"
+                      >
+                        <img
+                          src={item.images?.[0]?.url_standard}
+                          alt={item.product_name}
+                          className="w-20 h-20 object-cover bg-muted/10"
+                        />
+                      </Link>
+                      <div className="flex-1 min-w-0">
+                        <Link
+                          to={`/product/${item.slug}`}
+                          onClick={() => setOffCanvasType(null)}
+                          className="block"
+                        >
+                          <p className="text-sm font-medium text-foreground truncate">
+                            {item.variant_name || item.product_name}
+                          </p>
+                          <p className="text-sm font-light text-muted-foreground">
+                            {formatPrice(item.pricing.selling_price, item.pricing.currency)}
+                          </p>
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => removeFromWishlist(item.product_id, item.variant_id)}
+                          className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-1"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </div>
         </div>

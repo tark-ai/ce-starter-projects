@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import circularCollection from "@/assets/circular-collection.png";
-import organicEarring from "@/assets/organic-earring.png";
+import circularCollection from "@/assets/circular-collection.jpg";
+import organicEarring from "@/assets/organic-earring.jpg";
 
 const OneThirdTwoThirdsSection = () => {
   return (
@@ -13,6 +13,8 @@ const OneThirdTwoThirdsSection = () => {
                 src={organicEarring}
                 alt="Artisan crafted jewelry"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </Link>
@@ -31,6 +33,8 @@ const OneThirdTwoThirdsSection = () => {
                 src={circularCollection}
                 alt="Circular jewelry collection"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </Link>

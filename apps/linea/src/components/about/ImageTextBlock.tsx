@@ -22,6 +22,8 @@ const ImageTextBlock = ({
           src={image}
           alt={imageAlt}
           className="w-full aspect-square lg:aspect-auto lg:h-[800px] object-cover"
+          loading="lazy"
+          decoding="async"
         />
       </div>
       <div className="flex-1 space-y-6">

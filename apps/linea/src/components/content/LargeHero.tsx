@@ -1,4 +1,4 @@
-import heroImage from "@/assets/hero-image.png";
+import heroImage from "@/assets/hero-image.jpg";
 
 const LargeHero = () => {
   return (
@@ -8,6 +8,8 @@ const LargeHero = () => {
           src={heroImage}
           alt="Modern jewelry collection"
           className="w-full h-full object-cover"
+          loading="lazy"
+          decoding="async"
         />
       </div>
       <div className="">

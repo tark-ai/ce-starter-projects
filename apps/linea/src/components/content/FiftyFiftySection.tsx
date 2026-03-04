@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
-import earringsCollection from "@/assets/earrings-collection.png";
-import linkBracelet from "@/assets/link-bracelet.png";
+import earringsCollection from "@/assets/earrings-collection.jpg";
+import linkBracelet from "@/assets/link-bracelet.jpg";
 
 const FiftyFiftySection = () => {
   return (
@@ -13,6 +13,8 @@ const FiftyFiftySection = () => {
                 src={earringsCollection}
                 alt="Earrings collection"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                fetchPriority="high"
+                decoding="async"
               />
             </div>
           </Link>
@@ -31,6 +33,8 @@ const FiftyFiftySection = () => {
                 src={linkBracelet}
                 alt="Chain link bracelet"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                loading="lazy"
+                decoding="async"
               />
             </div>
           </Link>

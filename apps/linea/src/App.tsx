@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import ScrollToTop from "./components/ScrollToTop";
 import { destroyCheckout, initStorefront } from "./lib/storefront";
+import { WishlistProvider } from "./lib/wishlist";
 import CustomerCare from "./pages/about/CustomerCare";
 import OurStory from "./pages/about/OurStory";
 import SizeGuide from "./pages/about/SizeGuide";
@@ -39,27 +40,29 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/category/:category" element={<Category />} />
-            <Route path="/search" element={<Search />} />
-            <Route path="/product/:slug" element={<ProductDetail />} />
-            <Route path="/about/our-story" element={<OurStory />} />
-            <Route path="/about/sustainability" element={<Sustainability />} />
-            <Route path="/about/size-guide" element={<SizeGuide />} />
-            <Route path="/about/customer-care" element={<CustomerCare />} />
-            <Route path="/about/store-locator" element={<StoreLocator />} />
-            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-            <Route path="/terms-of-service" element={<TermsOfService />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <WishlistProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <ScrollToTop />
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/category/:category" element={<Category />} />
+              <Route path="/search" element={<Search />} />
+              <Route path="/product/:slug" element={<ProductDetail />} />
+              <Route path="/about/our-story" element={<OurStory />} />
+              <Route path="/about/sustainability" element={<Sustainability />} />
+              <Route path="/about/size-guide" element={<SizeGuide />} />
+              <Route path="/about/customer-care" element={<CustomerCare />} />
+              <Route path="/about/store-locator" element={<StoreLocator />} />
+              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+              <Route path="/terms-of-service" element={<TermsOfService />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </WishlistProvider>
     </QueryClientProvider>
   );
 };

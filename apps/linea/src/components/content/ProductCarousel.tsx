@@ -1,11 +1,14 @@
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
+import WishlistButton from "@/components/WishlistButton";
 import { formatPrice } from "@/lib/format";
 import { useProducts } from "@/lib/hooks";
+import { useWishlist } from "@/lib/wishlist";
 
 const ProductCarousel = () => {
   const { products, isLoading } = useProducts({ limit: 6 });
+  const { isInWishlist, toggleWishlist } = useWishlist();
 
   if (isLoading) {
     const skeletonIds = ["c1", "c2", "c3", "c4"];
@@ -47,13 +50,25 @@ const ProductCarousel = () => {
                         src={product.images?.[0]?.url_standard}
                         alt={product.images?.[0]?.alternate_text || product.name}
                         className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-0"
+                        loading="lazy"
+                        decoding="async"
                       />
                       <img
                         src={product.images?.[1]?.url_standard || product.images?.[0]?.url_standard}
                         alt={`${product.name} alternate`}
                         className="absolute inset-0 w-full h-full object-cover transition-all duration-300 opacity-0 group-hover:opacity-100"
+                        loading="lazy"
+                        decoding="async"
                       />
                       <div className="absolute inset-0 bg-black/[0.03]" />
+                      <WishlistButton
+                        active={isInWishlist(product.id)}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          toggleWishlist(product.id);
+                        }}
+                      />
                     </div>
                     <div className="space-y-1">
                       <p className="text-sm font-light text-foreground">

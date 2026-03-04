@@ -1,7 +1,9 @@
 import type { Item, Pagination as PaginationType } from "@commercengine/storefront-sdk";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";
+import WishlistButton from "@/components/WishlistButton";
 import { formatPrice } from "@/lib/format";
+import { useWishlist } from "@/lib/wishlist";
 import PaginationBar from "./Pagination";
 
 interface ProductGridProps {
@@ -12,6 +14,7 @@ interface ProductGridProps {
 }
 
 const ProductGrid = ({ skus, isLoading, pagination, onPageChange }: ProductGridProps) => {
+  const { isInWishlist, toggleWishlist } = useWishlist();
   if (isLoading) {
     const skeletonIds = ["s1", "s2", "s3", "s4", "s5", "s6", "s7", "s8"];
     return (
@@ -51,16 +54,28 @@ const ProductGrid = ({ skus, isLoading, pagination, onPageChange }: ProductGridP
                     src={item.images?.[0]?.url_standard}
                     alt={item.images?.[0]?.alternate_text || item.product_name}
                     className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-0"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <img
                     src={item.images?.[1]?.url_standard || item.images?.[0]?.url_standard}
                     alt={`${item.product_name} alternate`}
                     className="absolute inset-0 w-full h-full object-cover transition-all duration-300 opacity-0 group-hover:opacity-100"
+                    loading="lazy"
+                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-black/[0.03]" />
+                  <WishlistButton
+                    active={isInWishlist(item.product_id)}
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      toggleWishlist(item.product_id, item.variant_id);
+                    }}
+                  />
                 </div>
                 <div className="space-y-1">
-                  <p className="text-sm font-light text-foreground">{item.product_name}</p>
+                  <p className="text-sm font-light text-foreground">{item.categories?.[0]?.name}</p>
                   <div className="flex justify-between items-center">
                     <h3 className="text-sm font-medium text-foreground">
                       {item.variant_name || item.product_name}
