@@ -8,7 +8,14 @@ export default defineConfig({
   server: { port: 8081 },
   plugins: [
     tsconfigPaths(),
-    tanstackStart(),
+    tanstackStart({
+      prerender: {
+        enabled: true,
+        crawlLinks: true,
+        autoStaticPathsDiscovery: true,
+        filter: ({ path }) => !path.startsWith("/search") && !path.endsWith(".xml"),
+      },
+    }),
     nitro({
       vercel: {
         functions: {

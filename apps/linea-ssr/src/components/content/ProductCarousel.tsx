@@ -9,6 +9,7 @@ import { useWishlist } from "@/lib/wishlist";
 
 interface ProductCarouselProps {
   productId?: string;
+  serverProducts?: Product[];
 }
 
 function isItem(p: Product | Item): p is Item {
@@ -30,7 +31,7 @@ function getDisplayProps(p: Product | Item) {
   return {
     id: p.id,
     name: p.name,
-    linkParam: p.slug,
+    linkParam: p.id,
     images: p.images,
     categoryName: p.categories?.[0]?.name,
     price: p.pricing.selling_price,
@@ -38,11 +39,15 @@ function getDisplayProps(p: Product | Item) {
   };
 }
 
-const ProductCarousel = ({ productId }: ProductCarouselProps) => {
+const ProductCarousel = ({ productId, serverProducts }: ProductCarouselProps) => {
   const similar = useSimilarProducts(productId ?? "");
-  const fallback = useProducts({ limit: 6, enabled: !productId });
-  const items: (Product | Item)[] = productId ? similar.items : fallback.products;
-  const isLoading = productId ? similar.isLoading : fallback.isLoading;
+  const fallback = useProducts({ limit: 6, enabled: !productId && !serverProducts?.length });
+  const items: (Product | Item)[] = productId
+    ? similar.items
+    : serverProducts?.length
+      ? serverProducts
+      : fallback.products;
+  const isLoading = productId ? similar.isLoading : !serverProducts?.length && fallback.isLoading;
   const { isInWishlist, toggleWishlist } = useWishlist();
 
   if (isLoading) {

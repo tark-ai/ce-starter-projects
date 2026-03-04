@@ -6,11 +6,16 @@ import OneThirdTwoThirdsSection from "@/components/content/OneThirdTwoThirdsSect
 import ProductCarousel from "@/components/content/ProductCarousel";
 import Footer from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
+import { fetchProducts } from "@/lib/server-fns/catalog";
 
 const SITE_URL = "https://linea-static.demo.commercengine.com";
 const SITE_NAME = "Linea";
 
 export const Route = createFileRoute("/")({
+  loader: async () => {
+    const result = await fetchProducts({ data: { page: 1, limit: 20 } });
+    return { products: result?.products ?? [] };
+  },
   head: () => ({
     meta: [
       {
@@ -75,12 +80,14 @@ export const Route = createFileRoute("/")({
 });
 
 function IndexPage() {
+  const { products } = Route.useLoaderData();
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
       <main className="pt-6">
         <FiftyFiftySection />
-        <ProductCarousel />
+        <ProductCarousel serverProducts={products} />
         <LargeHero />
         <OneThirdTwoThirdsSection />
         <EditorialSection />

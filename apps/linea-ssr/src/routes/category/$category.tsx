@@ -6,6 +6,7 @@ import ProductGrid from "@/components/category/ProductGrid";
 import Footer from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
 import { useCategories, useListSkus, useSearchProducts } from "@/lib/hooks";
+import { fetchCategories, fetchListSkus } from "@/lib/server-fns/catalog";
 
 const SITE_URL = "https://linea-static.demo.commercengine.com";
 const SITE_NAME = "Linea";
@@ -45,6 +46,21 @@ function buildFilter(
 }
 
 export const Route = createFileRoute("/category/$category")({
+  loader: async ({ params }) => {
+    const categories = await fetchCategories();
+    const matched = (categories ?? []).find((c) => c.slug === params.category);
+    if (!matched)
+      return { serverSkus: [], serverPagination: undefined, categoryId: undefined, categoryName: undefined };
+    const result = await fetchListSkus({
+      data: { category_id: [matched.id], page: 1, limit: 20 },
+    });
+    return {
+      serverSkus: result?.skus ?? [],
+      serverPagination: result?.pagination,
+      categoryId: matched.id,
+      categoryName: matched.name,
+    };
+  },
   head: ({ params }) => {
     const displayName = params.category.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
     const categoryUrl = `${SITE_URL}/category/${params.category}`;
@@ -92,22 +108,24 @@ export const Route = createFileRoute("/category/$category")({
 
 function CategoryPage() {
   const { category } = Route.useParams();
+  const loaderData = Route.useLoaderData();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<Record<string, unknown>>({});
 
   const { categories } = useCategories();
   const matchedCategory = categories.find((c) => c.slug === category);
-  const categoryId = matchedCategory?.id;
-  const categoryName = matchedCategory?.name;
+  const categoryId = matchedCategory?.id ?? loaderData.categoryId;
+  const categoryName = matchedCategory?.name ?? loaderData.categoryName;
 
   const hasUserFilters = Object.keys(filters).length > 0;
+  const hasServerData = loaderData.serverSkus.length > 0;
 
   const listSkusResult = useListSkus({
     page,
     limit: 20,
     category_id: categoryId ? [categoryId] : undefined,
-    enabled: !hasUserFilters,
+    enabled: !hasUserFilters && (!hasServerData || page > 1),
   });
 
   const searchEnabled = hasUserFilters || filtersOpen;
@@ -147,9 +165,22 @@ function CategoryPage() {
   const baseFacetStats =
     Object.keys(baseFacetsRef.current.stats).length > 0 ? baseFacetsRef.current.stats : searchStats;
 
-  const skus = hasUserFilters ? searchResult.skus : listSkusResult.skus;
-  const pagination = hasUserFilters ? searchResult.pagination : listSkusResult.pagination;
-  const isLoading = hasUserFilters ? searchResult.isLoading : listSkusResult.isLoading;
+  const shouldUseServerFallback = !hasUserFilters && page === 1 && hasServerData;
+  const clientSkus = shouldUseServerFallback
+    ? listSkusResult.skus.length > 0
+      ? listSkusResult.skus
+      : loaderData.serverSkus
+    : listSkusResult.skus;
+  const skus = hasUserFilters ? searchResult.skus : clientSkus;
+  const clientPagination = shouldUseServerFallback
+    ? listSkusResult.pagination ?? loaderData.serverPagination
+    : listSkusResult.pagination;
+  const pagination = hasUserFilters ? searchResult.pagination : clientPagination;
+  const isLoading = hasUserFilters
+    ? searchResult.isLoading
+    : shouldUseServerFallback
+      ? !hasServerData && listSkusResult.isLoading
+      : listSkusResult.isLoading;
   const currency = skus[0]?.pricing?.currency ?? "INR";
 
   const handlePageChange = (newPage: number) => {
