@@ -1,4 +1,5 @@
 import type { ProductImage } from "@commercengine/storefront-sdk";
+import { Image } from "@unpic/react";
 import type * as React from "react";
 import { useRef, useState } from "react";
 import ImageZoom from "./ImageZoom";
@@ -85,13 +86,13 @@ const ProductImageGallery = ({ images, productName }: ProductImageGalleryProps) 
                 onKeyDown={handleKeyDown}
                 aria-label={`View ${productName} image ${index + 1}`}
               >
-                <img
+                <Image
                   src={image.url_standard}
                   alt={image.alternate_text || `${productName} view ${index + 1}`}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  layout="fullWidth"
                   loading={index === 0 ? "eager" : "lazy"}
                   fetchPriority={index === 0 ? "high" : undefined}
-                  decoding="async"
+                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </button>
             );
@@ -117,15 +118,16 @@ const ProductImageGallery = ({ images, productName }: ProductImageGalleryProps) 
             onTouchEnd={handleTouchEnd}
             aria-label={`View ${productName} image ${currentImageIndex + 1}`}
           >
-            <img
+            <Image
               src={images[currentImageIndex].url_standard}
               alt={
                 images[currentImageIndex].alternate_text ||
                 `${productName} view ${currentImageIndex + 1}`
               }
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
+              layout="fullWidth"
+              loading="eager"
               fetchPriority="high"
-              decoding="async"
+              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
             />
           </button>
 

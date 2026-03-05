@@ -1,5 +1,6 @@
 import type { Item, Product } from "@commercengine/storefront-sdk";
 import { Link } from "@tanstack/react-router";
+import { Image } from "@unpic/react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem } from "@/components/ui/carousel";
 import WishlistButton from "@/components/WishlistButton";
@@ -85,19 +86,17 @@ const ProductCarousel = ({ productId, serverProducts }: ProductCarouselProps) =>
                   <Card className="border-none shadow-none bg-transparent group">
                     <CardContent className="p-0">
                       <div className="aspect-square mb-3 overflow-hidden bg-muted/10 relative">
-                        <img
-                          src={d.images?.[0]?.url_standard}
+                        <Image
+                          src={d.images?.[0]?.url_standard ?? ""}
                           alt={d.images?.[0]?.alternate_text || d.name}
+                          layout="fullWidth"
                           className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-0"
-                          loading="lazy"
-                          decoding="async"
                         />
-                        <img
-                          src={d.images?.[1]?.url_standard || d.images?.[0]?.url_standard}
+                        <Image
+                          src={d.images?.[1]?.url_standard || d.images?.[0]?.url_standard || ""}
                           alt={`${d.name} alternate`}
+                          layout="fullWidth"
                           className="absolute inset-0 w-full h-full object-cover transition-all duration-300 opacity-0 group-hover:opacity-100"
-                          loading="lazy"
-                          decoding="async"
                         />
                         <div className="absolute inset-0 bg-black/[0.03]" />
                         <WishlistButton

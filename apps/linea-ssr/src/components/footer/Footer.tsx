@@ -35,7 +35,7 @@ const Footer = () => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             {/* Shop */}
             <div>
-              <h4 className="text-sm font-normal mb-4">Shop</h4>
+              <p className="text-sm font-normal mb-4">Shop</p>
               <ul className="space-y-2">
                 <li>
                   <Link
@@ -87,7 +87,7 @@ const Footer = () => {
 
             {/* Support */}
             <div>
-              <h4 className="text-sm font-normal mb-4">Support</h4>
+              <p className="text-sm font-normal mb-4">Support</p>
               <ul className="space-y-2">
                 <li>
                   <Link
@@ -134,7 +134,7 @@ const Footer = () => {
 
             {/* Connect */}
             <div>
-              <h4 className="text-sm font-normal mb-4">Connect</h4>
+              <p className="text-sm font-normal mb-4">Connect</p>
               <ul className="space-y-2">
                 <li>
                   <a

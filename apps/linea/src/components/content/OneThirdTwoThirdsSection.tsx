@@ -1,3 +1,4 @@
+import { Image } from "@unpic/react";
 import { Link } from "react-router-dom";
 import circularCollection from "@/assets/circular-collection.jpg";
 import organicEarring from "@/assets/organic-earring.jpg";
@@ -9,12 +10,11 @@ const OneThirdTwoThirdsSection = () => {
         <div className="lg:col-span-1">
           <Link to="/category/rings" className="block">
             <div className="w-full h-[500px] lg:h-[800px] mb-3 overflow-hidden">
-              <img
+              <Image
                 src={organicEarring}
                 alt="Artisan crafted jewelry"
+                layout="fullWidth"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                loading="lazy"
-                decoding="async"
               />
             </div>
           </Link>
@@ -29,12 +29,11 @@ const OneThirdTwoThirdsSection = () => {
         <div className="lg:col-span-2">
           <Link to="/category/necklaces" className="block">
             <div className="w-full h-[500px] lg:h-[800px] mb-3 overflow-hidden">
-              <img
+              <Image
                 src={circularCollection}
                 alt="Circular jewelry collection"
+                layout="fullWidth"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                loading="lazy"
-                decoding="async"
               />
             </div>
           </Link>

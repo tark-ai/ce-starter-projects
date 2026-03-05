@@ -4,7 +4,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: "DM Sans", sans-serif;
+  --font-sans: "DM Sans Variable", "DM Sans", sans-serif;
 
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));

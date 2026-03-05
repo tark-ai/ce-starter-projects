@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
@@ -7,18 +7,19 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import ScrollToTop from "./components/ScrollToTop";
 import { destroyCheckout, initStorefront } from "./lib/storefront";
 import { WishlistProvider } from "./lib/wishlist";
-import CustomerCare from "./pages/about/CustomerCare";
-import OurStory from "./pages/about/OurStory";
-import SizeGuide from "./pages/about/SizeGuide";
-import StoreLocator from "./pages/about/StoreLocator";
-import Sustainability from "./pages/about/Sustainability";
-import Category from "./pages/Category";
 import Index from "./pages/Index";
-import NotFound from "./pages/NotFound";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import ProductDetail from "./pages/ProductDetail";
-import Search from "./pages/Search";
-import TermsOfService from "./pages/TermsOfService";
+
+const Category = lazy(() => import("./pages/Category"));
+const Search = lazy(() => import("./pages/Search"));
+const ProductDetail = lazy(() => import("./pages/ProductDetail"));
+const OurStory = lazy(() => import("./pages/about/OurStory"));
+const Sustainability = lazy(() => import("./pages/about/Sustainability"));
+const SizeGuide = lazy(() => import("./pages/about/SizeGuide"));
+const CustomerCare = lazy(() => import("./pages/about/CustomerCare"));
+const StoreLocator = lazy(() => import("./pages/about/StoreLocator"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const TermsOfService = lazy(() => import("./pages/TermsOfService"));
+const NotFound = lazy(() => import("./pages/NotFound"));
 
 const queryClient = new QueryClient();
 
@@ -46,20 +47,22 @@ const App = () => {
           <Sonner />
           <BrowserRouter>
             <ScrollToTop />
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/category/:category" element={<Category />} />
-              <Route path="/search" element={<Search />} />
-              <Route path="/product/:slug" element={<ProductDetail />} />
-              <Route path="/about/our-story" element={<OurStory />} />
-              <Route path="/about/sustainability" element={<Sustainability />} />
-              <Route path="/about/size-guide" element={<SizeGuide />} />
-              <Route path="/about/customer-care" element={<CustomerCare />} />
-              <Route path="/about/store-locator" element={<StoreLocator />} />
-              <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-              <Route path="/terms-of-service" element={<TermsOfService />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
+            <Suspense>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/category/:category" element={<Category />} />
+                <Route path="/search" element={<Search />} />
+                <Route path="/product/:slug" element={<ProductDetail />} />
+                <Route path="/about/our-story" element={<OurStory />} />
+                <Route path="/about/sustainability" element={<Sustainability />} />
+                <Route path="/about/size-guide" element={<SizeGuide />} />
+                <Route path="/about/customer-care" element={<CustomerCare />} />
+                <Route path="/about/store-locator" element={<StoreLocator />} />
+                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                <Route path="/terms-of-service" element={<TermsOfService />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
           </BrowserRouter>
         </TooltipProvider>
       </WishlistProvider>

@@ -1,15 +1,15 @@
+import { Image } from "@unpic/react";
 import heroImage from "@/assets/hero-image.jpg";
 
 const LargeHero = () => {
   return (
     <section className="w-full mb-16 px-6">
       <div className="w-full aspect-[16/9] mb-3 overflow-hidden">
-        <img
+        <Image
           src={heroImage}
           alt="Modern jewelry collection"
+          layout="fullWidth"
           className="w-full h-full object-cover"
-          loading="lazy"
-          decoding="async"
         />
       </div>
       <div className="">

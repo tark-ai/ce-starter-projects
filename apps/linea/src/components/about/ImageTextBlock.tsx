@@ -1,3 +1,5 @@
+import { Image } from "@unpic/react";
+
 interface ImageTextBlockProps {
   image: string;
   imageAlt: string;
@@ -18,12 +20,11 @@ const ImageTextBlock = ({
       className={`flex flex-col ${imagePosition === "right" ? "lg:flex-row-reverse" : "lg:flex-row"} gap-12 items-center`}
     >
       <div className="flex-1">
-        <img
+        <Image
           src={image}
           alt={imageAlt}
+          layout="fullWidth"
           className="w-full aspect-square lg:aspect-auto lg:h-[800px] object-cover"
-          loading="lazy"
-          decoding="async"
         />
       </div>
       <div className="flex-1 space-y-6">

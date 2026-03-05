@@ -1,5 +1,6 @@
 import { useCheckout } from "@commercengine/checkout/react";
 import { Link, useNavigate } from "@tanstack/react-router";
+import { Image as UnpicImage } from "@unpic/react";
 import { ArrowRight, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import arcusBracelet from "@/assets/arcus-bracelet.jpg";
@@ -314,11 +315,11 @@ const Navigation = () => {
                         params={linkParams as never}
                         className="w-[400px] h-[280px] cursor-pointer group relative overflow-hidden block"
                       >
-                        <img
+                        <UnpicImage
                           src={image.src}
                           alt={image.alt}
+                          layout="fullWidth"
                           className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-90"
-                          decoding="async"
                         />
                         <div className="absolute bottom-2 left-2 text-white text-xs font-light flex items-center gap-1">
                           <span>{image.label}</span>
@@ -475,9 +476,11 @@ const Navigation = () => {
                         onClick={() => setOffCanvasType(null)}
                         className="shrink-0"
                       >
-                        <img
-                          src={item.images?.[0]?.url_standard}
+                        <UnpicImage
+                          src={item.images?.[0]?.url_standard ?? ""}
                           alt={item.product_name}
+                          width={80}
+                          height={80}
                           className="w-20 h-20 object-cover bg-muted/10"
                         />
                       </Link>

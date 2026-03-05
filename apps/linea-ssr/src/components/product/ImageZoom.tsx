@@ -1,3 +1,4 @@
+import { Image } from "@unpic/react";
 import { X } from "lucide-react";
 import type * as React from "react";
 import { useEffect, useRef } from "react";
@@ -76,9 +77,10 @@ const ImageZoom = ({ images, initialIndex, isOpen, onClose }: ImageZoomProps) =>
         <div className="space-y-4">
           {images.map((image) => (
             <div key={image} className="w-full flex justify-center">
-              <img
+              <Image
                 src={image}
                 alt="Product view"
+                layout="fullWidth"
                 className="w-full max-w-none object-cover animate-scale-in"
               />
             </div>

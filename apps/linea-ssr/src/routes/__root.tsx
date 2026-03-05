@@ -1,3 +1,4 @@
+import dmSansCss from "@fontsource-variable/dm-sans/index.css?url";
 import type { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { StorefrontInitializer } from "@/components/StorefrontInitializer";
@@ -23,17 +24,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
       { name: "author", content: "Commerce Engine" },
     ],
     links: [
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      {
-        rel: "preconnect",
-        href: "https://fonts.gstatic.com",
-        crossOrigin: "anonymous",
-      },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap",
-      },
       { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "stylesheet", href: dmSansCss },
       { rel: "stylesheet", href: appCss },
     ],
   }),

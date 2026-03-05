@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { Image } from "@unpic/react";
 import earringsCollection from "@/assets/earrings-collection.jpg";
 import linkBracelet from "@/assets/link-bracelet.jpg";
 
@@ -9,12 +10,13 @@ const FiftyFiftySection = () => {
         <div>
           <Link to="/category/$category" params={{ category: "earrings" }} className="block">
             <div className="w-full aspect-square mb-3 overflow-hidden">
-              <img
+              <Image
                 src={earringsCollection}
                 alt="Earrings collection"
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                layout="fullWidth"
+                loading="eager"
                 fetchPriority="high"
-                decoding="async"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
           </Link>
@@ -29,12 +31,11 @@ const FiftyFiftySection = () => {
         <div>
           <Link to="/category/$category" params={{ category: "bracelets" }} className="block">
             <div className="w-full aspect-square mb-3 overflow-hidden">
-              <img
+              <Image
                 src={linkBracelet}
                 alt="Chain link bracelet"
+                layout="fullWidth"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-                loading="lazy"
-                decoding="async"
               />
             </div>
           </Link>

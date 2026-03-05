@@ -1,5 +1,6 @@
 import type { Item, Pagination as PaginationType } from "@commercengine/storefront-sdk";
 import { Link } from "@tanstack/react-router";
+import { Image } from "@unpic/react";
 import { Card, CardContent } from "@/components/ui/card";
 import WishlistButton from "@/components/WishlistButton";
 import { formatPrice } from "@/lib/format";
@@ -50,19 +51,17 @@ const ProductGrid = ({ skus, isLoading, pagination, onPageChange }: ProductGridP
             <Card className="border-none shadow-none bg-transparent group cursor-pointer">
               <CardContent className="p-0">
                 <div className="aspect-square mb-3 overflow-hidden bg-muted/10 relative">
-                  <img
-                    src={item.images?.[0]?.url_standard}
+                  <Image
+                    src={item.images?.[0]?.url_standard ?? ""}
                     alt={item.images?.[0]?.alternate_text || item.product_name}
+                    layout="fullWidth"
                     className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-0"
-                    loading="lazy"
-                    decoding="async"
                   />
-                  <img
-                    src={item.images?.[1]?.url_standard || item.images?.[0]?.url_standard}
+                  <Image
+                    src={item.images?.[1]?.url_standard || item.images?.[0]?.url_standard || ""}
                     alt={`${item.product_name} alternate`}
+                    layout="fullWidth"
                     className="absolute inset-0 w-full h-full object-cover transition-all duration-300 opacity-0 group-hover:opacity-100"
-                    loading="lazy"
-                    decoding="async"
                   />
                   <div className="absolute inset-0 bg-black/[0.03]" />
                   <WishlistButton
