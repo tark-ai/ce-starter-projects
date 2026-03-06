@@ -149,7 +149,7 @@ const Category = () => {
             itemListElement: skus.slice(0, 20).map((item, i) => ({
               "@type": "ListItem",
               position: i + 1,
-              url: `${SITE_URL}/product/${item.slug}`,
+              url: `${SITE_URL}/product/${item.product_slug}`,
               name: item.product_name,
             })),
           },

@@ -177,7 +177,7 @@ export function useProductDetail(slug: string): UseProductDetailResult {
   const query = useQuery({
     queryKey: ["productDetail", slug],
     queryFn: async () => {
-      const { data, error } = await sdk.catalog.getProductDetail({ product_id_or_slug: slug });
+      const { data, error } = await sdk.catalog.getProductDetail({ product_id: slug });
       if (error) throw new Error(error.message);
       return data;
     },

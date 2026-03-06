@@ -8,270 +8,270 @@
 // You should NOT make any changes in this file as it will be overwritten.
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
-import { Route as rootRouteImport } from "./routes/__root";
-import { Route as AboutCustomerCareRouteImport } from "./routes/about/customer-care";
-import { Route as AboutOurStoryRouteImport } from "./routes/about/our-story";
-import { Route as AboutSizeGuideRouteImport } from "./routes/about/size-guide";
-import { Route as AboutStoreLocatorRouteImport } from "./routes/about/store-locator";
-import { Route as AboutSustainabilityRouteImport } from "./routes/about/sustainability";
-import { Route as CategoryCategoryRouteImport } from "./routes/category/$category";
-import { Route as IndexRouteImport } from "./routes/index";
-import { Route as PrivacyPolicyRouteImport } from "./routes/privacy-policy";
-import { Route as ProductSlugRouteImport } from "./routes/product/$slug";
-import { Route as SearchIndexRouteImport } from "./routes/search/index";
-import { Route as SitemapDotxmlRouteImport } from "./routes/sitemap[.]xml";
-import { Route as TermsOfServiceRouteImport } from "./routes/terms-of-service";
+import { Route as rootRouteImport } from './routes/__root'
+import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
+import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as PrivacyPolicyRouteImport } from './routes/privacy-policy'
+import { Route as IndexRouteImport } from './routes/index'
+import { Route as SearchIndexRouteImport } from './routes/search/index'
+import { Route as ProductSlugRouteImport } from './routes/product/$slug'
+import { Route as CategoryCategoryRouteImport } from './routes/category/$category'
+import { Route as AboutSustainabilityRouteImport } from './routes/about/sustainability'
+import { Route as AboutStoreLocatorRouteImport } from './routes/about/store-locator'
+import { Route as AboutSizeGuideRouteImport } from './routes/about/size-guide'
+import { Route as AboutOurStoryRouteImport } from './routes/about/our-story'
+import { Route as AboutCustomerCareRouteImport } from './routes/about/customer-care'
 
 const TermsOfServiceRoute = TermsOfServiceRouteImport.update({
-  id: "/terms-of-service",
-  path: "/terms-of-service",
+  id: '/terms-of-service',
+  path: '/terms-of-service',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: "/sitemap.xml",
-  path: "/sitemap.xml",
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const PrivacyPolicyRoute = PrivacyPolicyRouteImport.update({
-  id: "/privacy-policy",
-  path: "/privacy-policy",
+  id: '/privacy-policy',
+  path: '/privacy-policy',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const IndexRoute = IndexRouteImport.update({
-  id: "/",
-  path: "/",
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const SearchIndexRoute = SearchIndexRouteImport.update({
-  id: "/search/",
-  path: "/search/",
+  id: '/search/',
+  path: '/search/',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const ProductSlugRoute = ProductSlugRouteImport.update({
-  id: "/product/$slug",
-  path: "/product/$slug",
+  id: '/product/$slug',
+  path: '/product/$slug',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const CategoryCategoryRoute = CategoryCategoryRouteImport.update({
-  id: "/category/$category",
-  path: "/category/$category",
+  id: '/category/$category',
+  path: '/category/$category',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AboutSustainabilityRoute = AboutSustainabilityRouteImport.update({
-  id: "/about/sustainability",
-  path: "/about/sustainability",
+  id: '/about/sustainability',
+  path: '/about/sustainability',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AboutStoreLocatorRoute = AboutStoreLocatorRouteImport.update({
-  id: "/about/store-locator",
-  path: "/about/store-locator",
+  id: '/about/store-locator',
+  path: '/about/store-locator',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AboutSizeGuideRoute = AboutSizeGuideRouteImport.update({
-  id: "/about/size-guide",
-  path: "/about/size-guide",
+  id: '/about/size-guide',
+  path: '/about/size-guide',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AboutOurStoryRoute = AboutOurStoryRouteImport.update({
-  id: "/about/our-story",
-  path: "/about/our-story",
+  id: '/about/our-story',
+  path: '/about/our-story',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 const AboutCustomerCareRoute = AboutCustomerCareRouteImport.update({
-  id: "/about/customer-care",
-  path: "/about/customer-care",
+  id: '/about/customer-care',
+  path: '/about/customer-care',
   getParentRoute: () => rootRouteImport,
-} as any);
+} as any)
 
 export interface FileRoutesByFullPath {
-  "/": typeof IndexRoute;
-  "/privacy-policy": typeof PrivacyPolicyRoute;
-  "/sitemap.xml": typeof SitemapDotxmlRoute;
-  "/terms-of-service": typeof TermsOfServiceRoute;
-  "/about/customer-care": typeof AboutCustomerCareRoute;
-  "/about/our-story": typeof AboutOurStoryRoute;
-  "/about/size-guide": typeof AboutSizeGuideRoute;
-  "/about/store-locator": typeof AboutStoreLocatorRoute;
-  "/about/sustainability": typeof AboutSustainabilityRoute;
-  "/category/$category": typeof CategoryCategoryRoute;
-  "/product/$slug": typeof ProductSlugRoute;
-  "/search/": typeof SearchIndexRoute;
+  '/': typeof IndexRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
+  '/about/customer-care': typeof AboutCustomerCareRoute
+  '/about/our-story': typeof AboutOurStoryRoute
+  '/about/size-guide': typeof AboutSizeGuideRoute
+  '/about/store-locator': typeof AboutStoreLocatorRoute
+  '/about/sustainability': typeof AboutSustainabilityRoute
+  '/category/$category': typeof CategoryCategoryRoute
+  '/product/$slug': typeof ProductSlugRoute
+  '/search/': typeof SearchIndexRoute
 }
 export interface FileRoutesByTo {
-  "/": typeof IndexRoute;
-  "/privacy-policy": typeof PrivacyPolicyRoute;
-  "/sitemap.xml": typeof SitemapDotxmlRoute;
-  "/terms-of-service": typeof TermsOfServiceRoute;
-  "/about/customer-care": typeof AboutCustomerCareRoute;
-  "/about/our-story": typeof AboutOurStoryRoute;
-  "/about/size-guide": typeof AboutSizeGuideRoute;
-  "/about/store-locator": typeof AboutStoreLocatorRoute;
-  "/about/sustainability": typeof AboutSustainabilityRoute;
-  "/category/$category": typeof CategoryCategoryRoute;
-  "/product/$slug": typeof ProductSlugRoute;
-  "/search": typeof SearchIndexRoute;
+  '/': typeof IndexRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
+  '/about/customer-care': typeof AboutCustomerCareRoute
+  '/about/our-story': typeof AboutOurStoryRoute
+  '/about/size-guide': typeof AboutSizeGuideRoute
+  '/about/store-locator': typeof AboutStoreLocatorRoute
+  '/about/sustainability': typeof AboutSustainabilityRoute
+  '/category/$category': typeof CategoryCategoryRoute
+  '/product/$slug': typeof ProductSlugRoute
+  '/search': typeof SearchIndexRoute
 }
 export interface FileRoutesById {
-  __root__: typeof rootRouteImport;
-  "/": typeof IndexRoute;
-  "/privacy-policy": typeof PrivacyPolicyRoute;
-  "/sitemap.xml": typeof SitemapDotxmlRoute;
-  "/terms-of-service": typeof TermsOfServiceRoute;
-  "/about/customer-care": typeof AboutCustomerCareRoute;
-  "/about/our-story": typeof AboutOurStoryRoute;
-  "/about/size-guide": typeof AboutSizeGuideRoute;
-  "/about/store-locator": typeof AboutStoreLocatorRoute;
-  "/about/sustainability": typeof AboutSustainabilityRoute;
-  "/category/$category": typeof CategoryCategoryRoute;
-  "/product/$slug": typeof ProductSlugRoute;
-  "/search/": typeof SearchIndexRoute;
+  __root__: typeof rootRouteImport
+  '/': typeof IndexRoute
+  '/privacy-policy': typeof PrivacyPolicyRoute
+  '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/terms-of-service': typeof TermsOfServiceRoute
+  '/about/customer-care': typeof AboutCustomerCareRoute
+  '/about/our-story': typeof AboutOurStoryRoute
+  '/about/size-guide': typeof AboutSizeGuideRoute
+  '/about/store-locator': typeof AboutStoreLocatorRoute
+  '/about/sustainability': typeof AboutSustainabilityRoute
+  '/category/$category': typeof CategoryCategoryRoute
+  '/product/$slug': typeof ProductSlugRoute
+  '/search/': typeof SearchIndexRoute
 }
 export interface FileRouteTypes {
-  fileRoutesByFullPath: FileRoutesByFullPath;
+  fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | "/"
-    | "/privacy-policy"
-    | "/sitemap.xml"
-    | "/terms-of-service"
-    | "/about/customer-care"
-    | "/about/our-story"
-    | "/about/size-guide"
-    | "/about/store-locator"
-    | "/about/sustainability"
-    | "/category/$category"
-    | "/product/$slug"
-    | "/search/";
-  fileRoutesByTo: FileRoutesByTo;
+    | '/'
+    | '/privacy-policy'
+    | '/sitemap.xml'
+    | '/terms-of-service'
+    | '/about/customer-care'
+    | '/about/our-story'
+    | '/about/size-guide'
+    | '/about/store-locator'
+    | '/about/sustainability'
+    | '/category/$category'
+    | '/product/$slug'
+    | '/search/'
+  fileRoutesByTo: FileRoutesByTo
   to:
-    | "/"
-    | "/privacy-policy"
-    | "/sitemap.xml"
-    | "/terms-of-service"
-    | "/about/customer-care"
-    | "/about/our-story"
-    | "/about/size-guide"
-    | "/about/store-locator"
-    | "/about/sustainability"
-    | "/category/$category"
-    | "/product/$slug"
-    | "/search";
+    | '/'
+    | '/privacy-policy'
+    | '/sitemap.xml'
+    | '/terms-of-service'
+    | '/about/customer-care'
+    | '/about/our-story'
+    | '/about/size-guide'
+    | '/about/store-locator'
+    | '/about/sustainability'
+    | '/category/$category'
+    | '/product/$slug'
+    | '/search'
   id:
-    | "__root__"
-    | "/"
-    | "/privacy-policy"
-    | "/sitemap.xml"
-    | "/terms-of-service"
-    | "/about/customer-care"
-    | "/about/our-story"
-    | "/about/size-guide"
-    | "/about/store-locator"
-    | "/about/sustainability"
-    | "/category/$category"
-    | "/product/$slug"
-    | "/search/";
-  fileRoutesById: FileRoutesById;
+    | '__root__'
+    | '/'
+    | '/privacy-policy'
+    | '/sitemap.xml'
+    | '/terms-of-service'
+    | '/about/customer-care'
+    | '/about/our-story'
+    | '/about/size-guide'
+    | '/about/store-locator'
+    | '/about/sustainability'
+    | '/category/$category'
+    | '/product/$slug'
+    | '/search/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  PrivacyPolicyRoute: typeof PrivacyPolicyRoute;
-  SitemapDotxmlRoute: typeof SitemapDotxmlRoute;
-  TermsOfServiceRoute: typeof TermsOfServiceRoute;
-  AboutCustomerCareRoute: typeof AboutCustomerCareRoute;
-  AboutOurStoryRoute: typeof AboutOurStoryRoute;
-  AboutSizeGuideRoute: typeof AboutSizeGuideRoute;
-  AboutStoreLocatorRoute: typeof AboutStoreLocatorRoute;
-  AboutSustainabilityRoute: typeof AboutSustainabilityRoute;
-  CategoryCategoryRoute: typeof CategoryCategoryRoute;
-  ProductSlugRoute: typeof ProductSlugRoute;
-  SearchIndexRoute: typeof SearchIndexRoute;
+  IndexRoute: typeof IndexRoute
+  PrivacyPolicyRoute: typeof PrivacyPolicyRoute
+  SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  TermsOfServiceRoute: typeof TermsOfServiceRoute
+  AboutCustomerCareRoute: typeof AboutCustomerCareRoute
+  AboutOurStoryRoute: typeof AboutOurStoryRoute
+  AboutSizeGuideRoute: typeof AboutSizeGuideRoute
+  AboutStoreLocatorRoute: typeof AboutStoreLocatorRoute
+  AboutSustainabilityRoute: typeof AboutSustainabilityRoute
+  CategoryCategoryRoute: typeof CategoryCategoryRoute
+  ProductSlugRoute: typeof ProductSlugRoute
+  SearchIndexRoute: typeof SearchIndexRoute
 }
 
-declare module "@tanstack/react-router" {
+declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    "/terms-of-service": {
-      id: "/terms-of-service";
-      path: "/terms-of-service";
-      fullPath: "/terms-of-service";
-      preLoaderRoute: typeof TermsOfServiceRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/sitemap.xml": {
-      id: "/sitemap.xml";
-      path: "/sitemap.xml";
-      fullPath: "/sitemap.xml";
-      preLoaderRoute: typeof SitemapDotxmlRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/privacy-policy": {
-      id: "/privacy-policy";
-      path: "/privacy-policy";
-      fullPath: "/privacy-policy";
-      preLoaderRoute: typeof PrivacyPolicyRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/": {
-      id: "/";
-      path: "/";
-      fullPath: "/";
-      preLoaderRoute: typeof IndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/search/": {
-      id: "/search/";
-      path: "/search";
-      fullPath: "/search/";
-      preLoaderRoute: typeof SearchIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/product/$slug": {
-      id: "/product/$slug";
-      path: "/product/$slug";
-      fullPath: "/product/$slug";
-      preLoaderRoute: typeof ProductSlugRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/category/$category": {
-      id: "/category/$category";
-      path: "/category/$category";
-      fullPath: "/category/$category";
-      preLoaderRoute: typeof CategoryCategoryRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/about/sustainability": {
-      id: "/about/sustainability";
-      path: "/about/sustainability";
-      fullPath: "/about/sustainability";
-      preLoaderRoute: typeof AboutSustainabilityRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/about/store-locator": {
-      id: "/about/store-locator";
-      path: "/about/store-locator";
-      fullPath: "/about/store-locator";
-      preLoaderRoute: typeof AboutStoreLocatorRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/about/size-guide": {
-      id: "/about/size-guide";
-      path: "/about/size-guide";
-      fullPath: "/about/size-guide";
-      preLoaderRoute: typeof AboutSizeGuideRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/about/our-story": {
-      id: "/about/our-story";
-      path: "/about/our-story";
-      fullPath: "/about/our-story";
-      preLoaderRoute: typeof AboutOurStoryRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
-    "/about/customer-care": {
-      id: "/about/customer-care";
-      path: "/about/customer-care";
-      fullPath: "/about/customer-care";
-      preLoaderRoute: typeof AboutCustomerCareRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+    '/terms-of-service': {
+      id: '/terms-of-service'
+      path: '/terms-of-service'
+      fullPath: '/terms-of-service'
+      preLoaderRoute: typeof TermsOfServiceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy-policy': {
+      id: '/privacy-policy'
+      path: '/privacy-policy'
+      fullPath: '/privacy-policy'
+      preLoaderRoute: typeof PrivacyPolicyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/search/': {
+      id: '/search/'
+      path: '/search'
+      fullPath: '/search/'
+      preLoaderRoute: typeof SearchIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/product/$slug': {
+      id: '/product/$slug'
+      path: '/product/$slug'
+      fullPath: '/product/$slug'
+      preLoaderRoute: typeof ProductSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/category/$category': {
+      id: '/category/$category'
+      path: '/category/$category'
+      fullPath: '/category/$category'
+      preLoaderRoute: typeof CategoryCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/sustainability': {
+      id: '/about/sustainability'
+      path: '/about/sustainability'
+      fullPath: '/about/sustainability'
+      preLoaderRoute: typeof AboutSustainabilityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/store-locator': {
+      id: '/about/store-locator'
+      path: '/about/store-locator'
+      fullPath: '/about/store-locator'
+      preLoaderRoute: typeof AboutStoreLocatorRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/size-guide': {
+      id: '/about/size-guide'
+      path: '/about/size-guide'
+      fullPath: '/about/size-guide'
+      preLoaderRoute: typeof AboutSizeGuideRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/our-story': {
+      id: '/about/our-story'
+      path: '/about/our-story'
+      fullPath: '/about/our-story'
+      preLoaderRoute: typeof AboutOurStoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about/customer-care': {
+      id: '/about/customer-care'
+      path: '/about/customer-care'
+      fullPath: '/about/customer-care'
+      preLoaderRoute: typeof AboutCustomerCareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -288,17 +288,16 @@ const rootRouteChildren: RootRouteChildren = {
   CategoryCategoryRoute: CategoryCategoryRoute,
   ProductSlugRoute: ProductSlugRoute,
   SearchIndexRoute: SearchIndexRoute,
-};
+}
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
-  ._addFileTypes<FileRouteTypes>();
+  ._addFileTypes<FileRouteTypes>()
 
-import type { createStart } from "@tanstack/react-start";
-import type { getRouter } from "./router.tsx";
-
-declare module "@tanstack/react-start" {
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
   interface Register {
-    ssr: true;
-    router: Awaited<ReturnType<typeof getRouter>>;
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
   }
 }

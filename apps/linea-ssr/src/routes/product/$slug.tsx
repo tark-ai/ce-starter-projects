@@ -153,9 +153,9 @@ function ProductDetailPage() {
 
   const variantFromUrl = useMemo(() => {
     if (!product?.has_variant) return null;
-    const variantId = search.variant;
-    if (!variantId) return null;
-    return product.variants.find((variant) => variant.id === variantId) ?? null;
+    const variantSlug = search.variant;
+    if (!variantSlug) return null;
+    return product.variants.find((variant) => variant.slug === variantSlug) ?? null;
   }, [product, search]);
 
   const selectedVariant = useMemo(() => {
@@ -178,8 +178,8 @@ function ProductDetailPage() {
 
     if (optionKeys.length === 0) {
       const bootstrapVariant = variantFromUrl ?? getDefaultVariant(product);
-      if (bootstrapVariant && nextSearch.variant !== bootstrapVariant.id) {
-        nextSearch.variant = bootstrapVariant.id;
+      if (bootstrapVariant && nextSearch.variant !== bootstrapVariant.slug) {
+        nextSearch.variant = bootstrapVariant.slug;
         changed = true;
       }
       if (changed) {
@@ -206,14 +206,14 @@ function ProductDetailPage() {
             changed = true;
           }
         }
-        if (nextSearch.variant !== bootstrapVariant.id) {
-          nextSearch.variant = bootstrapVariant.id;
+        if (nextSearch.variant !== bootstrapVariant.slug) {
+          nextSearch.variant = bootstrapVariant.slug;
           changed = true;
         }
       }
     } else if (selectedVariant) {
-      if (nextSearch.variant !== selectedVariant.id) {
-        nextSearch.variant = selectedVariant.id;
+      if (nextSearch.variant !== selectedVariant.slug) {
+        nextSearch.variant = selectedVariant.slug;
         changed = true;
       }
     } else if (variantFromUrl) {
@@ -266,7 +266,7 @@ function ProductDetailPage() {
 
       const matchedVariant = findVariantBySelection(product.variants, optionKeys, nextSelection);
       if (matchedVariant) {
-        nextSearch.variant = matchedVariant.id;
+        nextSearch.variant = matchedVariant.slug;
       } else {
         delete nextSearch.variant;
       }
@@ -303,12 +303,12 @@ function ProductDetailPage() {
                     <Link to="/">Home</Link>
                   </BreadcrumbLink>
                 </BreadcrumbItem>
-                {categoryName && (
+                {categoryName && categorySlug && (
                   <>
                     <BreadcrumbSeparator />
                     <BreadcrumbItem>
                       <BreadcrumbLink asChild>
-                        <Link to="/category/$category" params={{ category: categorySlug! }}>
+                        <Link to="/category/$category" params={{ category: categorySlug }}>
                           {categoryName}
                         </Link>
                       </BreadcrumbLink>

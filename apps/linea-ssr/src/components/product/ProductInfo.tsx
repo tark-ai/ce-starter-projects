@@ -197,12 +197,12 @@ const ProductInfo = ({
                 <Link to="/">Home</Link>
               </BreadcrumbLink>
             </BreadcrumbItem>
-            {categoryName && (
+            {categoryName && categorySlug && (
               <>
                 <BreadcrumbSeparator />
                 <BreadcrumbItem>
                   <BreadcrumbLink asChild>
-                    <Link to="/category/$category" params={{ category: categorySlug! }}>
+                    <Link to="/category/$category" params={{ category: categorySlug }}>
                       {categoryName}
                     </Link>
                   </BreadcrumbLink>

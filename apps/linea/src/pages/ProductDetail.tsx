@@ -51,9 +51,9 @@ const ProductDetail = () => {
 
   const variantFromUrl = useMemo(() => {
     if (!product?.has_variant) return null;
-    const variantId = searchParams.get("variant");
-    if (!variantId) return null;
-    return product.variants.find((variant) => variant.id === variantId) ?? null;
+    const variantSlug = searchParams.get("variant");
+    if (!variantSlug) return null;
+    return product.variants.find((variant) => variant.slug === variantSlug) ?? null;
   }, [product, searchParams]);
 
   const selectedVariant = useMemo(() => {
@@ -74,8 +74,8 @@ const ProductDetail = () => {
 
     if (optionKeys.length === 0) {
       const bootstrapVariant = variantFromUrl ?? getDefaultVariant(product);
-      if (bootstrapVariant && nextParams.get("variant") !== bootstrapVariant.id) {
-        nextParams.set("variant", bootstrapVariant.id);
+      if (bootstrapVariant && nextParams.get("variant") !== bootstrapVariant.slug) {
+        nextParams.set("variant", bootstrapVariant.slug);
         changed = true;
       }
       if (changed) {
@@ -97,14 +97,14 @@ const ProductDetail = () => {
             changed = true;
           }
         }
-        if (nextParams.get("variant") !== bootstrapVariant.id) {
-          nextParams.set("variant", bootstrapVariant.id);
+        if (nextParams.get("variant") !== bootstrapVariant.slug) {
+          nextParams.set("variant", bootstrapVariant.slug);
           changed = true;
         }
       }
     } else if (selectedVariant) {
-      if (nextParams.get("variant") !== selectedVariant.id) {
-        nextParams.set("variant", selectedVariant.id);
+      if (nextParams.get("variant") !== selectedVariant.slug) {
+        nextParams.set("variant", selectedVariant.slug);
         changed = true;
       }
     } else if (variantFromUrl) {
@@ -152,7 +152,7 @@ const ProductDetail = () => {
 
       const matchedVariant = findVariantBySelection(product.variants, optionKeys, nextSelection);
       if (matchedVariant) {
-        nextParams.set("variant", matchedVariant.id);
+        nextParams.set("variant", matchedVariant.slug);
       } else {
         nextParams.delete("variant");
       }

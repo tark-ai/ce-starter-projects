@@ -22,7 +22,7 @@ export const fetchProductDetail = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     await ensureAuth();
     const { data: result, error } = await sdk.catalog.getProductDetail({
-      product_id_or_slug: data,
+      product_id: data,
     });
     if (error) throw new Error(error.message);
     return result?.product ?? null;

@@ -21,7 +21,7 @@ function getDisplayProps(p: Product | Item) {
     return {
       id: p.product_id,
       name: p.product_name,
-      linkParam: p.product_id,
+      linkParam: p.product_slug,
       images: p.images,
       categoryName: p.categories?.[0]?.name,
       price: p.pricing.selling_price,
