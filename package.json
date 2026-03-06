@@ -19,10 +19,20 @@
     "format": "turbo run format",
     "check": "turbo run check",
     "check:fix": "turbo run check:fix",
-    "typecheck": "turbo run typecheck"
+    "typecheck": "turbo run typecheck",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{js,ts,jsx,tsx,json,css,md}": [
+      "biome format --write --no-errors-on-unmatched",
+      "biome check --write --no-errors-on-unmatched"
+    ],
+    "*.{ts,tsx}": "bash -c 'bunx turbo run typecheck'"
   },
   "devDependencies": {
     "@biomejs/biome": "latest",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.2",
     "turbo": "latest"
   }
 }
