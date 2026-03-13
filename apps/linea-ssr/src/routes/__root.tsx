@@ -6,7 +6,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import appCss from "@/index.css?url";
-import { ensureServerAuth } from "@/lib/server-fns/auth";
 import { WishlistProvider } from "@/lib/wishlist";
 
 interface RouterContext {
@@ -14,9 +13,6 @@ interface RouterContext {
 }
 
 export const Route = createRootRouteWithContext<RouterContext>()({
-  beforeLoad: async () => {
-    await ensureServerAuth();
-  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },

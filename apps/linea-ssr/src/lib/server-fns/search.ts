@@ -1,6 +1,6 @@
-import type { SearchProductsBody } from "@commercengine/storefront-sdk";
+import type { SearchProductsBody } from "@commercengine/storefront";
 import { createServerFn } from "@tanstack/react-start";
-import { ensureAuth, sdk } from "@/lib/storefront";
+import { storefront } from "@/lib/storefront";
 
 export const searchProducts = createServerFn({ method: "POST" })
   .inputValidator(
@@ -14,7 +14,7 @@ export const searchProducts = createServerFn({ method: "POST" })
     }) => d
   )
   .handler(async ({ data }) => {
-    await ensureAuth();
+    const sdk = storefront.publicStorefront();
     const body: SearchProductsBody = {
       query: data.query ?? "",
       page: data.page ?? 1,

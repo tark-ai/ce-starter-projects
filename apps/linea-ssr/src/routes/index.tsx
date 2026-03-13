@@ -6,15 +6,17 @@ import OneThirdTwoThirdsSection from "@/components/content/OneThirdTwoThirdsSect
 import ProductCarousel from "@/components/content/ProductCarousel";
 import Footer from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
-import { fetchProducts } from "@/lib/server-fns/catalog";
+import { storefront } from "@/lib/storefront";
 
 const SITE_URL = "https://linea-static.demo.commercengine.io";
 const SITE_NAME = "Linea";
 
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const result = await fetchProducts({ data: { page: 1, limit: 20 } });
-    return { products: result?.products ?? [] };
+    const sdk = storefront.publicStorefront();
+    const { data, error } = await sdk.catalog.listProducts({ page: 1, limit: 20 });
+    if (error) throw new Error(error.message);
+    return { products: data?.products ?? [] };
   },
   head: () => ({
     meta: [

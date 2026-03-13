@@ -33,7 +33,7 @@ const Navigation = () => {
     if (!trimmed) return;
     setIsSearchOpen(false);
     setSearchQuery("");
-    navigate({ to: "/search", search: { q: trimmed } });
+    navigate({ to: "/search", search: () => ({ q: trimmed }) });
   };
 
   // Preload dropdown images for faster display

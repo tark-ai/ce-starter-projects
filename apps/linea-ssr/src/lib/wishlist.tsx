@@ -1,4 +1,4 @@
-import type { Item } from "@commercengine/storefront-sdk";
+import type { Item } from "@commercengine/storefront";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useRef } from "react";
 import {
@@ -6,6 +6,7 @@ import {
   fetchWishlist,
   removeFromWishlist as removeWishlistItem,
 } from "./server-fns/wishlist";
+import { ensureClientSessionBootstrapped } from "./session-bootstrap";
 
 type OnAddListener = () => void;
 
@@ -20,16 +21,20 @@ interface WishlistContextValue {
 }
 
 const WishlistContext = createContext<WishlistContextValue | null>(null);
-
 const WISHLIST_KEY = ["wishlist"];
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const addListeners = useRef(new Set<OnAddListener>());
+  const isClient = typeof window !== "undefined";
 
   const { data, isLoading } = useQuery({
     queryKey: WISHLIST_KEY,
-    queryFn: () => fetchWishlist(),
+    queryFn: async () => {
+      await ensureClientSessionBootstrapped();
+      return fetchWishlist();
+    },
+    enabled: isClient,
   });
 
   const items = data?.products ?? [];
@@ -41,7 +46,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     }: {
       productId: string;
       variantId?: string | null;
-    }) => addToWishlist({ data: { productId, variantId } }),
+    }) => {
+      await ensureClientSessionBootstrapped();
+      return addToWishlist({ data: { productId, variantId } });
+    },
     onSuccess: (data) => {
       queryClient.setQueryData(WISHLIST_KEY, data);
       for (const fn of addListeners.current) fn();
@@ -55,7 +63,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     }: {
       productId: string;
       variantId?: string | null;
-    }) => removeWishlistItem({ data: { productId, variantId } }),
+    }) => {
+      await ensureClientSessionBootstrapped();
+      return removeWishlistItem({ data: { productId, variantId } });
+    },
     onSuccess: (data) => {
       queryClient.setQueryData(WISHLIST_KEY, data);
     },

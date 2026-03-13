@@ -1,4 +1,4 @@
-import type { ProductImage } from "@commercengine/storefront-sdk";
+import type { ProductImage } from "@commercengine/storefront";
 import { Image } from "@unpic/react";
 import type * as React from "react";
 import { useRef, useState } from "react";

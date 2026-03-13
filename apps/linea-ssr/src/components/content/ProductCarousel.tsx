@@ -1,4 +1,4 @@
-import type { Item, Product } from "@commercengine/storefront-sdk";
+import type { Item, Product } from "@commercengine/storefront";
 import { Link } from "@tanstack/react-router";
 import { Image } from "@unpic/react";
 import { Card, CardContent } from "@/components/ui/card";

@@ -1,4 +1,4 @@
-import type { Item, Product } from "@commercengine/storefront-sdk";
+import type { Item, Product } from "@commercengine/storefront";
 import { Image } from "@unpic/react";
 import { Link } from "react-router-dom";
 import { Card, CardContent } from "@/components/ui/card";

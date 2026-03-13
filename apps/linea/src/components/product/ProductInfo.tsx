@@ -1,5 +1,5 @@
 import { useCheckout } from "@commercengine/checkout/react";
-import type { Product, VariantOption } from "@commercengine/storefront-sdk";
+import type { Product, VariantOption } from "@commercengine/storefront";
 import { Heart, Minus, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";

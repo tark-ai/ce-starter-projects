@@ -4,7 +4,7 @@ import type {
   Pagination,
   Product,
   SearchProductsBody,
-} from "@commercengine/storefront-sdk";
+} from "@commercengine/storefront";
 import { useQuery } from "@tanstack/react-query";
 import {
   fetchCategories,
@@ -14,8 +14,6 @@ import {
   fetchSimilarProducts,
 } from "./server-fns/catalog";
 import { searchProducts } from "./server-fns/search";
-
-// --- List Products (simple listing, e.g. home carousel) ---
 
 interface UseProductsOptions {
   page?: number;
@@ -46,8 +44,6 @@ export function useProducts(options: UseProductsOptions = {}): UseProductsResult
   };
 }
 
-// --- List SKUs (category pages, flat grid without facets) ---
-
 interface UseListSkusOptions {
   page?: number;
   limit?: number;
@@ -76,8 +72,6 @@ export function useListSkus(options: UseListSkusOptions = {}): UseListSkusResult
     isLoading: rqQuery.isLoading,
   };
 }
-
-// --- Search Products (faceted filtering) ---
 
 interface UseSearchProductsOptions {
   query?: string;
@@ -141,8 +135,6 @@ export function useSearchProducts(options: UseSearchProductsOptions = {}): UseSe
   };
 }
 
-// --- Similar Products ---
-
 interface UseSimilarProductsResult {
   items: Item[];
   isLoading: boolean;
@@ -161,8 +153,6 @@ export function useSimilarProducts(productId: string): UseSimilarProductsResult 
   };
 }
 
-// --- Product Detail (by slug or ID) ---
-
 interface UseProductDetailResult {
   product: Product | undefined;
   isLoading: boolean;
@@ -180,8 +170,6 @@ export function useProductDetail(slug: string): UseProductDetailResult {
     isLoading: query.isLoading,
   };
 }
-
-// --- Categories ---
 
 interface UseCategoriesResult {
   categories: Category[];

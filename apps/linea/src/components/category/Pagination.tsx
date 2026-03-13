@@ -1,4 +1,4 @@
-import type { Pagination as PaginationType } from "@commercengine/storefront-sdk";
+import type { Pagination as PaginationType } from "@commercengine/storefront";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 

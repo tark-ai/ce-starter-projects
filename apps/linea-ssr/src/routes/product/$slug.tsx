@@ -14,7 +14,7 @@ import {
   BreadcrumbPage,
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
-import { fetchProductDetail } from "@/lib/server-fns/catalog";
+import { storefront } from "@/lib/storefront";
 import {
   findVariantBySelection,
   getDefaultVariant,
@@ -29,7 +29,10 @@ const SITE_NAME = "Linea";
 export const Route = createFileRoute("/product/$slug")({
   validateSearch: (search: Record<string, unknown>) => search as Record<string, string>,
   loader: async ({ params }) => {
-    const product = await fetchProductDetail({ data: params.slug });
+    const sdk = storefront.publicStorefront();
+    const { data, error } = await sdk.catalog.getProductDetail({ product_id: params.slug });
+    if (error) throw new Error(error.message);
+    const product = data?.product;
     if (!product) throw notFound();
     return { product };
   },
@@ -186,7 +189,7 @@ function ProductDetailPage() {
         navigate({
           to: "/product/$slug",
           params: { slug },
-          search: nextSearch,
+          search: () => nextSearch,
           replace: true,
         });
       }

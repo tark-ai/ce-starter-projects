@@ -1,23 +1,28 @@
 import { initCheckout } from "@commercengine/checkout";
 import { destroyCheckout } from "@commercengine/checkout/react";
 import { useEffect } from "react";
-import { ensureServerAuth } from "@/lib/server-fns/auth";
-import { sdk, tokenStorage } from "@/lib/storefront";
+import { ensureClientSessionBootstrapped } from "@/lib/session-bootstrap";
+import { storefront } from "@/lib/storefront";
 
 /**
- * Client-side initialization component. Placed in __root.tsx.
+ * Canonical client bootstrap for the starter app.
  *
- * 1. Ensures anonymous auth tokens exist via a server function
- * 2. Initializes hosted checkout with the current tokens
- * 3. Sets up two-way token sync between SDK and checkout
+ * 1. Explicitly establishes the storefront session on first load.
+ * 2. Initializes hosted checkout with the current SDK tokens.
+ * 3. Keeps checkout and storefront tokens synchronized.
+ *
+ * Public prerendered reads use `storefront.publicStorefront()`.
+ * Session-bound flows should rely on this eager bootstrap before they
+ * trigger server functions that depend on a persisted session cookie.
  */
 export function StorefrontInitializer() {
   useEffect(() => {
     const init = async () => {
-      await ensureServerAuth();
+      await ensureClientSessionBootstrapped();
 
-      const accessToken = await tokenStorage.getAccessToken();
-      const refreshToken = await tokenStorage.getRefreshToken();
+      const sdk = storefront.clientStorefront();
+      const accessToken = await sdk.getAccessToken();
+      const refreshToken = await sdk.session.peekRefreshToken();
 
       initCheckout({
         storeId: import.meta.env.VITE_STORE_ID,
@@ -30,13 +35,12 @@ export function StorefrontInitializer() {
         accessToken: accessToken ?? undefined,
         refreshToken: refreshToken ?? undefined,
         onTokensUpdated: ({ accessToken, refreshToken }) => {
-          // checkout -> SDK: keep SDK in sync when checkout tokens change
-          sdk.setTokens(accessToken, refreshToken);
+          void sdk.setTokens(accessToken, refreshToken);
         },
       });
     };
 
-    init();
+    void init();
 
     return () => {
       destroyCheckout();

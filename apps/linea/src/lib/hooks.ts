@@ -4,7 +4,7 @@ import type {
   Pagination,
   Product,
   SearchProductsBody,
-} from "@commercengine/storefront-sdk";
+} from "@commercengine/storefront";
 import { useQuery } from "@tanstack/react-query";
 import { sdk } from "./storefront";
 

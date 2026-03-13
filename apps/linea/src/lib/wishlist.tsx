@@ -1,4 +1,4 @@
-import type { Item } from "@commercengine/storefront-sdk";
+import type { Item } from "@commercengine/storefront";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createContext, type ReactNode, useCallback, useContext, useMemo, useRef } from "react";
 import { sdk } from "./storefront";

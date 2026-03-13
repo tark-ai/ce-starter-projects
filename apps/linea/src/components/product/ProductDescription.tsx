@@ -1,4 +1,4 @@
-import type { Product } from "@commercengine/storefront-sdk";
+import type { Product } from "@commercengine/storefront";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";

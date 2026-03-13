@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { ensureAuth, sdk } from "@/lib/storefront";
+import { storefront } from "@/lib/storefront";
 
 const SITE_URL = "https://linea-static.demo.commercengine.io";
 
@@ -7,7 +7,7 @@ export const Route = createFileRoute("/sitemap.xml")({
   server: {
     handlers: {
       GET: async () => {
-        await ensureAuth();
+        const sdk = storefront.publicStorefront();
 
         const [categoriesResult, productsResult] = await Promise.all([
           sdk.catalog.listCategories(),

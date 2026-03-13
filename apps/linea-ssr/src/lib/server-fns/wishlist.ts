@@ -1,9 +1,15 @@
-import type { Item } from "@commercengine/storefront-sdk";
+import type { Item, SessionStorefrontSDK } from "@commercengine/storefront";
 import { createServerFn } from "@tanstack/react-start";
-import { ensureAuth, sdk } from "@/lib/storefront";
+import { storefront } from "@/lib/storefront";
+
+async function getWishlistSessionStorefront(): Promise<SessionStorefrontSDK> {
+  const sdk = await storefront.serverStorefront();
+  await sdk.ensureAccessToken();
+  return sdk;
+}
 
 export const fetchWishlist = createServerFn({ method: "GET" }).handler(async () => {
-  await ensureAuth();
+  const sdk = await getWishlistSessionStorefront();
   const userId = await sdk.getUserId();
 
   if (!userId) {
@@ -19,7 +25,7 @@ export const fetchWishlist = createServerFn({ method: "GET" }).handler(async () 
 export const addToWishlist = createServerFn({ method: "POST" })
   .inputValidator((d: { productId: string; variantId?: string | null }) => d)
   .handler(async ({ data }) => {
-    await ensureAuth();
+    const sdk = await getWishlistSessionStorefront();
     const userId = await sdk.getUserId();
     if (!userId) throw new Error("Not authenticated");
 
@@ -35,7 +41,7 @@ export const addToWishlist = createServerFn({ method: "POST" })
 export const removeFromWishlist = createServerFn({ method: "POST" })
   .inputValidator((d: { productId: string; variantId?: string | null }) => d)
   .handler(async ({ data }) => {
-    await ensureAuth();
+    const sdk = await getWishlistSessionStorefront();
     const userId = await sdk.getUserId();
     if (!userId) throw new Error("Not authenticated");
 

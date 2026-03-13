@@ -1,4 +1,4 @@
-import type { AssociatedOption, Product, Variant } from "@commercengine/storefront-sdk";
+import type { AssociatedOption, Product, Variant } from "@commercengine/storefront";
 
 export type AssociatedOptionValue = AssociatedOption[string];
 

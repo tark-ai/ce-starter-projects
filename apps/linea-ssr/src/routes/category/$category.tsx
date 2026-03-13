@@ -6,7 +6,7 @@ import ProductGrid from "@/components/category/ProductGrid";
 import Footer from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
 import { useCategories, useListSkus, useSearchProducts } from "@/lib/hooks";
-import { fetchCategories, fetchListSkus } from "@/lib/server-fns/catalog";
+import { storefront } from "@/lib/storefront";
 
 const SITE_URL = "https://linea-static.demo.commercengine.io";
 const SITE_NAME = "Linea";
@@ -47,8 +47,11 @@ function buildFilter(
 
 export const Route = createFileRoute("/category/$category")({
   loader: async ({ params }) => {
-    const categories = await fetchCategories();
-    const matched = (categories ?? []).find((c) => c.slug === params.category);
+    const sdk = storefront.publicStorefront();
+    const { data: categoriesData, error: categoriesError } = await sdk.catalog.listCategories();
+    if (categoriesError) throw new Error(categoriesError.message);
+    const categories = categoriesData?.categories ?? [];
+    const matched = categories.find((c) => c.slug === params.category);
     if (!matched)
       return {
         serverSkus: [],
@@ -56,9 +59,12 @@ export const Route = createFileRoute("/category/$category")({
         categoryId: undefined,
         categoryName: undefined,
       };
-    const result = await fetchListSkus({
-      data: { category_id: [matched.id], page: 1, limit: 20 },
+    const { data: result, error: skusError } = await sdk.catalog.listSkus({
+      category_id: [matched.id],
+      page: 1,
+      limit: 20,
     });
+    if (skusError) throw new Error(skusError.message);
     return {
       serverSkus: result?.skus ?? [],
       serverPagination: result?.pagination,

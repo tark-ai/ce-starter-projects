@@ -16,7 +16,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@commercengine/checkout": "^0.3.1",
-        "@commercengine/storefront-sdk": "^0.13.4",
+        "@commercengine/storefront": "^0.1.2",
         "@fontsource-variable/dm-sans": "^5.2.8",
         "@radix-ui/react-accordion": "^1.2.12",
         "@radix-ui/react-checkbox": "^1.3.3",
@@ -60,8 +60,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@commercengine/checkout": "^0.3.1",
-        "@commercengine/ssr-utils": "^0.1.0",
-        "@commercengine/storefront-sdk": "^0.13.4",
+        "@commercengine/storefront": "^0.1.2",
         "@fontsource-variable/dm-sans": "^5.2.8",
         "@radix-ui/react-accordion": "^1.2.12",
         "@radix-ui/react-checkbox": "^1.3.3",
@@ -192,9 +191,11 @@
 
     "@commercengine/js": ["@commercengine/js@0.5.1", "", {}, "sha512-vt0VFQW2D1K9fXTPQOEYusEum0W0heRC22x7fBauhIHA1wY7k18XDcM7+n9F6q+yfSXi3dP85NkkED8l6XoMow=="],
 
-    "@commercengine/ssr-utils": ["@commercengine/ssr-utils@0.1.0", "", {}, "sha512-5iUW/A1xa+iQ7BPvxO/mZA22kzSWtUA/4HBDr8ShaEk2CcaMVf5fvSRwTJMxT6/LuQcYDRhBM8CljGJoDyCSug=="],
+    "@commercengine/ssr-utils": ["@commercengine/ssr-utils@0.3.0", "", {}, "sha512-FZ7ksn4ppVUXJs0uZbIEuQy1WPGPSvfgClOz+NkIMaqfvNpPvrVgIx7zJXNGMnq+/aoSe8O0Ez8B2xyd077bKg=="],
 
-    "@commercengine/storefront-sdk": ["@commercengine/storefront-sdk@0.13.4", "", { "dependencies": { "openapi-fetch": "^0.17.0" } }, "sha512-F9rPM42ku9wxlEw5m13WgFTSJ/FaQbovcu9WfNLFz8EYG4RM7UBezfkPRPvyPZ4gTwG30iT6rKjvRA+D+Ik+ig=="],
+    "@commercengine/storefront": ["@commercengine/storefront@0.1.2", "", { "dependencies": { "@commercengine/ssr-utils": "0.3.0", "@commercengine/storefront-sdk": "0.14.2" }, "peerDependencies": { "@tanstack/react-start": ">=1.0.0", "next": ">=15.0.0", "react": ">=19.0.0", "react-dom": ">=19.0.0" }, "optionalPeers": ["@tanstack/react-start", "next", "react", "react-dom"] }, "sha512-HUV+Uz0e2IPFDK9JrfonRSylOFptz2Sbdi2pGQEEZSI3qmHnp33Vz0VKCkZ1Cqf9aLZApSnG1xGP+v5xoO2YQg=="],
+
+    "@commercengine/storefront-sdk": ["@commercengine/storefront-sdk@0.14.2", "", { "dependencies": { "openapi-fetch": "^0.17.0" } }, "sha512-wlCBYslycrmqH+UTqqWQGG/hFJK3862bERA7uVFryu+00iWWWlH4xA90QDi9+geb4pC50/qZdJIoeOW6HcRP4Q=="],
 
     "@cspotcode/source-map-support": ["@cspotcode/source-map-support@0.8.1", "", { "dependencies": { "@jridgewell/trace-mapping": "0.3.9" } }, "sha512-IchNf6dN4tHoMFIn/7OE8LWZ19Y6q/67Bmf6vnGREv8RSbBVb9LPJxEcnwrcwX6ixSvaiGoomAUvu4YSxXrVgw=="],
 
