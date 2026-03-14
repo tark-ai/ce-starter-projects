@@ -53,11 +53,9 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const { data, error, isLoading } = useQuery({
     queryKey: WISHLIST_KEY,
     queryFn: async () => {
-      const userId = await sdk.getUserId();
-      if (!userId) return { products: [] as Item[] };
-      const { data, error } = await sdk.cart.getWishlist({ user_id: userId });
+      const { data, error } = await sdk.cart.getWishlist();
       if (error) throw new Error(error.message);
-      return data;
+      return data ?? { products: [] as Item[] };
     },
   });
 
@@ -83,12 +81,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       productId: string;
       variantId?: string | null;
     }) => {
-      const userId = await sdk.getUserId();
-      if (!userId) throw new Error("Not authenticated");
-      const { data, error } = await sdk.cart.addToWishlist(
-        { user_id: userId },
-        { product_id: productId, variant_id: variantId ?? null }
-      );
+      const { data, error } = await sdk.cart.addToWishlist({
+        product_id: productId,
+        variant_id: variantId ?? null,
+      });
       if (error) throw new Error(error.message);
       return data;
     },
@@ -111,12 +107,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       productId: string;
       variantId?: string | null;
     }) => {
-      const userId = await sdk.getUserId();
-      if (!userId) throw new Error("Not authenticated");
-      const { data, error } = await sdk.cart.removeFromWishlist(
-        { user_id: userId },
-        { product_id: productId, variant_id: variantId ?? null }
-      );
+      const { data, error } = await sdk.cart.removeFromWishlist({
+        product_id: productId,
+        variant_id: variantId ?? null,
+      });
       if (error) throw new Error(error.message);
       return data;
     },
