@@ -105,7 +105,7 @@ const ProductInfo = ({
   const { isInWishlist, toggleWishlist } = useWishlist();
   const [quantity, setQuantity] = useState(1);
   const [adding, setAdding] = useState(false);
-  const wishlisted = isInWishlist(product.id);
+  const wishlisted = isInWishlist(product.id, selectedVariantId);
 
   const selectedVariant = product.has_variant
     ? product.variants.find((v) => v.id === selectedVariantId)

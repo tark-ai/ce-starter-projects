@@ -472,7 +472,8 @@ const Navigation = () => {
                     <div key={item.sku} className="flex gap-4 group/item">
                       <Link
                         to="/product/$slug"
-                        params={{ slug: item.product_id }}
+                        params={{ slug: item.product_slug }}
+                        search={item.variant_slug ? { variant: item.variant_slug } : {}}
                         onClick={() => setOffCanvasType(null)}
                         className="shrink-0"
                       >
@@ -487,7 +488,8 @@ const Navigation = () => {
                       <div className="flex-1 min-w-0">
                         <Link
                           to="/product/$slug"
-                          params={{ slug: item.product_id }}
+                          params={{ slug: item.product_slug }}
+                          search={item.variant_slug ? { variant: item.variant_slug } : {}}
                           onClick={() => setOffCanvasType(null)}
                           className="block"
                         >

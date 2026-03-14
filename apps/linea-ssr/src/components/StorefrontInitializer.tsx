@@ -12,8 +12,8 @@ import { storefront } from "@/lib/storefront";
  * 3. Keeps checkout and storefront tokens synchronized.
  *
  * Public prerendered reads use `storefront.publicStorefront()`.
- * Session-bound flows should rely on this eager bootstrap before they
- * trigger server functions that depend on a persisted session cookie.
+ * Session-bound flows should rely on this eager bootstrap before they trigger
+ * server functions that depend on a persisted session cookie.
  */
 export function StorefrontInitializer() {
   useEffect(() => {

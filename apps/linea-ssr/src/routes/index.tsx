@@ -13,10 +13,17 @@ const SITE_NAME = "Linea";
 
 export const Route = createFileRoute("/")({
   loader: async () => {
-    const sdk = storefront.publicStorefront();
-    const { data, error } = await sdk.catalog.listProducts({ page: 1, limit: 20 });
-    if (error) throw new Error(error.message);
-    return { products: data?.products ?? [] };
+    try {
+      const sdk = storefront.publicStorefront();
+      const { data, error } = await sdk.catalog.listSkus({ page: 1, limit: 20 });
+      if (error) {
+        console.error("[loader /] Failed to load products:", error.message);
+      }
+      return { products: data?.skus ?? [] };
+    } catch (e) {
+      console.error("[loader /] Unexpected error:", e);
+      return { products: [] };
+    }
   },
   head: () => ({
     meta: [

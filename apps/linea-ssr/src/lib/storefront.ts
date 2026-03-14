@@ -25,7 +25,7 @@ if (typeof window === "undefined") {
 const useStaging = import.meta.env.VITE_CE_ENV === "staging" || !import.meta.env.VITE_CE_ENV;
 const environment = useStaging ? Environment.Staging : Environment.Production;
 
-export const storefront = createTanStackStartStorefront({
+export const storefrontConfig = {
   storeId: import.meta.env.VITE_STORE_ID,
   apiKey: import.meta.env.VITE_API_KEY,
   environment,
@@ -39,4 +39,6 @@ export const storefront = createTanStackStartStorefront({
       });
     }
   },
-});
+};
+
+export const storefront = createTanStackStartStorefront(storefrontConfig);

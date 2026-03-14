@@ -47,7 +47,12 @@ const ProductGrid = ({ skus, isLoading, pagination, onPageChange }: ProductGridP
     <section className="w-full px-6 mb-16">
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
         {skus.map((item) => (
-          <Link key={item.sku} to="/product/$slug" params={{ slug: item.product_slug }}>
+          <Link
+            key={item.sku}
+            to="/product/$slug"
+            params={{ slug: item.product_slug }}
+            search={item.variant_slug ? { variant: item.variant_slug } : {}}
+          >
             <Card className="border-none shadow-none bg-transparent group cursor-pointer">
               <CardContent className="p-0">
                 <div className="aspect-square mb-3 overflow-hidden bg-muted/10 relative">
@@ -65,7 +70,7 @@ const ProductGrid = ({ skus, isLoading, pagination, onPageChange }: ProductGridP
                   />
                   <div className="absolute inset-0 bg-black/[0.03]" />
                   <WishlistButton
-                    active={isInWishlist(item.product_id)}
+                    active={isInWishlist(item.product_id, item.variant_id)}
                     onClick={(e) => {
                       e.preventDefault();
                       e.stopPropagation();
