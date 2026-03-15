@@ -176,11 +176,13 @@ interface UseCategoriesResult {
   isLoading: boolean;
 }
 
-export function useCategories(): UseCategoriesResult {
+export function useCategories(options: { enabled?: boolean } = {}): UseCategoriesResult {
+  const { enabled = true } = options;
   const query = useQuery({
     queryKey: ["categories"],
     queryFn: () => fetchCategories(),
     staleTime: 5 * 60 * 1000,
+    enabled,
   });
 
   return {

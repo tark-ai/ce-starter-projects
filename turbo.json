@@ -3,16 +3,18 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".output/**"],
+      "outputs": ["dist/**", ".output/**", ".next/**", "!.next/cache/**"],
       "inputs": [
         "src/**",
         "index.html",
         "vite.config.ts",
+        "next.config.ts",
         "tsconfig.json",
         "tsconfig.app.json",
-        "postcss.config.js"
+        "postcss.config.js",
+        "postcss.config.mjs"
       ],
-      "env": ["VITE_STORE_ID", "VITE_API_KEY", "VITE_CE_ENV"]
+      "env": ["VITE_STORE_ID", "VITE_API_KEY", "VITE_CE_ENV", "NEXT_PUBLIC_STORE_ID", "NEXT_PUBLIC_API_KEY", "NEXT_PUBLIC_CE_ENV"]
     },
     "dev": {
       "cache": false,

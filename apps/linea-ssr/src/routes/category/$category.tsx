@@ -3,9 +3,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import CategoryHeader from "@/components/category/CategoryHeader";
 import FilterSortBar from "@/components/category/FilterSortBar";
 import ProductGrid from "@/components/category/ProductGrid";
-import Footer from "@/components/footer/Footer";
-import Header from "@/components/header/Header";
-import { useCategories, useListSkus, useSearchProducts } from "@/lib/hooks";
+import { useListSkus, useSearchProducts } from "@/lib/hooks";
 import { storefront } from "@/lib/storefront";
 
 const SITE_URL = "https://linea-static.demo.commercengine.io";
@@ -119,24 +117,19 @@ export const Route = createFileRoute("/category/$category")({
 
 function CategoryPage() {
   const { category } = Route.useParams();
-  const loaderData = Route.useLoaderData();
+  const { serverSkus, serverPagination, categoryId, categoryName } = Route.useLoaderData();
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<Record<string, unknown>>({});
 
-  const { categories } = useCategories();
-  const matchedCategory = categories.find((c) => c.slug === category);
-  const categoryId = matchedCategory?.id ?? loaderData.categoryId;
-  const categoryName = matchedCategory?.name ?? loaderData.categoryName;
-
   const hasUserFilters = Object.keys(filters).length > 0;
-  const hasServerData = loaderData.serverSkus.length > 0;
+  const hasPaginated = page > 1;
 
   const listSkusResult = useListSkus({
     page,
     limit: 20,
     category_id: categoryId ? [categoryId] : undefined,
-    enabled: !hasUserFilters && (!hasServerData || page > 1),
+    enabled: !hasUserFilters && hasPaginated,
   });
 
   const searchEnabled = hasUserFilters || filtersOpen;
@@ -176,21 +169,21 @@ function CategoryPage() {
   const baseFacetStats =
     Object.keys(baseFacetsRef.current.stats).length > 0 ? baseFacetsRef.current.stats : searchStats;
 
-  const shouldUseServerFallback = !hasUserFilters && page === 1 && hasServerData;
-  const clientSkus = shouldUseServerFallback
-    ? listSkusResult.skus.length > 0
-      ? listSkusResult.skus
-      : loaderData.serverSkus
-    : listSkusResult.skus;
-  const skus = hasUserFilters ? searchResult.skus : clientSkus;
-  const clientPagination = shouldUseServerFallback
-    ? (listSkusResult.pagination ?? loaderData.serverPagination)
-    : listSkusResult.pagination;
-  const pagination = hasUserFilters ? searchResult.pagination : clientPagination;
+  const useInitialData = !hasUserFilters && !hasPaginated;
+  const skus = hasUserFilters
+    ? searchResult.skus
+    : useInitialData
+      ? serverSkus
+      : listSkusResult.skus;
+  const pagination = hasUserFilters
+    ? searchResult.pagination
+    : useInitialData
+      ? serverPagination
+      : listSkusResult.pagination;
   const isLoading = hasUserFilters
     ? searchResult.isLoading
-    : shouldUseServerFallback
-      ? !hasServerData && listSkusResult.isLoading
+    : useInitialData
+      ? false
       : listSkusResult.isLoading;
   const currency = skus[0]?.pricing?.currency ?? "INR";
 
@@ -205,33 +198,27 @@ function CategoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <main className="pt-6">
+      <CategoryHeader category={category || "All Products"} />
 
-      <main className="pt-6">
-        <CategoryHeader category={category || "All Products"} />
+      <FilterSortBar
+        filtersOpen={filtersOpen}
+        setFiltersOpen={setFiltersOpen}
+        itemCount={pagination?.total_records ?? 0}
+        currency={currency}
+        baseFacetDistribution={baseFacetDistribution}
+        baseFacetStats={baseFacetStats}
+        facetDistribution={searchResult.facetDistribution}
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+      />
 
-        <FilterSortBar
-          filtersOpen={filtersOpen}
-          setFiltersOpen={setFiltersOpen}
-          itemCount={pagination?.total_records ?? 0}
-          currency={currency}
-          baseFacetDistribution={baseFacetDistribution}
-          baseFacetStats={baseFacetStats}
-          facetDistribution={searchResult.facetDistribution}
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-        />
-
-        <ProductGrid
-          skus={skus}
-          isLoading={isLoading}
-          pagination={pagination}
-          onPageChange={handlePageChange}
-        />
-      </main>
-
-      <Footer />
-    </div>
+      <ProductGrid
+        skus={skus}
+        isLoading={isLoading}
+        pagination={pagination}
+        onPageChange={handlePageChange}
+      />
+    </main>
   );
 }

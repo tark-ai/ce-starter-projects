@@ -5,8 +5,6 @@ import FiftyFiftySection from "@/components/content/FiftyFiftySection";
 import LargeHero from "@/components/content/LargeHero";
 import OneThirdTwoThirdsSection from "@/components/content/OneThirdTwoThirdsSection";
 import ProductCarousel from "@/components/content/ProductCarousel";
-import Footer from "@/components/footer/Footer";
-import Header from "@/components/header/Header";
 import { storefront } from "@/lib/storefront";
 
 const SITE_URL = "https://linea-static.demo.commercengine.io";
@@ -93,16 +91,12 @@ function IndexPage() {
   const { products } = Route.useLoaderData();
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
-      <main className="pt-6">
-        <FiftyFiftySection />
-        <ProductCarousel serverProducts={products} />
-        <LargeHero />
-        <OneThirdTwoThirdsSection />
-        <EditorialSection />
-      </main>
-      <Footer />
-    </div>
+    <main className="pt-6">
+      <FiftyFiftySection />
+      <ProductCarousel serverProducts={products} />
+      <LargeHero />
+      <OneThirdTwoThirdsSection />
+      <EditorialSection />
+    </main>
   );
 }

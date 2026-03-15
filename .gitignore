@@ -14,6 +14,8 @@ dist-ssr
 .nitro
 *.local
 .vercel
+.next
+*.tsbuildinfo
 
 # Turborepo
 .turbo

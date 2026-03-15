@@ -175,7 +175,6 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   return <WishlistContext value={value}>{children}</WishlistContext>;
 }
 
-// biome-ignore lint/style/useComponentExportOnlyModules: we need to export the useWishlist function
 export function useWishlist() {
   const context = useContext(WishlistContext);
   if (!context) {

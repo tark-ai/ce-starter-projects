@@ -1,18 +1,34 @@
 import { Toaster as Sonner } from "@ce/ui/components/ui/sonner";
 import { Toaster } from "@ce/ui/components/ui/toaster";
 import { TooltipProvider } from "@ce/ui/components/ui/tooltip";
+import type { Category } from "@commercengine/storefront";
 import dmSansCss from "@fontsource-variable/dm-sans/index.css?url";
 import type { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
+import Footer from "@/components/footer/Footer";
+import Header from "@/components/header/Header";
 import { StorefrontInitializer } from "@/components/StorefrontInitializer";
 import appCss from "@/index.css?url";
+import { fetchCategories } from "@/lib/server-fns/catalog";
 import { WishlistProvider } from "@/lib/wishlist";
 
 interface RouterContext {
   queryClient: QueryClient;
 }
 
+export interface RootLoaderData {
+  categories: Category[];
+}
+
 export const Route = createRootRouteWithContext<RouterContext>()({
+  loader: async (): Promise<RootLoaderData> => {
+    try {
+      const categories = await fetchCategories();
+      return { categories };
+    } catch {
+      return { categories: [] };
+    }
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
@@ -30,6 +46,8 @@ export const Route = createRootRouteWithContext<RouterContext>()({
 });
 
 function RootComponent() {
+  const { categories } = Route.useLoaderData();
+
   return (
     <html lang="en">
       <head>
@@ -41,7 +59,11 @@ function RootComponent() {
           <WishlistProvider>
             <Toaster />
             <Sonner />
-            <Outlet />
+            <div className="min-h-screen bg-background">
+              <Header categories={categories} />
+              <Outlet />
+              <Footer />
+            </div>
           </WishlistProvider>
         </TooltipProvider>
         <Scripts />

@@ -10,8 +10,6 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useRef, useState } from "react";
 import FilterSortBar from "@/components/category/FilterSortBar";
 import ProductGrid from "@/components/category/ProductGrid";
-import Footer from "@/components/footer/Footer";
-import Header from "@/components/header/Header";
 import { useSearchProducts } from "@/lib/hooks";
 
 const SITE_URL = "https://linea-static.demo.commercengine.io";
@@ -132,52 +130,46 @@ function SearchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <Header />
+    <main className="pt-6">
+      <section className="w-full px-6 mb-8">
+        <div className="mb-6">
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link to="/">Home</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Search</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+        </div>
+        <h1 className="text-3xl md:text-4xl font-light text-foreground">
+          Results for &ldquo;{query}&rdquo;
+        </h1>
+      </section>
 
-      <main className="pt-6">
-        <section className="w-full px-6 mb-8">
-          <div className="mb-6">
-            <Breadcrumb>
-              <BreadcrumbList>
-                <BreadcrumbItem>
-                  <BreadcrumbLink asChild>
-                    <Link to="/">Home</Link>
-                  </BreadcrumbLink>
-                </BreadcrumbItem>
-                <BreadcrumbSeparator />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Search</BreadcrumbPage>
-                </BreadcrumbItem>
-              </BreadcrumbList>
-            </Breadcrumb>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-light text-foreground">
-            Results for &ldquo;{query}&rdquo;
-          </h1>
-        </section>
+      <FilterSortBar
+        filtersOpen={filtersOpen}
+        setFiltersOpen={setFiltersOpen}
+        itemCount={searchResult.pagination?.total_records ?? 0}
+        currency={currency}
+        baseFacetDistribution={baseFacetDistribution}
+        baseFacetStats={baseFacetStats}
+        facetDistribution={searchResult.facetDistribution}
+        filters={filters}
+        onFiltersChange={handleFiltersChange}
+      />
 
-        <FilterSortBar
-          filtersOpen={filtersOpen}
-          setFiltersOpen={setFiltersOpen}
-          itemCount={searchResult.pagination?.total_records ?? 0}
-          currency={currency}
-          baseFacetDistribution={baseFacetDistribution}
-          baseFacetStats={baseFacetStats}
-          facetDistribution={searchResult.facetDistribution}
-          filters={filters}
-          onFiltersChange={handleFiltersChange}
-        />
-
-        <ProductGrid
-          skus={searchResult.skus}
-          isLoading={searchResult.isLoading}
-          pagination={searchResult.pagination}
-          onPageChange={handlePageChange}
-        />
-      </main>
-
-      <Footer />
-    </div>
+      <ProductGrid
+        skus={searchResult.skus}
+        isLoading={searchResult.isLoading}
+        pagination={searchResult.pagination}
+        onPageChange={handlePageChange}
+      />
+    </main>
   );
 }
