@@ -4,22 +4,22 @@
     "ce": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "90c49dfcb6fc8d661f58d230cc48b0cd326d6cb0a82717f011460047d0ae7cd2"
+      "computedHash": "6169e9b5eb8bd61376fe17008e8f23bd41dd18603e16fc4276832b4e21ffa71d"
     },
     "ce-auth": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "1efddb4536fa1edb3e6659d05514c77c45793d6a982e8cfbb7ab1b63111ef838"
+      "computedHash": "018d3645a151314e8f002acb3e9c96c1a27d005403f743ab6dfa02c53d74ef2c"
     },
     "ce-cart-checkout": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "3eee7133894139e6d663538ab262f56fbf10a7748e15b7462b5420deab252aac"
+      "computedHash": "9527968fb042f8be0a492a3330d8f7979533656af6197a5e9f2a7f4289f767b6"
     },
     "ce-catalog": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "86bc23f0cf56643c443487af221ad9800dd728fbdffe8d32f989862b75abbca8"
+      "computedHash": "328875578f0f9c0f663cfe97320e1981149d9aca7331d6a90624a687433c2b45"
     },
     "ce-nextjs-patterns": {
       "source": "commercengine/skills",
@@ -29,12 +29,22 @@
     "ce-orders": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "8c30cb9b9b8976d45ccef8d038ba6e3ee2b35e006a1afc188c642b3fd96b0e06"
+      "computedHash": "a166bb88571f07daaa32fac89b4d266091aea579788a4c897c13b6d4913472af"
     },
     "ce-setup": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "9d44adef2a41840fb324516b120b01d1de7b5ba1c06635c311117d64a9d7d19a"
+      "computedHash": "161b75e46bddc6a915dd776b29ee6c758a4964c86df29119060d5b3ccefb43b6"
+    },
+    "ce-ssr": {
+      "source": "commercengine/skills",
+      "sourceType": "github",
+      "computedHash": "3af76d4ae7e22c4ef9c753cd565cc27145fedf35477372bf4683708bd6eff543"
+    },
+    "ce-ssr-patterns": {
+      "source": "commercengine/skills",
+      "sourceType": "github",
+      "computedHash": "eceb0ae0a774239b35284c71678ef75e6bf093d718c4da0cf90a15cb6c3f773a"
     },
     "ce-webhooks": {
       "source": "commercengine/skills",
