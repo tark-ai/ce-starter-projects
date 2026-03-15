@@ -1,3 +1,18 @@
+import {
+  findVariantBySelection,
+  getDefaultVariant,
+  getVariantOptionSelection,
+  hasAllOptionsSelected,
+  optionQueryParamKey,
+} from "@ce/linea-shared/lib/variants";
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@ce/ui/components/ui/breadcrumb";
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo } from "react";
 import ProductCarousel from "@/components/content/ProductCarousel";
@@ -6,22 +21,7 @@ import Header from "@/components/header/Header";
 import ProductDescription from "@/components/product/ProductDescription";
 import ProductImageGallery from "@/components/product/ProductImageGallery";
 import ProductInfo from "@/components/product/ProductInfo";
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbLink,
-  BreadcrumbList,
-  BreadcrumbPage,
-  BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
 import { storefront } from "@/lib/storefront";
-import {
-  findVariantBySelection,
-  getDefaultVariant,
-  getVariantOptionSelection,
-  hasAllOptionsSelected,
-  optionQueryParamKey,
-} from "@/lib/variants";
 
 const SITE_URL = "https://linea-static.demo.commercengine.io";
 const SITE_NAME = "Linea";

@@ -1,17 +1,17 @@
-import AboutSidebar from "../../components/about/AboutSidebar";
-import ContentSection from "../../components/about/ContentSection";
-import PageHeader from "../../components/about/PageHeader";
-import Footer from "../../components/footer/Footer";
-import Header from "../../components/header/Header";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
-} from "../../components/ui/accordion";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
-import { Textarea } from "../../components/ui/textarea";
+} from "@ce/ui/components/ui/accordion";
+import { Button } from "@ce/ui/components/ui/button";
+import { Input } from "@ce/ui/components/ui/input";
+import { Textarea } from "@ce/ui/components/ui/textarea";
+import AboutSidebar from "../../components/about/AboutSidebar";
+import ContentSection from "../../components/about/ContentSection";
+import PageHeader from "../../components/about/PageHeader";
+import Footer from "../../components/footer/Footer";
+import Header from "../../components/header/Header";
 
 const CustomerCare = () => {
   return (

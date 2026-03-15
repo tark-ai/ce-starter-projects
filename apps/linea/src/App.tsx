@@ -1,9 +1,9 @@
+import { Toaster as Sonner } from "@ce/ui/components/ui/sonner";
+import { Toaster } from "@ce/ui/components/ui/toaster";
+import { TooltipProvider } from "@ce/ui/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import ScrollToTop from "./components/ScrollToTop";
 import { destroyCheckout, initStorefront } from "./lib/storefront";
 import { WishlistProvider } from "./lib/wishlist";

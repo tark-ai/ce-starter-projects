@@ -1,10 +1,10 @@
+import { Toaster as Sonner } from "@ce/ui/components/ui/sonner";
+import { Toaster } from "@ce/ui/components/ui/toaster";
+import { TooltipProvider } from "@ce/ui/components/ui/tooltip";
 import dmSansCss from "@fontsource-variable/dm-sans/index.css?url";
 import type { QueryClient } from "@tanstack/react-query";
 import { createRootRouteWithContext, HeadContent, Outlet, Scripts } from "@tanstack/react-router";
 import { StorefrontInitializer } from "@/components/StorefrontInitializer";
-import { Toaster as Sonner } from "@/components/ui/sonner";
-import { Toaster } from "@/components/ui/toaster";
-import { TooltipProvider } from "@/components/ui/tooltip";
 import appCss from "@/index.css?url";
 import { WishlistProvider } from "@/lib/wishlist";
 

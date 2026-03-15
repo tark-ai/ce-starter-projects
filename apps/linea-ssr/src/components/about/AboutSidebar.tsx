@@ -1,34 +1,10 @@
-import { Link } from "@tanstack/react-router";
-
-const aboutPages = [
-  { name: "Our Story", path: "/about/our-story" },
-  { name: "Sustainability", path: "/about/sustainability" },
-  { name: "Size Guide", path: "/about/size-guide" },
-  { name: "Customer Care", path: "/about/customer-care" },
-  { name: "Store Locator", path: "/about/store-locator" },
-];
+import { AboutSidebar as SharedAboutSidebar } from "@ce/linea-shared/about";
+import { useLocation } from "@tanstack/react-router";
+import { LineaLink } from "@/lib/linea-routing";
 
 const AboutSidebar = () => {
-  return (
-    <aside className="hidden md:block w-64 sticky top-32 h-fit px-6">
-      <nav className="space-y-1">
-        <h3 className="text-lg font-light text-foreground mb-6">About</h3>
-        {aboutPages.map((page) => (
-          <Link
-            key={page.path}
-            to={page.path}
-            className="block py-2 text-sm font-light transition-all text-muted-foreground hover:text-foreground hover:underline hover:decoration-1 hover:underline-offset-4"
-            activeProps={{
-              className:
-                "block py-2 text-sm font-light transition-all text-primary underline decoration-2 underline-offset-4",
-            }}
-          >
-            {page.name}
-          </Link>
-        ))}
-      </nav>
-    </aside>
-  );
+  const location = useLocation();
+  return <SharedAboutSidebar currentPath={location.pathname} LinkComponent={LineaLink} />;
 };
 
 export default AboutSidebar;

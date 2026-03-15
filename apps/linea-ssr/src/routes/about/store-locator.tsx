@@ -1,3 +1,4 @@
+import { Button } from "@ce/ui/components/ui/button";
 import { createFileRoute } from "@tanstack/react-router";
 import AboutSidebar from "@/components/about/AboutSidebar";
 import ContentSection from "@/components/about/ContentSection";
@@ -5,7 +6,6 @@ import PageHeader from "@/components/about/PageHeader";
 import StoreMap from "@/components/about/StoreMap";
 import Footer from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
-import { Button } from "@/components/ui/button";
 
 const SITE_URL = "https://linea-static.demo.commercengine.io";
 const SITE_NAME = "Linea";

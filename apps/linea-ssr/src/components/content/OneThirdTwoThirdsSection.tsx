@@ -1,52 +1,8 @@
-import { Link } from "@tanstack/react-router";
-import { Image } from "@unpic/react";
-import circularCollection from "@/assets/circular-collection.jpg";
-import organicEarring from "@/assets/organic-earring.jpg";
+import { OneThirdTwoThirdsSection as SharedOneThirdTwoThirdsSection } from "@ce/linea-shared/content";
+import { LineaLink } from "@/lib/linea-routing";
 
 const OneThirdTwoThirdsSection = () => {
-  return (
-    <section className="w-full mb-16 px-6">
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
-          <Link to="/category/$category" params={{ category: "rings" }} className="block">
-            <div className="w-full h-[500px] lg:h-[800px] mb-3 overflow-hidden">
-              <Image
-                src={organicEarring}
-                alt="Artisan crafted jewelry"
-                layout="fullWidth"
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-          </Link>
-          <div className="">
-            <h3 className="text-sm font-normal text-foreground mb-1">Artisan Craft</h3>
-            <p className="text-sm font-light text-foreground">
-              Handcrafted pieces with meticulous attention to detail
-            </p>
-          </div>
-        </div>
-
-        <div className="lg:col-span-2">
-          <Link to="/category/$category" params={{ category: "necklaces" }} className="block">
-            <div className="w-full h-[500px] lg:h-[800px] mb-3 overflow-hidden">
-              <Image
-                src={circularCollection}
-                alt="Circular jewelry collection"
-                layout="fullWidth"
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
-              />
-            </div>
-          </Link>
-          <div className="">
-            <h3 className="text-sm font-normal text-foreground mb-1">Circular Elements</h3>
-            <p className="text-sm font-light text-foreground">
-              Geometric perfection meets contemporary minimalism
-            </p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
+  return <SharedOneThirdTwoThirdsSection LinkComponent={LineaLink} />;
 };
 
 export default OneThirdTwoThirdsSection;

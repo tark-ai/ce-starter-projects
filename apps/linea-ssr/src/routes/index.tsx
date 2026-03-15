@@ -1,3 +1,4 @@
+/** biome-ignore-all lint/suspicious/noConsole: used to detect API errors during build time */
 import { createFileRoute } from "@tanstack/react-router";
 import EditorialSection from "@/components/content/EditorialSection";
 import FiftyFiftySection from "@/components/content/FiftyFiftySection";

@@ -1,5 +1,5 @@
+import founders from "@ce/ui/assets/founders.jpg";
 import { createFileRoute } from "@tanstack/react-router";
-import founders from "@/assets/founders.jpg";
 import AboutSidebar from "@/components/about/AboutSidebar";
 import ContentSection from "@/components/about/ContentSection";
 import ImageTextBlock from "@/components/about/ImageTextBlock";

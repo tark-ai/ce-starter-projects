@@ -1,10 +1,10 @@
+import { Button } from "@ce/ui/components/ui/button";
 import AboutSidebar from "../../components/about/AboutSidebar";
 import ContentSection from "../../components/about/ContentSection";
 import PageHeader from "../../components/about/PageHeader";
 import StoreMap from "../../components/about/StoreMap";
 import Footer from "../../components/footer/Footer";
 import Header from "../../components/header/Header";
-import { Button } from "../../components/ui/button";
 
 const StoreLocator = () => {
   const stores = [

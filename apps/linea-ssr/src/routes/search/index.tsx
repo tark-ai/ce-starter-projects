@@ -1,9 +1,3 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
-import FilterSortBar from "@/components/category/FilterSortBar";
-import ProductGrid from "@/components/category/ProductGrid";
-import Footer from "@/components/footer/Footer";
-import Header from "@/components/header/Header";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,7 +5,13 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@ce/ui/components/ui/breadcrumb";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useMemo, useRef, useState } from "react";
+import FilterSortBar from "@/components/category/FilterSortBar";
+import ProductGrid from "@/components/category/ProductGrid";
+import Footer from "@/components/footer/Footer";
+import Header from "@/components/header/Header";
 import { useSearchProducts } from "@/lib/hooks";
 
 const SITE_URL = "https://linea-static.demo.commercengine.io";

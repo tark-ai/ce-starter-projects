@@ -1,0 +1,36 @@
+{
+  "name": "@ce/linea-shared",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./about": "./src/about.tsx",
+    "./category": "./src/category.tsx",
+    "./content": "./src/content.tsx",
+    "./footer": "./src/footer.tsx",
+    "./header": "./src/header.tsx",
+    "./product": "./src/product.tsx",
+    "./lib/*": "./src/lib/*.ts"
+  },
+  "scripts": {
+    "check": "biome check ./src",
+    "check:fix": "biome check --write ./src",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ce/ui": "workspace:*",
+    "@commercengine/checkout": "^0.3.1",
+    "@commercengine/storefront": "^0.1.4",
+    "@unpic/react": "^1.0.2",
+    "lucide-react": "^0.563.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^5.9.3"
+  }
+}

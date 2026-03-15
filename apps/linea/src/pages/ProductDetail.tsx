@@ -1,5 +1,10 @@
-import { useCallback, useEffect, useMemo } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import {
+  findVariantBySelection,
+  getDefaultVariant,
+  getVariantOptionSelection,
+  hasAllOptionsSelected,
+  optionQueryParamKey,
+} from "@ce/linea-shared/lib/variants";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -7,7 +12,9 @@ import {
   BreadcrumbList,
   BreadcrumbPage,
   BreadcrumbSeparator,
-} from "@/components/ui/breadcrumb";
+} from "@ce/ui/components/ui/breadcrumb";
+import { useCallback, useEffect, useMemo } from "react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import ProductCarousel from "../components/content/ProductCarousel";
 import Footer from "../components/footer/Footer";
 import Header from "../components/header/Header";
@@ -16,13 +23,6 @@ import ProductImageGallery from "../components/product/ProductImageGallery";
 import ProductInfo from "../components/product/ProductInfo";
 import SEO, { SITE_NAME, SITE_URL } from "../components/Seo";
 import { useProductDetail } from "../lib/hooks";
-import {
-  findVariantBySelection,
-  getDefaultVariant,
-  getVariantOptionSelection,
-  hasAllOptionsSelected,
-  optionQueryParamKey,
-} from "../lib/variants";
 
 const ProductDetail = () => {
   const { slug } = useParams();

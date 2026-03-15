@@ -1,3 +1,4 @@
+import { toast } from "@ce/ui/components/ui/sonner";
 import type { Item } from "@commercengine/storefront";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
@@ -9,7 +10,6 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { toast } from "@/components/ui/sonner";
 import { sdk } from "./storefront";
 
 type OnAddListener = () => void;
