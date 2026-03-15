@@ -8,6 +8,15 @@ import { LineaLink } from "@/lib/linea-routing";
 import { useLineaSearchNavigation } from "@/lib/use-linea-search-navigation";
 import { useWishlist } from "@/lib/wishlist";
 
+const NAV_IMAGES = {
+  ringsCollection: "/images/rings-collection.jpg",
+  earringsCollection: "/images/earrings-collection.jpg",
+  arcusBracelet: "/images/arcus-bracelet.jpg",
+  spanBracelet: "/images/span-bracelet.jpg",
+  founders: "/images/founders.jpg",
+  logo: "/LINEA-1.svg",
+};
+
 interface NavigationProps {
   serverCategories?: Category[];
 }
@@ -30,6 +39,7 @@ const Navigation = ({ serverCategories }: NavigationProps) => {
       cartCount={cartCount}
       openCart={openCart}
       onSearchSubmit={navigateToSearch}
+      images={NAV_IMAGES}
     />
   );
 };

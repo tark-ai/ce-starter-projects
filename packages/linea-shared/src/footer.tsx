@@ -1,11 +1,12 @@
-import logoSrc from "./assets/linea-jewelry-inc.svg";
+import defaultLogoSrc from "./assets/linea-jewelry-inc.svg";
 import type { LineaLinkComponent } from "./lib/routing";
 
 interface FooterProps {
   LinkComponent: LineaLinkComponent;
+  logoSrc?: string;
 }
 
-export function Footer({ LinkComponent }: FooterProps) {
+export function Footer({ LinkComponent, logoSrc = defaultLogoSrc }: FooterProps) {
   return (
     <footer className="w-full bg-white text-black pt-8 pb-2 px-6 border-t border-[#e5e5e5] mt-48">
       <div className="">

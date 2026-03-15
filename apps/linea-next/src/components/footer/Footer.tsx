@@ -4,7 +4,7 @@ import { Footer as SharedFooter } from "@ce/linea-shared/footer";
 import { LineaLink } from "@/lib/linea-routing";
 
 const Footer = () => {
-  return <SharedFooter LinkComponent={LineaLink} />;
+  return <SharedFooter LinkComponent={LineaLink} logoSrc="/Linea_Jewelry_Inc-2.svg" />;
 };
 
 export default Footer;

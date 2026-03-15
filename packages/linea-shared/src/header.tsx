@@ -1,8 +1,8 @@
-import arcusBracelet from "@ce/ui/assets/arcus-bracelet.jpg";
-import earringsCollection from "@ce/ui/assets/earrings-collection.jpg";
-import founders from "@ce/ui/assets/founders.jpg";
-import ringsCollection from "@ce/ui/assets/rings-collection.jpg";
-import spanBracelet from "@ce/ui/assets/span-bracelet.jpg";
+import defaultArcusBracelet from "@ce/ui/assets/arcus-bracelet.jpg";
+import defaultEarringsCollection from "@ce/ui/assets/earrings-collection.jpg";
+import defaultFounders from "@ce/ui/assets/founders.jpg";
+import defaultRingsCollection from "@ce/ui/assets/rings-collection.jpg";
+import defaultSpanBracelet from "@ce/ui/assets/span-bracelet.jpg";
 import { formatPrice } from "@ce/ui/lib/format";
 import type { Item } from "@commercengine/storefront";
 import { Image as UnpicImage } from "@unpic/react";
@@ -15,6 +15,15 @@ export interface NavigationCategory {
   slug?: string | null;
 }
 
+export interface NavigationImages {
+  ringsCollection: string;
+  earringsCollection: string;
+  arcusBracelet: string;
+  spanBracelet: string;
+  founders: string;
+  logo: string;
+}
+
 interface NavigationProps {
   LinkComponent: LineaLinkComponent;
   categories: NavigationCategory[];
@@ -25,6 +34,7 @@ interface NavigationProps {
   cartCount: number;
   openCart: () => void;
   onSearchSubmit: (query: string) => void;
+  images?: NavigationImages;
 }
 
 export function Navigation({
@@ -37,7 +47,15 @@ export function Navigation({
   cartCount,
   openCart,
   onSearchSubmit,
+  images,
 }: NavigationProps) {
+  const ringsCollection = images?.ringsCollection ?? defaultRingsCollection;
+  const earringsCollection = images?.earringsCollection ?? defaultEarringsCollection;
+  const arcusBracelet = images?.arcusBracelet ?? defaultArcusBracelet;
+  const spanBracelet = images?.spanBracelet ?? defaultSpanBracelet;
+  const founders = images?.founders ?? defaultFounders;
+  const logo = images?.logo ?? "/LINEA-1.svg";
+
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -210,7 +228,7 @@ export function Navigation({
 
         <div className="absolute left-1/2 transform -translate-x-1/2">
           <LinkComponent route={{ path: "/" }} className="block">
-            <img src="/LINEA-1.svg" alt="LINEA" className="h-6 w-auto" />
+            <img src={logo} alt="LINEA" className="h-6 w-auto" />
           </LinkComponent>
         </div>
 
