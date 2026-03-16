@@ -1,0 +1,36 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import CategoryContent from "../../components/category/CategoryContent";
+import { publicSdk } from "../../lib/storefront";
+
+export async function getStaticPaths() {
+  const { data } = await publicSdk.catalog.listCategories();
+  const paths = (data?.categories ?? []).map((c) => ({
+    params: { category: c.slug ?? c.id },
+    props: { categoryData: c },
+  }));
+  // Add "shop" as a catch-all page for /category/shop (linked from nav)
+  paths.push({ params: { category: "shop" }, props: { categoryData: null as any } });
+  return paths;
+}
+
+const { category } = Astro.params;
+const { categoryData } = Astro.props;
+
+const displayName = categoryData?.name ?? (category ? category.charAt(0).toUpperCase() + category.slice(1) : "All Products");
+
+const { data: skusData } = await publicSdk.catalog.listSkus({
+  page: 1,
+  limit: 20,
+  category_id: categoryData?.id ? [categoryData.id] : undefined,
+});
+---
+
+<Layout title={`${displayName} | Linea`} description={`Shop ${displayName} from Linea.`}>
+  <CategoryContent
+    client:only="react"
+    category={category!}
+    initialSkus={skusData?.skus ?? []}
+    initialPagination={skusData?.pagination}
+  />
+</Layout>

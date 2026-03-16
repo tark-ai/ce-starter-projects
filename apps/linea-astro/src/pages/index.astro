@@ -1,0 +1,12 @@
+---
+import Layout from "../layouts/Layout.astro";
+import HomeContent from "../components/content/HomeContent";
+import { publicSdk } from "../lib/storefront";
+
+const { data } = await publicSdk.catalog.listSkus({ page: 1, limit: 6 });
+const products = data?.skus ?? [];
+---
+
+<Layout>
+  <HomeContent client:only="react" initialProducts={products} />
+</Layout>

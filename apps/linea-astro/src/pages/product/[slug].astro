@@ -1,0 +1,26 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import ProductContent from "../../components/product/ProductContent";
+import { publicSdk } from "../../lib/storefront";
+
+export async function getStaticPaths() {
+  const { data } = await publicSdk.catalog.listProducts({ limit: 100 });
+  return (data?.products ?? []).map((p) => ({
+    params: { slug: p.slug || p.id },
+  }));
+}
+
+const { slug } = Astro.params;
+
+const [productResult, similarResult] = await Promise.all([
+  publicSdk.catalog.getProductDetail({ product_id: slug! }),
+  publicSdk.catalog.listSimilarProducts({ product_id: [slug!] }),
+]);
+
+const product = productResult.data?.product;
+const similarItems = similarResult.data?.products ?? [];
+---
+
+<Layout title={product?.name ? `${product.name} | Linea` : "Product | Linea"} description={product?.short_description ?? `Shop ${product?.name ?? "this product"} from Linea`}>
+  <ProductContent client:only="react" serverProduct={product} serverSimilarItems={similarItems} />
+</Layout>

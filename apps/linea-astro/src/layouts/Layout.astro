@@ -1,0 +1,49 @@
+---
+import { ClientRouter } from "astro:transitions";
+import "@fontsource-variable/dm-sans";
+import "../styles/globals.css";
+import { PoweredByBadge } from "@ce/ui/components/ui/powered-by-badge";
+import Navigation from "../components/header/Navigation";
+import Footer from "../components/footer/Footer";
+import { publicSdk } from "../lib/storefront";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title = "Linea - Minimalist jewelry crafted for the modern individual", description = "Shop Linea's curated collection of minimalist jewelry — rings, necklaces, earrings, and bracelets crafted for the modern individual. Free shipping on all orders." } = Astro.props;
+
+const { data } = await publicSdk.catalog.listCategories();
+const categories = data?.categories ?? [];
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <ClientRouter />
+  </head>
+  <body>
+    <div class="min-h-screen bg-background">
+      <header class="w-full sticky top-0 z-50">
+        <Navigation client:only="react" serverCategories={categories} transition:persist />
+      </header>
+      <div data-page-content>
+        <slot />
+      </div>
+      <Footer client:only="react" transition:persist />
+      <PoweredByBadge client:only="react" transition:persist />
+    </div>
+
+    <!-- App-level checkout bootstrapping + partial swap for the persistent shell -->
+    <script>
+      import { installLineaClientRuntime } from "@/lib/client-runtime";
+
+      installLineaClientRuntime();
+    </script>
+  </body>
+</html>

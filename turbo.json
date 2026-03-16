@@ -3,7 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".output/**", ".next/**", "!.next/cache/**"],
+      "outputs": ["dist/**", ".output/**", ".next/**", "!.next/cache/**", ".astro/**"],
       "inputs": [
         "src/**",
         "index.html",
@@ -12,9 +12,10 @@
         "tsconfig.json",
         "tsconfig.app.json",
         "postcss.config.js",
-        "postcss.config.mjs"
+        "postcss.config.mjs",
+        "astro.config.mjs"
       ],
-      "env": ["VITE_STORE_ID", "VITE_API_KEY", "VITE_CE_ENV", "NEXT_PUBLIC_STORE_ID", "NEXT_PUBLIC_API_KEY", "NEXT_PUBLIC_CE_ENV"]
+      "env": ["VITE_STORE_ID", "VITE_API_KEY", "VITE_CE_ENV", "NEXT_PUBLIC_STORE_ID", "NEXT_PUBLIC_API_KEY", "NEXT_PUBLIC_CE_ENV", "PUBLIC_STORE_ID", "PUBLIC_API_KEY", "PUBLIC_CE_ENV"]
     },
     "dev": {
       "cache": false,

@@ -10,6 +10,7 @@ Commerce Engine starter monorepo. Use the `ce` skill for Commerce Engine work.
    - `apps/linea/src/App.tsx`, `apps/linea/src/pages`, `apps/linea/src/lib/linea-routing.tsx`
    - `apps/linea-ssr/src/routes`, `apps/linea-ssr/src/lib/linea-routing.tsx`
    - `apps/linea-next/src/app`, `apps/linea-next/src/lib/linea-routing.tsx`
+   - `apps/linea-astro/src/pages`, `apps/linea-astro/src/lib/linea-routing.tsx`
 
 ## Boundaries
 
@@ -30,4 +31,5 @@ bun run build
 bun run dev:linea
 bun run dev:linea-ssr
 bunx turbo run dev --filter=@ce/linea-next
+bun run dev:linea-astro
 ```
