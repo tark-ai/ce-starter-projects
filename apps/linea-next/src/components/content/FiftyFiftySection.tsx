@@ -1,5 +1,6 @@
 "use client";
 
+import { images } from "@ce/ui/lib/images";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -9,13 +10,14 @@ const FiftyFiftySection = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
           <Link href="/category/earrings" className="block">
-            <div className="relative w-full aspect-square mb-3 overflow-hidden">
+            <div className="w-full aspect-square mb-3 overflow-hidden">
               <Image
-                src="/images/earrings-collection.jpg"
+                src={images.earringsCollection}
                 alt="Earrings collection"
-                fill
-                className="object-cover hover:scale-105 transition-transform duration-300"
-                sizes="(max-width: 768px) 100vw, 50vw"
+                width={1788}
+                height={1792}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                sizes="(max-width: 768px) calc(100vw - 48px), calc(50vw - 36px)"
                 priority
               />
             </div>
@@ -30,13 +32,14 @@ const FiftyFiftySection = () => {
 
         <div>
           <Link href="/category/bracelets" className="block">
-            <div className="relative w-full aspect-square mb-3 overflow-hidden">
+            <div className="w-full aspect-square mb-3 overflow-hidden">
               <Image
-                src="/images/link-bracelet.jpg"
+                src={images.linkBracelet}
                 alt="Chain link bracelet"
-                fill
-                className="object-cover hover:scale-105 transition-transform duration-300"
-                sizes="(max-width: 768px) 100vw, 50vw"
+                width={1742}
+                height={1744}
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                sizes="(max-width: 768px) calc(100vw - 48px), calc(50vw - 36px)"
               />
             </div>
           </Link>

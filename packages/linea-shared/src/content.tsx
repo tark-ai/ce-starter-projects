@@ -1,16 +1,12 @@
-import circularCollection from "@ce/ui/assets/circular-collection.jpg";
-import earringsCollection from "@ce/ui/assets/earrings-collection.jpg";
-import founders from "@ce/ui/assets/founders.jpg";
-import heroImage from "@ce/ui/assets/hero-image.jpg";
-import linkBracelet from "@ce/ui/assets/link-bracelet.jpg";
-import organicEarring from "@ce/ui/assets/organic-earring.jpg";
 import { Card, CardContent } from "@ce/ui/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem } from "@ce/ui/components/ui/carousel";
 import { formatPrice } from "@ce/ui/lib/format";
+import { IMAGEKIT_ENDPOINT, imagePaths } from "@ce/ui/lib/images";
 import type { Item } from "@commercengine/storefront";
-import { Image } from "@unpic/react";
+import { Image } from "@imagekit/react";
 import { ArrowRight } from "lucide-react";
 import type { LineaLinkComponent } from "./lib/routing";
+import { StorefrontImage } from "./lib/storefront-image";
 import { WishlistButton } from "./product";
 
 interface ProductCarouselProps {
@@ -69,16 +65,22 @@ export function ProductCarousel({
                 <Card className="border-none shadow-none bg-transparent group">
                   <CardContent className="p-0">
                     <div className="aspect-square mb-3 overflow-hidden bg-muted/10 relative">
-                      <Image
-                        src={item.images?.[0]?.url_standard ?? ""}
+                      <StorefrontImage
+                        image={item.images?.[0]}
                         alt={item.images?.[0]?.alternate_text || item.product_name}
-                        layout="fullWidth"
+                        variant="standard"
+                        width={400}
+                        height={400}
+                        loading="lazy"
                         className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-0"
                       />
-                      <Image
-                        src={item.images?.[1]?.url_standard || item.images?.[0]?.url_standard || ""}
+                      <StorefrontImage
+                        image={item.images?.[1] || item.images?.[0]}
                         alt={`${item.variant_name || item.product_name} alternate`}
-                        layout="fullWidth"
+                        variant="standard"
+                        width={400}
+                        height={400}
+                        loading="lazy"
                         className="absolute inset-0 w-full h-full object-cover transition-all duration-300 opacity-0 group-hover:opacity-100"
                       />
                       <div className="absolute inset-0 bg-black/[0.03]" />
@@ -122,9 +124,13 @@ export function LargeHero() {
     <section className="w-full mb-16 px-6">
       <div className="w-full aspect-[16/9] mb-3 overflow-hidden">
         <Image
-          src={heroImage}
+          urlEndpoint={IMAGEKIT_ENDPOINT}
+          src={imagePaths.heroImage}
           alt="Modern jewelry collection"
-          layout="fullWidth"
+          width={2690}
+          height={1792}
+          sizes="calc(100vw - 48px)"
+          transformation={[{ quality: 80 }]}
           className="w-full h-full object-cover"
         />
       </div>
@@ -170,9 +176,13 @@ export function EditorialSection({ LinkComponent }: EditorialSectionProps) {
         <div className="order-first md:order-last">
           <div className="w-full aspect-square overflow-hidden">
             <Image
-              src={founders}
+              urlEndpoint={IMAGEKIT_ENDPOINT}
+              src={imagePaths.founders}
               alt="Linea founders - two women in minimalist jewelry"
-              layout="fullWidth"
+              width={1792}
+              height={1794}
+              sizes="(max-width: 768px) calc(100vw - 48px), calc(50vw - 48px)"
+              transformation={[{ quality: 80 }]}
               className="w-full h-full object-cover"
             />
           </div>
@@ -196,11 +206,14 @@ export function FiftyFiftySection({ LinkComponent }: FiftyFiftySectionProps) {
           <LinkComponent route={{ path: "/category/earrings" }} className="block">
             <div className="w-full aspect-square mb-3 overflow-hidden">
               <Image
-                src={earringsCollection}
+                urlEndpoint={IMAGEKIT_ENDPOINT}
+                src={imagePaths.earringsCollection}
                 alt="Earrings collection"
-                layout="fullWidth"
+                width={1788}
+                height={1792}
+                sizes="(max-width: 768px) calc(100vw - 48px), calc(50vw - 36px)"
+                transformation={[{ quality: 80 }]}
                 loading="eager"
-                fetchPriority="high"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -217,9 +230,13 @@ export function FiftyFiftySection({ LinkComponent }: FiftyFiftySectionProps) {
           <LinkComponent route={{ path: "/category/bracelets" }} className="block">
             <div className="w-full aspect-square mb-3 overflow-hidden">
               <Image
-                src={linkBracelet}
+                urlEndpoint={IMAGEKIT_ENDPOINT}
+                src={imagePaths.linkBracelet}
                 alt="Chain link bracelet"
-                layout="fullWidth"
+                width={1742}
+                height={1744}
+                sizes="(max-width: 768px) calc(100vw - 48px), calc(50vw - 36px)"
+                transformation={[{ quality: 80 }]}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -250,9 +267,13 @@ export function OneThirdTwoThirdsSection({ LinkComponent }: OneThirdTwoThirdsSec
           <LinkComponent route={{ path: "/category/rings" }} className="block">
             <div className="w-full h-[500px] lg:h-[800px] mb-3 overflow-hidden">
               <Image
-                src={organicEarring}
+                urlEndpoint={IMAGEKIT_ENDPOINT}
+                src={imagePaths.organicEarring}
                 alt="Artisan crafted jewelry"
-                layout="fullWidth"
+                width={1590}
+                height={1592}
+                sizes="(max-width: 1024px) calc(100vw - 48px), calc(33vw - 40px)"
+                transformation={[{ quality: 80 }]}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -269,9 +290,13 @@ export function OneThirdTwoThirdsSection({ LinkComponent }: OneThirdTwoThirdsSec
           <LinkComponent route={{ path: "/category/necklaces" }} className="block">
             <div className="w-full h-[500px] lg:h-[800px] mb-3 overflow-hidden">
               <Image
-                src={circularCollection}
+                urlEndpoint={IMAGEKIT_ENDPOINT}
+                src={imagePaths.circularCollection}
                 alt="Circular jewelry collection"
-                layout="fullWidth"
+                width={1792}
+                height={1792}
+                sizes="(max-width: 1024px) calc(100vw - 48px), calc(67vw - 40px)"
+                transformation={[{ quality: 80 }]}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>

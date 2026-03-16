@@ -1,3 +1,4 @@
+import { images } from "@ce/ui/lib/images";
 import AboutSidebar from "@/components/about/AboutSidebar";
 import ContentSection from "@/components/about/ContentSection";
 import ImageTextBlock from "@/components/about/ImageTextBlock";
@@ -18,7 +19,7 @@ export default function OurStoryPage() {
 
         <ContentSection>
           <ImageTextBlock
-            image="/images/founders.jpg"
+            image={images.founders}
             imageAlt="Company founders"
             title="Founded on Passion"
             content="LINEA Jewelry was born from a shared vision of creating timeless pieces that transcend fleeting trends. Our founders, united by their passion for exceptional craftsmanship and sustainable practices, established the brand with a commitment to creating jewelry that tells a story - your story."

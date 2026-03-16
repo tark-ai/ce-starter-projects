@@ -21,10 +21,10 @@ import {
 import { Slider } from "@ce/ui/components/ui/slider";
 import { formatPrice } from "@ce/ui/lib/format";
 import type { Item, Pagination as PaginationType } from "@commercengine/storefront";
-import { Image } from "@unpic/react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import type { LineaLinkComponent } from "./lib/routing";
+import { StorefrontImage } from "./lib/storefront-image";
 import { WishlistButton } from "./product";
 
 interface CategoryHeaderProps {
@@ -453,16 +453,20 @@ export function ProductGrid({
             <Card className="border-none shadow-none bg-transparent group cursor-pointer">
               <CardContent className="p-0">
                 <div className="aspect-square mb-3 overflow-hidden bg-muted/10 relative">
-                  <Image
-                    src={item.images?.[0]?.url_standard ?? ""}
+                  <StorefrontImage
+                    image={item.images?.[0]}
                     alt={item.images?.[0]?.alternate_text || item.product_name}
-                    layout="fullWidth"
+                    variant="standard"
+                    width={400}
+                    height={400}
                     className="w-full h-full object-cover transition-all duration-300 group-hover:opacity-0"
                   />
-                  <Image
-                    src={item.images?.[1]?.url_standard || item.images?.[0]?.url_standard || ""}
+                  <StorefrontImage
+                    image={item.images?.[1] || item.images?.[0]}
                     alt={`${item.product_name} alternate`}
-                    layout="fullWidth"
+                    variant="standard"
+                    width={400}
+                    height={400}
                     className="absolute inset-0 w-full h-full object-cover transition-all duration-300 opacity-0 group-hover:opacity-100"
                   />
                   <div className="absolute inset-0 bg-black/[0.03]" />

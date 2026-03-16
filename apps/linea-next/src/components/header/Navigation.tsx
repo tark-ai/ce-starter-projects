@@ -1,6 +1,7 @@
 "use client";
 
 import { Navigation as SharedNavigation } from "@ce/linea-shared/header";
+import { images } from "@ce/ui/lib/images";
 import { useCheckout } from "@commercengine/checkout/react";
 import type { Category } from "@commercengine/storefront";
 import { useCategories } from "@/lib/hooks";
@@ -9,11 +10,11 @@ import { useLineaSearchNavigation } from "@/lib/use-linea-search-navigation";
 import { useWishlist } from "@/lib/wishlist";
 
 const NAV_IMAGES = {
-  ringsCollection: "/images/rings-collection.jpg",
-  earringsCollection: "/images/earrings-collection.jpg",
-  arcusBracelet: "/images/arcus-bracelet.jpg",
-  spanBracelet: "/images/span-bracelet.jpg",
-  founders: "/images/founders.jpg",
+  ringsCollection: images.ringsCollection,
+  earringsCollection: images.earringsCollection,
+  arcusBracelet: images.arcusBracelet,
+  spanBracelet: images.spanBracelet,
+  founders: images.founders,
   logo: "/LINEA-1.svg",
 };
 

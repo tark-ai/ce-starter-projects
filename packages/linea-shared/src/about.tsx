@@ -1,4 +1,5 @@
-import { Image } from "@unpic/react";
+import { IMAGEKIT_ENDPOINT } from "@ce/ui/lib/images";
+import { Image } from "@imagekit/react";
 import type { LineaLinkComponent } from "./lib/routing";
 
 // --- PageHeader ---
@@ -57,9 +58,13 @@ export function ImageTextBlock({
     >
       <div className="flex-1">
         <Image
-          src={image}
+          urlEndpoint={IMAGEKIT_ENDPOINT}
+          src={image.replace(IMAGEKIT_ENDPOINT, "")}
           alt={imageAlt}
-          layout="fullWidth"
+          width={1792}
+          height={1794}
+          sizes="(max-width: 1024px) calc(100vw - 48px), calc(50vw - 48px)"
+          transformation={[{ quality: 80 }]}
           className="w-full aspect-square lg:aspect-auto lg:h-[800px] object-cover"
         />
       </div>

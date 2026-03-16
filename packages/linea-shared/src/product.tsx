@@ -18,11 +18,11 @@ import { Textarea } from "@ce/ui/components/ui/textarea";
 import { formatPrice } from "@ce/ui/lib/format";
 import { useCheckout } from "@commercengine/checkout/react";
 import type { Product, ProductImage, VariantOption } from "@commercengine/storefront";
-import { Image } from "@unpic/react";
 import { ChevronDown, ChevronUp, Heart, Minus, Plus, X } from "lucide-react";
 import type * as React from "react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { LineaLinkComponent } from "./lib/routing";
+import { StorefrontImage } from "./lib/storefront-image";
 import { getOptionSelectionValue, getVariantOption } from "./lib/variants";
 
 export interface WishlistButtonProps {
@@ -388,7 +388,7 @@ export function ProductInfo({
 // --- ImageZoom ---
 
 interface ImageZoomProps {
-  images: string[];
+  images: ProductImage[];
   initialIndex: number;
   isOpen: boolean;
   onClose: () => void;
@@ -453,11 +453,13 @@ export function ImageZoom({ images, initialIndex, isOpen, onClose }: ImageZoomPr
       <div ref={scrollRef} className="relative w-full h-full overflow-y-auto">
         <div className="space-y-4">
           {images.map((image) => (
-            <div key={image} className="w-full flex justify-center">
-              <Image
-                src={image}
-                alt="Product view"
-                layout="fullWidth"
+            <div key={image.id} className="w-full flex justify-center">
+              <StorefrontImage
+                image={image}
+                alt={image.alternate_text || "Product view"}
+                variant="zoom"
+                width={1200}
+                height={1200}
                 className="w-full max-w-none object-cover animate-scale-in"
               />
             </div>
@@ -481,8 +483,6 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
   const [zoomInitialIndex, setZoomInitialIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const touchEndX = useRef<number | null>(null);
-
-  const imageUrls = images.map((img) => img.url_zoom || img.url_standard);
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => (prev + 1) % images.length);
@@ -552,10 +552,12 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
                 onKeyDown={handleKeyDown}
                 aria-label={`View ${productName} image ${index + 1}`}
               >
-                <Image
-                  src={image.url_standard}
+                <StorefrontImage
+                  image={image}
                   alt={image.alternate_text || `${productName} view ${index + 1}`}
-                  layout="fullWidth"
+                  variant="standard"
+                  width={800}
+                  height={800}
                   loading={index === 0 ? "eager" : "lazy"}
                   fetchPriority={index === 0 ? "high" : undefined}
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -584,13 +586,15 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
             onTouchEnd={handleTouchEnd}
             aria-label={`View ${productName} image ${currentImageIndex + 1}`}
           >
-            <Image
-              src={images[currentImageIndex].url_standard}
+            <StorefrontImage
+              image={images[currentImageIndex]}
               alt={
                 images[currentImageIndex].alternate_text ||
                 `${productName} view ${currentImageIndex + 1}`
               }
-              layout="fullWidth"
+              variant="standard"
+              width={800}
+              height={800}
               loading="eager"
               fetchPriority="high"
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105 select-none"
@@ -615,7 +619,7 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
       </div>
 
       <ImageZoom
-        images={imageUrls}
+        images={images}
         initialIndex={zoomInitialIndex}
         isOpen={isZoomOpen}
         onClose={() => setIsZoomOpen(false)}

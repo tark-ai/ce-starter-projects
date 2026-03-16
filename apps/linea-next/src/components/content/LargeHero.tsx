@@ -1,15 +1,17 @@
+import { images } from "@ce/ui/lib/images";
 import Image from "next/image";
 
 const LargeHero = () => {
   return (
     <section className="w-full mb-16 px-6">
-      <div className="relative w-full aspect-[16/9] mb-3 overflow-hidden">
+      <div className="w-full aspect-[16/9] mb-3 overflow-hidden">
         <Image
-          src="/images/hero-image.jpg"
+          src={images.heroImage}
           alt="Modern jewelry collection"
-          fill
-          className="object-cover"
-          sizes="100vw"
+          width={2690}
+          height={1792}
+          className="w-full h-full object-cover"
+          sizes="calc(100vw - 48px)"
           priority
         />
       </div>

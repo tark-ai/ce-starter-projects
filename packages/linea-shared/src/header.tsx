@@ -1,14 +1,11 @@
-import defaultArcusBracelet from "@ce/ui/assets/arcus-bracelet.jpg";
-import defaultEarringsCollection from "@ce/ui/assets/earrings-collection.jpg";
-import defaultFounders from "@ce/ui/assets/founders.jpg";
-import defaultRingsCollection from "@ce/ui/assets/rings-collection.jpg";
-import defaultSpanBracelet from "@ce/ui/assets/span-bracelet.jpg";
 import { formatPrice } from "@ce/ui/lib/format";
+import { images as defaultImages, IMAGEKIT_ENDPOINT } from "@ce/ui/lib/images";
 import type { Item } from "@commercengine/storefront";
-import { Image as UnpicImage } from "@unpic/react";
+import { Image as ImageKitImage } from "@imagekit/react";
 import { ArrowRight, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import type { LineaLinkComponent, LineaRoute } from "./lib/routing";
+import { StorefrontImage } from "./lib/storefront-image";
 
 export interface NavigationCategory {
   name: string;
@@ -37,6 +34,40 @@ interface NavigationProps {
   images?: NavigationImages;
 }
 
+const isImageKitAsset = (src: string) => src.startsWith(IMAGEKIT_ENDPOINT);
+
+const getImageKitPath = (src: string) => src.slice(IMAGEKIT_ENDPOINT.length);
+
+function NavigationPromoImage({ alt, src }: { alt: string; src: string }) {
+  if (isImageKitAsset(src)) {
+    return (
+      <ImageKitImage
+        urlEndpoint={IMAGEKIT_ENDPOINT}
+        src={getImageKitPath(src)}
+        alt={alt}
+        width={400}
+        height={280}
+        sizes="400px"
+        transformation={[{ quality: 80 }]}
+        loading="lazy"
+        className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-90"
+      />
+    );
+  }
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      width={400}
+      height={280}
+      loading="lazy"
+      decoding="async"
+      className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-90"
+    />
+  );
+}
+
 export function Navigation({
   LinkComponent,
   categories,
@@ -49,11 +80,11 @@ export function Navigation({
   onSearchSubmit,
   images,
 }: NavigationProps) {
-  const ringsCollection = images?.ringsCollection ?? defaultRingsCollection;
-  const earringsCollection = images?.earringsCollection ?? defaultEarringsCollection;
-  const arcusBracelet = images?.arcusBracelet ?? defaultArcusBracelet;
-  const spanBracelet = images?.spanBracelet ?? defaultSpanBracelet;
-  const founders = images?.founders ?? defaultFounders;
+  const ringsCollection = images?.ringsCollection ?? defaultImages.ringsCollection;
+  const earringsCollection = images?.earringsCollection ?? defaultImages.earringsCollection;
+  const arcusBracelet = images?.arcusBracelet ?? defaultImages.arcusBracelet;
+  const spanBracelet = images?.spanBracelet ?? defaultImages.spanBracelet;
+  const founders = images?.founders ?? defaultImages.founders;
   const logo = images?.logo ?? "/LINEA-1.svg";
 
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -73,21 +104,6 @@ export function Navigation({
     setSearchQuery("");
     onSearchSubmit(trimmed);
   };
-
-  useEffect(() => {
-    const imagesToPreload = [
-      ringsCollection,
-      earringsCollection,
-      arcusBracelet,
-      spanBracelet,
-      founders,
-    ];
-
-    imagesToPreload.forEach((src) => {
-      const image = new Image();
-      image.src = src;
-    });
-  }, []);
 
   const popularSearches = [
     "Gold Rings",
@@ -206,7 +222,7 @@ export function Navigation({
           </div>
         </button>
 
-        <div className="hidden lg:flex space-x-8">
+        <div className="hidden lg:flex space-x-8" role="menubar">
           {navItems.map((item) => (
             <div
               key={item.name}
@@ -350,12 +366,7 @@ export function Navigation({
                       route={getImageRoute(activeDropdown, image.label)}
                       className="w-[400px] h-[280px] cursor-pointer group relative overflow-hidden block"
                     >
-                      <UnpicImage
-                        src={image.src}
-                        alt={image.alt}
-                        layout="fullWidth"
-                        className="w-full h-full object-cover transition-opacity duration-200 group-hover:opacity-90"
-                      />
+                      <NavigationPromoImage src={image.src} alt={image.alt} />
                       <div className="absolute bottom-2 left-2 text-white text-xs font-light flex items-center gap-1">
                         <span>{image.label}</span>
                         <ArrowRight size={12} />
@@ -495,11 +506,13 @@ export function Navigation({
                         onClick={() => setOffCanvasType(null)}
                         className="shrink-0"
                       >
-                        <UnpicImage
-                          src={item.images?.[0]?.url_standard ?? ""}
+                        <StorefrontImage
+                          image={item.images?.[0]}
                           alt={item.product_name}
+                          variant="thumbnail"
                           width={80}
                           height={80}
+                          loading="lazy"
                           className="w-20 h-20 object-cover bg-muted/10"
                         />
                       </LinkComponent>

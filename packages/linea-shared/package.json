@@ -21,7 +21,7 @@
     "@ce/ui": "workspace:*",
     "@commercengine/checkout": "^0.3.1",
     "@commercengine/storefront": "^0.1.4",
-    "@unpic/react": "^1.0.2",
+    "@imagekit/react": "^5.0.2",
     "lucide-react": "^0.563.0"
   },
   "peerDependencies": {

@@ -1,5 +1,6 @@
 "use client";
 
+import { images } from "@ce/ui/lib/images";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,13 +29,14 @@ const EditorialSection = () => {
         </div>
 
         <div className="order-first md:order-last">
-          <div className="relative w-full aspect-square overflow-hidden">
+          <div className="w-full aspect-square overflow-hidden">
             <Image
-              src="/images/founders.jpg"
+              src={images.founders}
               alt="Linea founders - two women in minimalist jewelry"
-              fill
-              className="object-cover"
-              sizes="(max-width: 768px) 100vw, 50vw"
+              width={1792}
+              height={1794}
+              className="w-full h-full object-cover"
+              sizes="(max-width: 768px) calc(100vw - 48px), calc(50vw - 48px)"
             />
           </div>
         </div>
