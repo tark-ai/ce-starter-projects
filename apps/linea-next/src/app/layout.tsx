@@ -2,6 +2,7 @@
 import "@fontsource-variable/dm-sans";
 import "./globals.css";
 
+import { PoweredByBadge } from "@ce/ui/components/ui/powered-by-badge";
 import type { Metadata } from "next";
 import Footer from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
@@ -41,6 +42,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Header categories={categories} />
             {children}
             <Footer />
+            <PoweredByBadge />
           </div>
         </Providers>
       </body>

@@ -1,3 +1,4 @@
+import { PoweredByBadge } from "@ce/ui/components/ui/powered-by-badge";
 import { Toaster as Sonner } from "@ce/ui/components/ui/sonner";
 import { Toaster } from "@ce/ui/components/ui/toaster";
 import { TooltipProvider } from "@ce/ui/components/ui/tooltip";
@@ -63,6 +64,7 @@ function RootComponent() {
               <Header categories={categories} />
               <Outlet />
               <Footer />
+              <PoweredByBadge />
             </div>
           </WishlistProvider>
         </TooltipProvider>
