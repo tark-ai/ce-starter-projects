@@ -30,13 +30,13 @@ const categories = data?.categories ?? [];
   <body>
     <div class="min-h-screen bg-background">
       <header class="w-full sticky top-0 z-50">
-        <Navigation client:only="react" serverCategories={categories} transition:persist />
+        <Navigation client:load serverCategories={categories} transition:persist />
       </header>
       <div data-page-content>
         <slot />
       </div>
-      <Footer client:only="react" transition:persist />
-      <PoweredByBadge client:only="react" transition:persist />
+      <Footer client:load transition:persist />
+      <PoweredByBadge client:load transition:persist />
     </div>
 
     <!-- App-level checkout bootstrapping + partial swap for the persistent shell -->

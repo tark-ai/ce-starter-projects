@@ -22,5 +22,5 @@ const similarItems = similarResult.data?.products ?? [];
 ---
 
 <Layout title={product?.name ? `${product.name} | Linea` : "Product | Linea"} description={product?.short_description ?? `Shop ${product?.name ?? "this product"} from Linea`}>
-  <ProductContent client:only="react" serverProduct={product} serverSimilarItems={similarItems} />
+  <ProductContent client:idle serverProduct={product} serverSimilarItems={similarItems} />
 </Layout>

@@ -18,7 +18,7 @@
         "@ce/linea-shared": "workspace:*",
         "@ce/ui": "workspace:*",
         "@commercengine/checkout": "^0.3.1",
-        "@commercengine/storefront": "^0.1.4",
+        "@commercengine/storefront": "^0.1.5",
         "@fontsource-variable/dm-sans": "^5.2.8",
         "@tailwindcss/postcss": "^4.2.1",
         "@tanstack/react-query": "^5.90.21",
@@ -46,7 +46,7 @@
         "@ce/linea-shared": "workspace:*",
         "@ce/ui": "workspace:*",
         "@commercengine/checkout": "^0.3.1",
-        "@commercengine/storefront": "^0.1.4",
+        "@commercengine/storefront": "^0.1.5",
         "@fontsource-variable/dm-sans": "^5.2.8",
         "@tanstack/react-query": "^5.90.21",
         "astro": "^6.0.4",
@@ -72,7 +72,7 @@
         "@ce/linea-shared": "workspace:*",
         "@ce/ui": "workspace:*",
         "@commercengine/checkout": "^0.3.1",
-        "@commercengine/storefront": "^0.1.4",
+        "@commercengine/storefront": "^0.1.5",
         "@fontsource-variable/dm-sans": "^5.2.8",
         "@tanstack/react-query": "^5.90.21",
         "lucide-react": "^0.563.0",
@@ -98,7 +98,7 @@
         "@ce/linea-shared": "workspace:*",
         "@ce/ui": "workspace:*",
         "@commercengine/checkout": "^0.3.1",
-        "@commercengine/storefront": "^0.1.4",
+        "@commercengine/storefront": "^0.1.5",
         "@fontsource-variable/dm-sans": "^5.2.8",
         "@tailwindcss/postcss": "^4.2.1",
         "@tanstack/react-query": "^5.90.21",
@@ -129,7 +129,7 @@
       "dependencies": {
         "@ce/ui": "workspace:*",
         "@commercengine/checkout": "^0.3.1",
-        "@commercengine/storefront": "^0.1.4",
+        "@commercengine/storefront": "^0.1.5",
         "@imagekit/react": "^5.0.2",
         "lucide-react": "^0.563.0",
       },
@@ -297,7 +297,7 @@
 
     "@commercengine/ssr-utils": ["@commercengine/ssr-utils@0.3.0", "", {}, "sha512-FZ7ksn4ppVUXJs0uZbIEuQy1WPGPSvfgClOz+NkIMaqfvNpPvrVgIx7zJXNGMnq+/aoSe8O0Ez8B2xyd077bKg=="],
 
-    "@commercengine/storefront": ["@commercengine/storefront@0.1.4", "", { "dependencies": { "@commercengine/ssr-utils": "0.3.0", "@commercengine/storefront-sdk": "0.14.2" }, "peerDependencies": { "@tanstack/react-start": ">=1.0.0", "next": ">=15.0.0", "react": ">=19.0.0", "react-dom": ">=19.0.0" }, "optionalPeers": ["@tanstack/react-start", "next", "react", "react-dom"] }, "sha512-PS5ULO7weKStmXe6QOy04FUynPgAbXGMNcSilLt/EE0bKGPlAaSBcBsVCrhEpDhAIFPni+/B8nYWgL51uoddtA=="],
+    "@commercengine/storefront": ["@commercengine/storefront@0.1.5", "", { "dependencies": { "@commercengine/ssr-utils": "0.3.0", "@commercengine/storefront-sdk": "0.14.2" }, "peerDependencies": { "@sveltejs/kit": ">=2.0.0", "@tanstack/react-start": ">=1.0.0", "astro": ">=5.0.0", "next": ">=15.0.0", "react": ">=19.0.0", "react-dom": ">=19.0.0" }, "optionalPeers": ["@sveltejs/kit", "@tanstack/react-start", "astro", "next", "react", "react-dom"] }, "sha512-RTErr9Igk1P0Yb96jTdUAiaZKotZ7pmVwnZjmHY5LTOJO1y7xpIMjuK4EJWpdsvVtrDD3j6VF5epti2s1gtrKQ=="],
 
     "@commercengine/storefront-sdk": ["@commercengine/storefront-sdk@0.14.2", "", { "dependencies": { "openapi-fetch": "^0.17.0" } }, "sha512-wlCBYslycrmqH+UTqqWQGG/hFJK3862bERA7uVFryu+00iWWWlH4xA90QDi9+geb4pC50/qZdJIoeOW6HcRP4Q=="],
 

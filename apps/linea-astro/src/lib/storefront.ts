@@ -1,9 +1,13 @@
-import { Environment, PublicStorefrontSDK } from "@commercengine/storefront";
+import { Environment } from "@commercengine/storefront";
+import { createAstroServerStorefront } from "@commercengine/storefront/astro/server";
 
 const useStaging = import.meta.env.PUBLIC_CE_ENV === "staging" || !import.meta.env.PUBLIC_CE_ENV;
 
-export const publicSdk = new PublicStorefrontSDK({
+const serverStorefront = createAstroServerStorefront({
   storeId: import.meta.env.PUBLIC_STORE_ID ?? "",
   apiKey: import.meta.env.PUBLIC_API_KEY ?? "",
   environment: useStaging ? Environment.Staging : Environment.Production,
+  tokenStorageOptions: { prefix: "linea_" },
 });
+
+export const publicSdk = serverStorefront.publicStorefront();

@@ -28,7 +28,7 @@ const { data: skusData } = await publicSdk.catalog.listSkus({
 
 <Layout title={`${displayName} | Linea`} description={`Shop ${displayName} from Linea.`}>
   <CategoryContent
-    client:only="react"
+    client:idle
     category={category!}
     initialSkus={skusData?.skus ?? []}
     initialPagination={skusData?.pagination}

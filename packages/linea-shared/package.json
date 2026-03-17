@@ -20,7 +20,7 @@
   "dependencies": {
     "@ce/ui": "workspace:*",
     "@commercengine/checkout": "^0.3.1",
-    "@commercengine/storefront": "^0.1.4",
+    "@commercengine/storefront": "^0.1.5",
     "@imagekit/react": "^5.0.2",
     "lucide-react": "^0.563.0"
   },

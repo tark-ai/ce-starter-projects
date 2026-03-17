@@ -10,7 +10,7 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { sdk } from "./storefront-client";
+import { getSdk } from "./storefront-client";
 
 type OnAddListener = () => void;
 
@@ -53,7 +53,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   const { data, error, isLoading } = useQuery({
     queryKey: WISHLIST_KEY,
     queryFn: async () => {
-      const { data, error } = await sdk.cart.getWishlist();
+      const { data, error } = await getSdk().cart.getWishlist();
       if (error) throw new Error(error.message);
       return data ?? { products: [] as Item[] };
     },
@@ -82,7 +82,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       productId: string;
       variantId?: string | null;
     }) => {
-      const { data, error } = await sdk.cart.addToWishlist({
+      const { data, error } = await getSdk().cart.addToWishlist({
         product_id: productId,
         variant_id: variantId ?? null,
       });
@@ -108,7 +108,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       productId: string;
       variantId?: string | null;
     }) => {
-      const { data, error } = await sdk.cart.removeFromWishlist({
+      const { data, error } = await getSdk().cart.removeFromWishlist({
         product_id: productId,
         variant_id: variantId ?? null,
       });

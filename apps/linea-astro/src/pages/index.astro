@@ -8,5 +8,5 @@ const products = data?.skus ?? [];
 ---
 
 <Layout>
-  <HomeContent client:only="react" initialProducts={products} />
+  <HomeContent client:idle initialProducts={products} />
 </Layout>

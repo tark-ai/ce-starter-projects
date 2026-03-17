@@ -6,10 +6,10 @@ import type {
   SearchProductsBody,
 } from "@commercengine/storefront";
 import { useQuery } from "@tanstack/react-query";
-import { sdk } from "./storefront-client";
+import { getSdk } from "./storefront-client";
 
 function publicSdkClient() {
-  return sdk;
+  return getSdk();
 }
 
 interface UseProductsOptions {

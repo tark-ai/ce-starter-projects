@@ -1,23 +1,29 @@
 import { getCheckout, initCheckout } from "@commercengine/checkout";
-import { BrowserTokenStorage, createStorefront, Environment } from "@commercengine/storefront";
-
-const tokenStorage = new BrowserTokenStorage("linea_");
+import { Environment } from "@commercengine/storefront";
+import { createAstroStorefront } from "@commercengine/storefront/astro";
 
 const useStaging = import.meta.env.PUBLIC_CE_ENV === "staging" || !import.meta.env.PUBLIC_CE_ENV;
 
-const storefront = createStorefront({
+const storefront = createAstroStorefront({
   storeId: import.meta.env.PUBLIC_STORE_ID ?? "",
-  environment: useStaging ? Environment.Staging : Environment.Production,
   apiKey: import.meta.env.PUBLIC_API_KEY ?? "",
-  session: {
-    tokenStorage,
-    onTokensUpdated: (accessToken, refreshToken) => {
-      getCheckout().updateTokens(accessToken, refreshToken);
-    },
+  environment: useStaging ? Environment.Staging : Environment.Production,
+  tokenStorageOptions: { prefix: "linea_" },
+  onTokensUpdated: (accessToken, refreshToken) => {
+    getCheckout().updateTokens(accessToken, refreshToken);
   },
 });
 
-export const sdk = storefront.session();
+// Lazy — clientStorefront() throws during SSR, but hooks only call getSdk()
+// inside queryFn callbacks which only execute on the client.
+let _sdk: ReturnType<typeof storefront.clientStorefront> | null = null;
+
+export function getSdk() {
+  if (!_sdk) {
+    _sdk = storefront.clientStorefront();
+  }
+  return _sdk;
+}
 
 let initPromise: Promise<void> | null = null;
 
@@ -25,8 +31,11 @@ export function initStorefront() {
   if (initPromise) return initPromise;
 
   initPromise = (async () => {
-    const accessToken = await sdk.ensureAccessToken();
-    const refreshToken = await tokenStorage.getRefreshToken();
+    await storefront.bootstrap();
+
+    const sdk = getSdk();
+    const accessToken = await sdk.getAccessToken();
+    const refreshToken = await sdk.session.peekRefreshToken();
 
     initCheckout({
       storeId: import.meta.env.PUBLIC_STORE_ID ?? "",
