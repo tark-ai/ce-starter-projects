@@ -7,7 +7,7 @@ Commerce Engine Hosted Checkout is a pre-built, embeddable checkout that runs in
 - **Ship faster** — skip building cart UI, payment forms, and checkout logic
 - **PCI compliant** — payment data never touches your servers
 - **Always up to date** — new payment methods and features deployed automatically
-- **Framework agnostic** — React, Vue, Svelte, Solid, or plain HTML
+- **Framework agnostic** — React, Vue, Svelte, Solid, Astro, or plain HTML
 - **Store isolation by default** — each store loads from its own subdomain origin
 - **Zero layout shift** — iframe loads in the background
 
@@ -15,7 +15,7 @@ Commerce Engine Hosted Checkout is a pre-built, embeddable checkout that runs in
 
 | Package | Description |
 |---------|-------------|
-| `@commercengine/checkout` | Framework bindings for React, Vue, Svelte, and Solid |
+| `@commercengine/checkout` | React, Vue, Svelte, and Solid bindings plus root helpers like `initCheckout()`, `getCheckout()`, and `subscribeToCheckout()` |
 | `@commercengine/js` | Vanilla JS SDK, also available via CDN |
 
 ## Checkout Studio (No-Code Customization)
@@ -52,7 +52,7 @@ Use **Checkout Studio** for checkout customization:
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `authMode` | `"managed" \| "provided"` | `"managed"` | `"managed"`: checkout handles its own auth. `"provided"`: your app manages tokens and syncs them to checkout (recommended for storefront apps already using Storefront SDK auth). |
+| `authMode` | `"managed" \| "provided"` | `"managed"` | `"provided"` (recommended): your app and checkout sync tokens bidirectionally — **required** when using `@commercengine/storefront`. `"managed"`: checkout handles its own auth (standalone embeds on static HTML / no-code platforms only). |
 | `accessToken` | `string` | — | Initial access token (JWT). Used with `authMode: "provided"`. |
 | `refreshToken` | `string` | — | Initial refresh token. Used with `authMode: "provided"`. |
 
@@ -127,25 +127,68 @@ Event listener methods: `checkout.on(event, handler)`, `checkout.once(event, han
 
 ## Setup by Framework
 
+> **All framework examples below use `authMode: "provided"` with two-way token sync.** This is the required pattern for any app that uses the Storefront SDK. Astro uses the root `@commercengine/checkout` helpers instead of a dedicated Astro binding. For standalone embeds on static HTML / no-code platforms without the SDK, see [Managed Mode](#managed-mode-standalone-embeds-only).
+
+### SPA Storefront Config (Shared)
+
+All SPA frameworks (React, Vue, Svelte, Solid) share this storefront config. It wires the SDK→checkout direction of the token sync. Place this in a shared module (e.g., `lib/storefront.ts`):
+
+```typescript
+// lib/storefront.ts
+import {
+  BrowserTokenStorage,
+  createStorefront,
+} from "@commercengine/storefront";
+import { getCheckout } from "@commercengine/checkout";
+
+const tokenStorage = new BrowserTokenStorage("myapp_");
+
+export const storefront = createStorefront({
+  storeId: import.meta.env.VITE_STORE_ID,
+  apiKey: import.meta.env.VITE_API_KEY,
+  session: {
+    tokenStorage,
+    onTokensUpdated: (accessToken, refreshToken) => {
+      getCheckout().updateTokens(accessToken, refreshToken);
+    },
+  },
+});
+```
+
+> **SSR frameworks** (Next.js, TanStack Start, Nuxt, SvelteKit) use their own storefront factory — see the Next.js section below and `ssr-patterns/` for details.
+
 ### React
 
 ```bash
-npm install @commercengine/checkout
+npm install @commercengine/checkout @commercengine/storefront
 ```
 
 ```tsx
-// Root component — initialize in useEffect, cleanup on unmount
+// Root component — initialize storefront + checkout with two-way sync
 import { useEffect } from "react";
 import { initCheckout, destroyCheckout } from "@commercengine/checkout/react";
+import { storefront } from "./lib/storefront";
 
 function Root() {
   useEffect(() => {
-    initCheckout({
-      storeId: import.meta.env.VITE_STORE_ID,
-      apiKey: import.meta.env.VITE_API_KEY,
-      environment: "production",
-      onComplete: (order) => console.log("Order completed:", order.orderNumber),
-    });
+    const init = async () => {
+      const sessionSdk = storefront.session();
+      const accessToken = await sessionSdk.ensureAccessToken();
+      const refreshToken = await sessionSdk.session.peekRefreshToken();
+
+      initCheckout({
+        storeId: import.meta.env.VITE_STORE_ID,
+        apiKey: import.meta.env.VITE_API_KEY,
+        authMode: "provided",
+        accessToken: accessToken ?? undefined,
+        refreshToken: refreshToken ?? undefined,
+        onTokensUpdated: ({ accessToken, refreshToken }) => {
+          void sessionSdk.setTokens(accessToken, refreshToken);
+        },
+        onComplete: (order) => console.log("Order completed:", order.orderNumber),
+      });
+    };
+    void init();
     return () => destroyCheckout();
   }, []);
 
@@ -289,24 +332,38 @@ Then use `useCheckout()` in any client component — no provider needed.
 ### Vue
 
 ```bash
-npm install @commercengine/checkout
+npm install @commercengine/checkout @commercengine/storefront
 ```
 
 ```typescript
-// main.ts — initialize before createApp(), cleanup on HMR
+// main.ts — initialize storefront + checkout with two-way sync
 import { createApp } from "vue";
 import { initCheckout, destroyCheckout } from "@commercengine/checkout/vue";
+import { storefront } from "./lib/storefront";
 import App from "./App.vue";
 
-initCheckout({
-  storeId: import.meta.env.VITE_STORE_ID,
-  apiKey: import.meta.env.VITE_API_KEY,
-  environment: "production",
-  onComplete: (order) => console.log("Order completed:", order.orderNumber),
-});
+async function bootstrap() {
+  const sessionSdk = storefront.session();
+  const accessToken = await sessionSdk.ensureAccessToken();
+  const refreshToken = await sessionSdk.session.peekRefreshToken();
 
-const app = createApp(App);
-app.mount("#app");
+  initCheckout({
+    storeId: import.meta.env.VITE_STORE_ID,
+    apiKey: import.meta.env.VITE_API_KEY,
+    authMode: "provided",
+    accessToken: accessToken ?? undefined,
+    refreshToken: refreshToken ?? undefined,
+    onTokensUpdated: ({ accessToken, refreshToken }) => {
+      void sessionSdk.setTokens(accessToken, refreshToken);
+    },
+    onComplete: (order) => console.log("Order completed:", order.orderNumber),
+  });
+
+  const app = createApp(App);
+  app.mount("#app");
+}
+
+void bootstrap();
 
 if (import.meta.hot) {
   import.meta.hot.dispose(() => destroyCheckout());
@@ -328,16 +385,26 @@ const { openCart, openCheckout, addToCart, cartCount, isReady } = useCheckout();
 </template>
 ```
 
-**Nuxt 3:** Create `plugins/checkout.client.ts` (`.client.ts` suffix ensures browser-only):
+**Nuxt 3:** Create `plugins/checkout.client.ts` (`.client.ts` suffix ensures browser-only). See `ssr/` for Nuxt storefront setup with `@commercengine/ssr-utils`:
 
 ```typescript
 import { initCheckout } from "@commercengine/checkout/vue";
+import { storefront } from "~/lib/storefront";
 
-export default defineNuxtPlugin(() => {
+export default defineNuxtPlugin(async () => {
+  const sessionSdk = storefront.session();
+  const accessToken = await sessionSdk.ensureAccessToken();
+  const refreshToken = await sessionSdk.session.peekRefreshToken();
+
   initCheckout({
     storeId: "store_xxx",
     apiKey: "ak_xxx",
-    environment: "production",
+    authMode: "provided",
+    accessToken: accessToken ?? undefined,
+    refreshToken: refreshToken ?? undefined,
+    onTokensUpdated: ({ accessToken, refreshToken }) => {
+      void sessionSdk.setTokens(accessToken, refreshToken);
+    },
   });
 });
 ```
@@ -345,23 +412,34 @@ export default defineNuxtPlugin(() => {
 ### Svelte
 
 ```bash
-npm install @commercengine/checkout
+npm install @commercengine/checkout @commercengine/storefront
 ```
 
-**SvelteKit** — initialize in `src/routes/+layout.svelte` with `browser` guard and cleanup:
+**SvelteKit** — initialize in `src/routes/+layout.svelte` with `browser` guard and cleanup. See `ssr/` for SvelteKit storefront setup with `@commercengine/ssr-utils`:
 
 ```svelte
 <script>
   import { onMount, onDestroy } from "svelte";
   import { browser } from "$app/environment";
   import { initCheckout, destroyCheckout } from "@commercengine/checkout/svelte";
+  import { storefront } from "$lib/storefront";
 
-  onMount(() => {
+  onMount(async () => {
     if (!browser) return;
+
+    const sessionSdk = storefront.session();
+    const accessToken = await sessionSdk.ensureAccessToken();
+    const refreshToken = await sessionSdk.session.peekRefreshToken();
+
     initCheckout({
       storeId: import.meta.env.VITE_STORE_ID,
       apiKey: import.meta.env.VITE_API_KEY,
-      environment: "production",
+      authMode: "provided",
+      accessToken: accessToken ?? undefined,
+      refreshToken: refreshToken ?? undefined,
+      onTokensUpdated: ({ accessToken, refreshToken }) => {
+        void sessionSdk.setTokens(accessToken, refreshToken);
+      },
       onComplete: (order) => console.log("Order completed:", order.orderNumber),
     });
   });
@@ -390,20 +468,30 @@ Access state via `$checkout.property` (Svelte auto-subscription syntax). Fine-gr
 ### Solid
 
 ```bash
-npm install @commercengine/checkout
+npm install @commercengine/checkout @commercengine/storefront
 ```
 
 ```tsx
-// Root component — initialize in onMount, cleanup in onCleanup
+// Root component — initialize storefront + checkout with two-way sync
 import { onMount, onCleanup } from "solid-js";
 import { initCheckout, destroyCheckout } from "@commercengine/checkout/solid";
+import { storefront } from "./lib/storefront";
 
 function Root() {
-  onMount(() => {
+  onMount(async () => {
+    const sessionSdk = storefront.session();
+    const accessToken = await sessionSdk.ensureAccessToken();
+    const refreshToken = await sessionSdk.session.peekRefreshToken();
+
     initCheckout({
       storeId: import.meta.env.VITE_STORE_ID,
       apiKey: import.meta.env.VITE_API_KEY,
-      environment: "production",
+      authMode: "provided",
+      accessToken: accessToken ?? undefined,
+      refreshToken: refreshToken ?? undefined,
+      onTokensUpdated: ({ accessToken, refreshToken }) => {
+        void sessionSdk.setTokens(accessToken, refreshToken);
+      },
       onComplete: (order) => console.log("Order completed:", order.orderNumber),
     });
   });
@@ -428,22 +516,168 @@ function CartButton() {
 }
 ```
 
-**SolidStart:** Initialize in root layout with `onMount`/`onCleanup`.
+**SolidStart:** Initialize in root layout with `onMount`/`onCleanup` using the same `authMode: "provided"` pattern.
+
+### Astro
+
+Astro does not need a dedicated checkout binding. Use the root `@commercengine/checkout` helpers in a shared layout script or client module.
+
+```bash
+npm install @commercengine/checkout @commercengine/storefront
+```
+
+**Step 1: Create a client module that owns Storefront SDK + Hosted Checkout init**
+
+```typescript
+// src/lib/storefront-client.ts
+import { getCheckout, initCheckout } from "@commercengine/checkout";
+import { BrowserTokenStorage, createStorefront, Environment } from "@commercengine/storefront";
+
+const tokenStorage = new BrowserTokenStorage("myapp_");
+
+const storefront = createStorefront({
+  storeId: import.meta.env.PUBLIC_STORE_ID ?? "",
+  apiKey: import.meta.env.PUBLIC_API_KEY ?? "",
+  environment:
+    import.meta.env.PUBLIC_CE_ENV === "staging" ? Environment.Staging : Environment.Production,
+  session: {
+    tokenStorage,
+    onTokensUpdated: (accessToken, refreshToken) => {
+      getCheckout().updateTokens(accessToken, refreshToken);
+    },
+  },
+});
+
+const sessionSdk = storefront.session();
+let initPromise: Promise<void> | null = null;
+
+export function initHostedCheckout() {
+  if (initPromise) return initPromise;
+
+  initPromise = (async () => {
+    const accessToken = await sessionSdk.ensureAccessToken();
+    const refreshToken = await tokenStorage.getRefreshToken();
+
+    initCheckout({
+      storeId: import.meta.env.PUBLIC_STORE_ID ?? "",
+      apiKey: import.meta.env.PUBLIC_API_KEY ?? "",
+      environment: import.meta.env.PUBLIC_CE_ENV === "staging" ? "staging" : "production",
+      authMode: "provided",
+      accessToken: accessToken ?? undefined,
+      refreshToken: refreshToken ?? undefined,
+      onTokensUpdated: ({ accessToken, refreshToken }) => {
+        void sessionSdk.setTokens(accessToken, refreshToken);
+      },
+    });
+  })().catch((error) => {
+    initPromise = null;
+    throw error;
+  });
+
+  return initPromise;
+}
+```
+
+**Step 2: Call it from the shared layout**
+
+```astro
+---
+import { ClientRouter } from "astro:transitions";
+---
+
+<html>
+  <head>
+    <ClientRouter />
+  </head>
+  <body>
+    <div data-page-content>
+      <slot />
+    </div>
+
+    <script>
+      import { initHostedCheckout } from "@/lib/storefront-client";
+
+      function bootstrap() {
+        void initHostedCheckout();
+      }
+
+      bootstrap();
+      document.addEventListener("astro:page-load", bootstrap);
+    </script>
+  </body>
+</html>
+```
+
+**Highly Recommended: preserve the same iframe across `ClientRouter` navigations**
+
+Astro's default client-router swap replaces `document.body`, so a body-mounted checkout iframe will remount on every navigation. `transition:persist` alone does not prevent iframe reloads. If remounting is acceptable, stop at the previous step. If you need to keep the iframe alive, install an app-level custom swap in the layout and only replace your page content region.
+
+```astro
+<script>
+  import { swapFunctions } from "astro:transitions/client";
+
+  document.addEventListener("astro:before-swap", (event) => {
+    event.swap = () => {
+      swapFunctions.deselectScripts(event.newDocument);
+      swapFunctions.swapRootAttributes(event.newDocument);
+      swapFunctions.swapHeadElements(event.newDocument);
+      const restoreFocus = swapFunctions.saveFocus();
+
+      const nextContent = event.newDocument.querySelector("[data-page-content]");
+      const currentContent = document.querySelector("[data-page-content]");
+
+      if (nextContent && currentContent) {
+        swapFunctions.swapBodyElement(nextContent, currentContent);
+      } else {
+        swapFunctions.swapBodyElement(event.newDocument.body, document.body);
+      }
+
+      restoreFocus();
+    };
+  });
+</script>
+```
 
 ### Vanilla JS (ES Module)
 
 ```bash
-npm install @commercengine/checkout
+npm install @commercengine/checkout @commercengine/storefront
 ```
 
 ```typescript
+import {
+  BrowserTokenStorage,
+  createStorefront,
+} from "@commercengine/storefront";
 import { initCheckout, getCheckout, subscribeToCheckout } from "@commercengine/checkout";
 
-// Initialize
+// Set up storefront with SDK→checkout token sync
+const tokenStorage = new BrowserTokenStorage("myapp_");
+const storefront = createStorefront({
+  storeId: "store_xxx",
+  apiKey: "ak_xxx",
+  session: {
+    tokenStorage,
+    onTokensUpdated: (accessToken, refreshToken) => {
+      getCheckout().updateTokens(accessToken, refreshToken);
+    },
+  },
+});
+
+// Bootstrap session and init checkout with two-way sync
+const sessionSdk = storefront.session();
+const accessToken = await sessionSdk.ensureAccessToken();
+const refreshToken = await tokenStorage.getRefreshToken();
+
 initCheckout({
   storeId: "store_xxx",
   apiKey: "ak_xxx",
-  environment: "production",
+  authMode: "provided",
+  accessToken: accessToken ?? undefined,
+  refreshToken: refreshToken ?? undefined,
+  onTokensUpdated: ({ accessToken, refreshToken }) => {
+    void sessionSdk.setTokens(accessToken, refreshToken);
+  },
   onComplete: (order) => console.log("Order placed:", order.orderNumber),
 });
 
@@ -469,7 +703,9 @@ document.getElementById("add-btn").onclick = () => {
 };
 ```
 
-### Vanilla JS (CDN)
+### Vanilla JS (CDN) — Managed Mode for Static HTML
+
+For static HTML pages, no-code platforms (Webflow, Framer), or sites that do **not** use the Storefront SDK, checkout runs in `managed` mode and handles auth entirely on its own:
 
 ```html
 <script src="https://cdn.commercengine.com/v1.js" async></script>
@@ -504,42 +740,21 @@ Everything in Commerce Engine is linked to the live session. Anonymous bootstrap
 
 | Mode | When to use | Who manages auth |
 |------|-------------|------------------|
-| `managed` (default) | Your app does **not** manage Commerce Engine auth | Checkout handles everything (anonymous tokens, OTP login, refresh) |
-| `provided` (advanced) | Your app **already** manages Commerce Engine auth (via SDK or direct API calls) | Your app is the single source of truth — checkout receives tokens |
+| `provided` (recommended) | Your app uses `@commercengine/storefront` or makes direct Commerce Engine API calls | Your app is the single source of truth — tokens sync bidirectionally with checkout |
+| `managed` | Standalone embed on a static HTML / no-code platform (Webflow, Framer, etc.) where the Storefront SDK is **not** used | Checkout handles everything (anonymous tokens, OTP login, refresh) |
 
-**The rule is simple**: If your app manages CE auth (whether via the Storefront SDK or direct API calls), you **must** use `provided` mode. Using `managed` mode when your app also manages auth creates two independent sessions — this is a critical data integrity issue, not a preference.
+**The rule is simple**: If your app uses the `@commercengine/storefront` package at all, you **must** use `provided` mode. The Storefront SDK creates and manages its own session (tokens) for every API call — cart, customer, orders, analytics. If checkout simultaneously manages its own auth via `managed` mode, two independent sessions are created. This breaks cart association, server-side analytics, and order attribution. This applies whether or not your app has custom auth UI — the SDK's existence alone requires `provided` mode.
 
-### Managed Mode (Default)
+### Provided Mode (Recommended)
 
-Checkout handles the entire auth lifecycle — anonymous tokens, OTP login, token refresh. No auth code needed in your app.
+Your app is the single source of truth for auth. Checkout receives tokens from your app and syncs any internal token changes back.
 
-If your app needs to know about auth events happening inside checkout (e.g., to show the user's name in your header), use the auth callbacks:
+**Why two-way sync?** Both the SDK and checkout can independently refresh near-expired tokens during API calls. The bidirectional sync ensures both sides always hold the same tokens regardless of which side triggers a refresh. Login and logout events inside checkout (OTP flow, account switching) also produce new tokens that must flow back to the SDK, and vice versa. Logout returns new tokens with reduced privileges — the `onTokensUpdated` callback handles this automatically in both directions, no manual token clearing needed.
 
-```typescript
-initCheckout({
-  storeId: "store_xxx",
-  apiKey: "ak_xxx",
-  // authMode defaults to "managed"
-
-  onTokensUpdated: ({ accessToken, refreshToken }) => {
-    // Single source for token sync
-    setAppTokens(accessToken, refreshToken);
-  },
-  onLogin: ({ user, loginMethod }) => {
-    // Semantic event (user + method)
-    setAppUser(user);
-  },
-  onLogout: ({ user }) => {
-    setAppUser(user ?? null);
-  },
-});
-```
-
-### Provided Mode (Recommended for new storefront integrations)
-
-Your app is the single source of truth for auth. Checkout receives tokens from your app and never manages its own auth state.
-
-**This mode requires precision.** You must sync tokens to checkout on every auth state change — login, logout, token refresh. A stale or missing token in checkout means a broken session.
+This is the correct mode for:
+- Any app using `@commercengine/storefront` (SPA or SSR)
+- Any app making direct Commerce Engine API calls
+- Any app with custom auth UI (login, account pages, etc.)
 
 ```typescript
 initCheckout({
@@ -548,6 +763,10 @@ initCheckout({
   authMode: "provided",
   accessToken: currentAccessToken,
   refreshToken: currentRefreshToken,
+  onTokensUpdated: ({ accessToken, refreshToken }) => {
+    // Sync checkout's token changes back to SDK
+    void sessionSdk.setTokens(accessToken, refreshToken);
+  },
 });
 ```
 
@@ -595,14 +814,34 @@ initCheckout({
 });
 ```
 
+### Managed Mode (Standalone Embeds Only)
+
+Checkout handles the entire auth lifecycle — anonymous tokens, OTP login, token refresh. No auth code needed in the host page.
+
+**Use managed mode only when:**
+- The host page is static HTML with no Commerce Engine SDK (Webflow, Framer, Squarespace, or similar no-code platforms)
+- Internal Commerce Engine applications where checkout is the only CE integration
+
+If your app imports `@commercengine/storefront` at all — even for public catalog reads — **do not use managed mode**. It will create a second independent session.
+
+```typescript
+// Standalone embed on a static HTML page — no Storefront SDK present
+initCheckout({
+  storeId: "store_xxx",
+  apiKey: "ak_xxx",
+  // authMode defaults to "managed"
+  onComplete: (order) => console.log("Order:", order.orderNumber),
+});
+```
+
 ### Auth Pitfalls
 
 | Level | Issue | Solution |
 |-------|-------|----------|
-| CRITICAL | App manages CE auth (SDK or API) + `managed` mode | Two independent sessions — breaks analytics, cart association, and order attribution. **Must** use `provided` mode. |
-| CRITICAL | `provided` mode without syncing tokens | Checkout waits indefinitely for tokens. Must call `updateTokens()` after init and on every token change (login, logout, refresh). |
-| CRITICAL | Not syncing logout in `provided` mode | User logs out of your app but remains logged in inside checkout — different users on the same session. Sync via `updateTokens("", "")`. |
-| HIGH | Not syncing token refresh in `provided` mode | Your app refreshes tokens but checkout holds stale ones — API calls inside checkout fail or map to wrong session. |
+| CRITICAL | App uses `@commercengine/storefront` + `managed` mode | Two independent sessions — breaks analytics, cart association, and order attribution. **Must** use `provided` mode. |
+| CRITICAL | `provided` mode without two-way sync | Must set up `onTokensUpdated` callbacks in both directions — SDK→checkout via `updateTokens()` and checkout→SDK via `setTokens()`. |
+| CRITICAL | Not syncing tokens bidirectionally | Both sides can independently refresh tokens. Without two-way sync, one side holds stale tokens — API calls fail or map to the wrong session. |
+| HIGH | Using `managed` mode in a framework app (React, Next.js, Vue, etc.) with Storefront SDK | Even without custom auth UI, the SDK's session management conflicts with checkout's. Use `provided` mode. |
 
 ## Quick Buy
 
@@ -633,7 +872,7 @@ The SDK itself is hosted at `https://cdn.commercengine.com/v1.js` (single deploy
 
 | Level | Issue | Solution |
 |-------|-------|----------|
-| CRITICAL | Using `authMode: "provided"` without syncing tokens | Must call `updateTokens()` whenever tokens change, or user sessions will break |
+| CRITICAL | Using `authMode: "provided"` without two-way sync | Must set up `onTokensUpdated` callbacks in both directions — SDK→checkout via `updateTokens()` and checkout→SDK via `setTokens()` |
 | HIGH | Calling `useCheckout()` before `initCheckout()` | `initCheckout()` must run first — call it at app entry point, outside components |
 | HIGH | Not handling `onComplete` event | Always listen for order completion to show confirmation or redirect |
 | MEDIUM | Missing `browser` guard in SSR frameworks | Use `typeof window !== "undefined"` (Solid) or `browser` (SvelteKit) guard |

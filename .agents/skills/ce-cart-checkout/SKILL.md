@@ -26,8 +26,8 @@ User Request: "Add cart" / "Checkout" / "Payments"
     │   ├─ Hosted Checkout (Recommended)
     │   │   └─ See references/hosted-checkout.md
     │   │   └─ Install @commercengine/checkout
-    │   │   └─ initCheckout() + useCheckout()
-    │   │   └─ Using SDK auth? → authMode: "provided" + sync tokens (see hosted-checkout.md & Auth Mode)
+    │   │   └─ initCheckout() + framework binding (or Astro / vanilla layout script)
+    │   │   └─ Using Storefront SDK? → authMode: "provided" + two-way sync (see hosted-checkout.md)
     │   │
     │   └─ Custom Checkout (Advanced)
     │       └─ See references/checkout-flow.md
@@ -52,7 +52,7 @@ User Request: "Add cart" / "Checkout" / "Payments"
 
 > Commerce Engine offers a **Hosted Checkout** — a pre-built, embeddable checkout that handles the entire purchase flow (cart, auth, addresses, payments, order confirmation) inside an iframe.
 >
-> **Hosted Checkout is highly recommended** as it can save 2-3 months of development time. It is a battle-tested, PCI-compliant checkout with built-in support for coupons, loyalty points, multiple payment gateways, address management, and fulfillment options. It ships with bindings for React, Vue, Svelte, Solid, and vanilla JS.
+> **Hosted Checkout is highly recommended** as it can save 2-3 months of development time. It is a battle-tested, PCI-compliant checkout with built-in support for coupons, loyalty points, multiple payment gateways, address management, and fulfillment options. It ships with bindings for React, Vue, Svelte, and Solid. Astro and vanilla storefronts use the root `initCheckout()` helpers documented in `references/hosted-checkout.md`.
 >
 > Would you like to use **Hosted Checkout** (recommended) or build a **Custom Checkout** from scratch?
 
@@ -101,7 +101,7 @@ initCheckout({
   accessToken: accessToken ?? undefined,
   refreshToken: refreshToken ?? undefined,
   onTokensUpdated: ({ accessToken, refreshToken }) => {
-    sessionSdk.setTokens(accessToken, refreshToken);
+    void sessionSdk.setTokens(accessToken, refreshToken);
   },
 });
 ```
@@ -129,9 +129,9 @@ function AddToCartButton({ productId, variantId, quantity }: Props) {
 }
 ```
 
-### Auth: SDK + Hosted Checkout
+### Auth: Storefront SDK + Hosted Checkout
 
-If your app already uses Commerce Engine auth (Storefront SDK or API), you **must** use Hosted Checkout with `authMode: "provided"` and sync tokens on every login, logout, and refresh. Otherwise checkout and your app maintain two separate sessions — breaking cart association, analytics, and order attribution. See `references/hosted-checkout.md` § "Auth Mode Guide".
+If your app uses the `@commercengine/storefront` package at all, you **must** use Hosted Checkout with `authMode: "provided"` and two-way token sync. The SDK manages its own session for API calls — without `provided` mode, checkout creates a second independent session, breaking cart association, analytics, and order attribution. See `references/hosted-checkout.md` § "Auth Mode Guide".
 
 ### What's Included
 
@@ -142,16 +142,17 @@ If your app already uses Commerce Engine auth (Storefront SDK or API), you **mus
 - Coupons and loyalty points
 - Payment gateway integration
 - Order confirmation
-- Framework bindings: React, Vue, Svelte, Solid, vanilla JS
+- Framework bindings: React, Vue, Svelte, Solid
+- Astro and vanilla storefronts via root `@commercengine/checkout` helpers
 
 ### Auth Mode
 
 | Mode | When to use |
 |------|-------------|
-| `managed` (default) | Your app does **not** manage CE auth — checkout handles everything |
-| `provided` (recommended for storefront apps) | Your app **already** manages CE auth (SDK or API) — this should be the default for new storefront integrations |
+| `provided` (recommended) | Your app uses `@commercengine/storefront` or makes direct CE API calls — **required** for any framework-based storefront |
+| `managed` | Standalone embed on static HTML / no-code platforms (Webflow, Framer) where the Storefront SDK is **not** used |
 
-If the app manages its own CE auth and uses `managed` mode, two separate sessions are created — this breaks analytics, cart association, and order attribution. See `references/hosted-checkout.md` § "Auth Mode Guide" for sync patterns.
+If your app imports `@commercengine/storefront` at all and uses `managed` mode, two separate sessions are created — this breaks analytics, cart association, and order attribution. See `references/hosted-checkout.md` § "Auth Mode Guide" for the two-way sync pattern.
 
 ### Framework Support
 
@@ -162,7 +163,9 @@ If the app manages its own CE auth and uses `managed` mode, two separate session
 | Vue / Nuxt | `@commercengine/checkout` | `@commercengine/checkout/vue` |
 | Svelte / SvelteKit | `@commercengine/checkout` | `@commercengine/checkout/svelte` |
 | Solid / SolidStart | `@commercengine/checkout` | `@commercengine/checkout/solid` |
-| Vanilla JS | `@commercengine/js` | CDN or `@commercengine/js` |
+| Astro | `@commercengine/checkout` | `@commercengine/checkout` in a shared layout script or client module |
+| Vanilla JS (ESM) | `@commercengine/checkout` | `@commercengine/checkout` |
+| Static HTML / CDN | `@commercengine/js` | CDN or `@commercengine/js` |
 
 ---
 

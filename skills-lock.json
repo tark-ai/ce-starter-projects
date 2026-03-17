@@ -4,17 +4,17 @@
     "ce": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "6169e9b5eb8bd61376fe17008e8f23bd41dd18603e16fc4276832b4e21ffa71d"
+      "computedHash": "f9201409d11081dcc740a39e160ff024bf7b8aa5118c71ffc9734cba9f02533b"
     },
     "ce-auth": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "018d3645a151314e8f002acb3e9c96c1a27d005403f743ab6dfa02c53d74ef2c"
+      "computedHash": "fae66fa2a209193a1bf8eed5cc394962e3cec24027c647155bfb6f6b9303ee15"
     },
     "ce-cart-checkout": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "9527968fb042f8be0a492a3330d8f7979533656af6197a5e9f2a7f4289f767b6"
+      "computedHash": "2da94a220a994683929abb9a39fc37cd8f8fabd6457de349bb78a9924ce4a4a8"
     },
     "ce-catalog": {
       "source": "commercengine/skills",
@@ -34,17 +34,17 @@
     "ce-setup": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "161b75e46bddc6a915dd776b29ee6c758a4964c86df29119060d5b3ccefb43b6"
+      "computedHash": "fb9b1b8fb22266c99bb1aec7b7d5b31ad5818b953b0b51b13317bfcd90f26bbb"
     },
     "ce-ssr": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "3af76d4ae7e22c4ef9c753cd565cc27145fedf35477372bf4683708bd6eff543"
+      "computedHash": "260edc2e8b1191a58c648e3999bf3bebb174d807be4323d76b98b68d09cb6b6e"
     },
     "ce-ssr-patterns": {
       "source": "commercengine/skills",
       "sourceType": "github",
-      "computedHash": "eceb0ae0a774239b35284c71678ef75e6bf093d718c4da0cf90a15cb6c3f773a"
+      "computedHash": "f4f90104ed91f5dcea1eae8da04cbd3cb186c42d77708ee6a0b0d081b5b6e0f3"
     },
     "ce-webhooks": {
       "source": "commercengine/skills",
