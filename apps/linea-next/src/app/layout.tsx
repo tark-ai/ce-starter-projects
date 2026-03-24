@@ -11,12 +11,12 @@ import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    default: "Linea - Minimalist jewelry crafted for the modern individual",
+    default: "Linea — Commerce Engine + Next.js Starter Template",
     template: "%s | Linea",
   },
   description:
-    "Shop Linea's curated collection of minimalist jewelry — rings, necklaces, earrings, and bracelets crafted for the modern individual. Free shipping on all orders.",
-  metadataBase: new URL("https://linea.demo.commercengine.com"),
+    "Linea is a production-ready e-commerce starter template built with Commerce Engine and Next.js. A reference implementation featuring a minimalist jewelry storefront with full catalog, cart, checkout, and search.",
+  metadataBase: new URL("https://linea-next.demo.commercengine.com"),
   openGraph: {
     siteName: "Linea",
     type: "website",

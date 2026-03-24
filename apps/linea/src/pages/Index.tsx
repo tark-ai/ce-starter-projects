@@ -5,7 +5,7 @@ import OneThirdTwoThirdsSection from "../components/content/OneThirdTwoThirdsSec
 import ProductCarousel from "../components/content/ProductCarousel";
 import Footer from "../components/footer/Footer";
 import Header from "../components/header/Header";
-import SEO, { SITE_NAME, SITE_URL } from "../components/Seo";
+import SEO, { FRAMEWORK, SITE_NAME, SITE_URL } from "../components/Seo";
 
 const Index = () => {
   return (
@@ -30,9 +30,10 @@ const Index = () => {
           {
             "@context": "https://schema.org",
             "@type": "Organization",
-            name: SITE_NAME,
-            url: SITE_URL,
+            name: "Commerce Engine",
+            url: "https://www.commercengine.io",
             logo: `${SITE_URL}/favicon.svg`,
+            description: `Commerce Engine is a headless e-commerce platform. ${SITE_NAME} is an open-source reference storefront built with ${FRAMEWORK}.`,
           },
         ]}
       />

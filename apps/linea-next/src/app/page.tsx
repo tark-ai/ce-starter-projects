@@ -2,8 +2,9 @@
 import { storefront } from "@/lib/storefront";
 import { HomeContent } from "./home-content";
 
-const SITE_URL = "https://linea.demo.commercengine.com";
+const SITE_URL = "https://linea-next.demo.commercengine.com";
 const SITE_NAME = "Linea";
+const FRAMEWORK = "Next.js";
 
 export const revalidate = 3600;
 
@@ -29,9 +30,10 @@ export default async function Home() {
     {
       "@context": "https://schema.org",
       "@type": "Organization",
-      name: SITE_NAME,
-      url: SITE_URL,
+      name: "Commerce Engine",
+      url: "https://www.commercengine.io",
       logo: `${SITE_URL}/favicon.svg`,
+      description: `Commerce Engine is a headless e-commerce platform. ${SITE_NAME} is an open-source reference storefront built with ${FRAMEWORK}.`,
     },
   ];
 

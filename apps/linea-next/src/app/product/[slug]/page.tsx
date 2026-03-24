@@ -5,7 +5,7 @@ import { Suspense } from "react";
 import { storefront } from "@/lib/storefront";
 import { ProductContent } from "./product-content";
 
-const SITE_URL = "https://linea.demo.commercengine.com";
+const SITE_URL = "https://linea-next.demo.commercengine.com";
 const SITE_NAME = "Linea";
 
 export const revalidate = 3600;

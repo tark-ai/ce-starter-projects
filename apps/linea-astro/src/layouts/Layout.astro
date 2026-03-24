@@ -12,7 +12,7 @@ interface Props {
   description?: string;
 }
 
-const { title = "Linea - Minimalist jewelry crafted for the modern individual", description = "Shop Linea's curated collection of minimalist jewelry — rings, necklaces, earrings, and bracelets crafted for the modern individual. Free shipping on all orders." } = Astro.props;
+const { title = "Linea — Commerce Engine + Astro Starter Template", description = "Linea is a production-ready e-commerce starter template built with Commerce Engine and Astro. A reference implementation featuring a minimalist jewelry storefront with full catalog, cart, checkout, and search." } = Astro.props;
 
 const { data } = await publicSdk.catalog.listCategories();
 const categories = data?.categories ?? [];

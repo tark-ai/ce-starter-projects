@@ -2,6 +2,10 @@ import type { AssociatedOption, Product, Variant } from "@commercengine/storefro
 
 export type AssociatedOptionValue = AssociatedOption[string];
 
+export function optionQueryParamKey(optionKey: string): string {
+  return optionKey;
+}
+
 export function getVariantOption(
   variant: Variant,
   optionKey: string

@@ -1,9 +1,16 @@
 <script lang="ts">
+import { SITE_URL } from "$lib/seo";
 import { images } from "@ce/ui/lib/images";
 import ContentSection from "$lib/components/about/ContentSection.svelte";
 import ImageTextBlock from "$lib/components/about/ImageTextBlock.svelte";
 import PageHeader from "$lib/components/about/PageHeader.svelte";
 </script>
+
+<svelte:head>
+	<title>Our Story | Linea</title>
+	<meta name="description" content="Discover Linea's journey — minimalist jewelry born from architecture and fine arts, crafted for the modern individual." />
+	<link rel="canonical" href="{SITE_URL}/about/our-story" />
+</svelte:head>
 
 <PageHeader title="Our Story" subtitle="A journey of passion, craftsmanship, and timeless elegance" />
 

@@ -1,3 +1,13 @@
+<script lang="ts">
+import { SITE_URL } from "$lib/seo";
+</script>
+
+<svelte:head>
+	<title>Privacy Policy | Linea</title>
+	<meta name="description" content="Linea's privacy policy — how we collect, use, and protect your personal information." />
+	<link rel="canonical" href="{SITE_URL}/privacy-policy" />
+</svelte:head>
+
 <div class="max-w-4xl mx-auto px-6 py-12">
 	<header class="mb-12 text-center">
 		<h1 class="text-4xl font-light text-foreground mb-4">Privacy Policy</h1>

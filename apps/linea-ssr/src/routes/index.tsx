@@ -9,6 +9,7 @@ import { storefront } from "@/lib/storefront";
 
 const SITE_URL = "https://linea-static.demo.commercengine.io";
 const SITE_NAME = "Linea";
+const FRAMEWORK = "TanStack Start";
 
 export const Route = createFileRoute("/")({
   loader: async () => {
@@ -27,16 +28,16 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       {
-        title: `${SITE_NAME} - Minimalist jewelry crafted for the modern individual`,
+        title: `${SITE_NAME} — Commerce Engine + TanStack Start Starter Template`,
       },
       {
         name: "description",
         content:
-          "Shop Linea's curated collection of minimalist jewelry — rings, necklaces, earrings, and bracelets crafted for the modern individual. Free shipping on all orders.",
+          "Linea is a production-ready e-commerce starter template built with Commerce Engine and TanStack Start. A reference implementation featuring a minimalist jewelry storefront with full catalog, cart, checkout, and search.",
       },
       {
         property: "og:title",
-        content: `${SITE_NAME} - Minimalist jewelry crafted for the modern individual`,
+        content: `${SITE_NAME} — Commerce Engine + TanStack Start Starter Template`,
       },
       { property: "og:type", content: "website" },
       { property: "og:image", content: `${SITE_URL}/og-image.jpg` },
@@ -44,12 +45,12 @@ export const Route = createFileRoute("/")({
       { name: "twitter:card", content: "summary_large_image" },
       {
         name: "twitter:title",
-        content: `${SITE_NAME} - Minimalist jewelry crafted for the modern individual`,
+        content: `${SITE_NAME} — Commerce Engine + TanStack Start Starter Template`,
       },
       {
         name: "twitter:description",
         content:
-          "Shop Linea's curated collection of minimalist jewelry — rings, necklaces, earrings, and bracelets crafted for the modern individual.",
+          "Linea is a production-ready e-commerce starter template built with Commerce Engine and TanStack Start. A reference implementation featuring a minimalist jewelry storefront with full catalog, cart, checkout, and search.",
       },
       { name: "twitter:image", content: `${SITE_URL}/og-image.jpg` },
     ],
@@ -77,9 +78,10 @@ export const Route = createFileRoute("/")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "Organization",
-          name: SITE_NAME,
-          url: SITE_URL,
+          name: "Commerce Engine",
+          url: "https://www.commercengine.io",
           logo: `${SITE_URL}/favicon.svg`,
+          description: `Commerce Engine is a headless e-commerce platform. ${SITE_NAME} is an open-source reference storefront built with ${FRAMEWORK}.`,
         }),
       },
     ],

@@ -1,7 +1,14 @@
 <script lang="ts">
+import { SITE_URL } from "$lib/seo";
 import ContentSection from "$lib/components/about/ContentSection.svelte";
 import PageHeader from "$lib/components/about/PageHeader.svelte";
 </script>
+
+<svelte:head>
+	<title>Sustainability | Linea</title>
+	<meta name="description" content="Learn about Linea's commitment to sustainable jewelry — responsibly sourced materials, ethical practices, and eco-friendly packaging." />
+	<link rel="canonical" href="{SITE_URL}/about/sustainability" />
+</svelte:head>
 
 <PageHeader
 	title="Sustainability"

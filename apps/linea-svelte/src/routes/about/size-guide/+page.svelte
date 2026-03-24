@@ -1,4 +1,5 @@
 <script lang="ts">
+import { SITE_URL } from "$lib/seo";
 import ContentSection from "$lib/components/about/ContentSection.svelte";
 import PageHeader from "$lib/components/about/PageHeader.svelte";
 
@@ -14,6 +15,12 @@ const ringSizes = [
   { us: "9", uk: "R", eu: "59", diameter: "18.8", circumference: "59.1" },
 ];
 </script>
+
+<svelte:head>
+	<title>Size Guide | Linea</title>
+	<meta name="description" content="Find your perfect fit with Linea's comprehensive ring, bracelet, and necklace sizing guide." />
+	<link rel="canonical" href="{SITE_URL}/about/size-guide" />
+</svelte:head>
 
 <PageHeader title="Size Guide" subtitle="Find your perfect fit with our comprehensive sizing guide" />
 

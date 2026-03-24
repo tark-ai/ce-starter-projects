@@ -1,4 +1,5 @@
 <script lang="ts">
+import { SITE_URL } from "$lib/seo";
 import ContentSection from "$lib/components/about/ContentSection.svelte";
 import PageHeader from "$lib/components/about/PageHeader.svelte";
 
@@ -47,6 +48,12 @@ function toggleFaq(id: string) {
   openFaq = openFaq === id ? null : id;
 }
 </script>
+
+<svelte:head>
+	<title>Customer Care | Linea</title>
+	<meta name="description" content="Get help with orders, shipping, returns, and product care. Linea's customer care team is here for you." />
+	<link rel="canonical" href="{SITE_URL}/about/customer-care" />
+</svelte:head>
 
 <PageHeader title="Customer Care" subtitle="We're here to help you with all your jewelry needs" />
 

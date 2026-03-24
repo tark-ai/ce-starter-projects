@@ -1,4 +1,5 @@
 <script lang="ts">
+import { SITE_URL } from "$lib/seo";
 import ContentSection from "$lib/components/about/ContentSection.svelte";
 import PageHeader from "$lib/components/about/PageHeader.svelte";
 import StoreMap from "$lib/components/about/StoreMap.svelte";
@@ -27,6 +28,12 @@ const stores = [
   },
 ];
 </script>
+
+<svelte:head>
+	<title>Store Locator | Linea</title>
+	<meta name="description" content="Find a Linea jewelry store near you. Visit our boutiques in New York, Beverly Hills, and SoHo." />
+	<link rel="canonical" href="{SITE_URL}/about/store-locator" />
+</svelte:head>
 
 <PageHeader
 	title="Store Locator"

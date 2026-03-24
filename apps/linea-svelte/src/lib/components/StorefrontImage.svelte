@@ -9,30 +9,26 @@ type StorefrontImageSource = {
 type StorefrontImageVariant = "tiny" | "thumbnail" | "standard" | "zoom";
 
 const SRC_FALLBACKS: Record<StorefrontImageVariant, Array<keyof StorefrontImageSource>> = {
-  tiny: ["url_tiny", "url_thumbnail", "url_standard", "url_zoom"],
-  thumbnail: ["url_thumbnail", "url_standard", "url_zoom", "url_tiny"],
-  standard: ["url_standard", "url_zoom", "url_thumbnail", "url_tiny"],
-  zoom: ["url_zoom", "url_standard", "url_thumbnail", "url_tiny"],
+  tiny: ["url_thumbnail", "url_standard", "url_zoom"],
+  thumbnail: ["url_thumbnail", "url_standard", "url_zoom"],
+  standard: ["url_standard", "url_zoom", "url_thumbnail"],
+  zoom: ["url_zoom", "url_standard", "url_thumbnail"],
 };
 
-const SRCSET_VARIANTS: Record<
-  StorefrontImageVariant,
-  Array<{ density: "1x" | "2x"; key: keyof StorefrontImageSource }>
-> = {
-  tiny: [
-    { density: "1x", key: "url_tiny" },
-    { density: "2x", key: "url_thumbnail" },
-  ],
-  thumbnail: [
-    { density: "1x", key: "url_thumbnail" },
-    { density: "2x", key: "url_standard" },
-  ],
-  standard: [
-    { density: "1x", key: "url_standard" },
-    { density: "2x", key: "url_zoom" },
-  ],
-  zoom: [{ density: "1x", key: "url_zoom" }],
-};
+/**
+ * Cloudflare variant widths:
+ *   thumbnail: 256, tiny: 512, standard: 1366, original: 1920
+ *
+ * The CE SDK doesn't expose a field for the Cloudflare "tiny" variant,
+ * so we derive its URL by replacing the variant segment in an existing URL.
+ */
+const CF_VARIANT_REGEX = /\/(blur|thumbnail|standard|original)\?/;
+
+function deriveTinyUrl(image: StorefrontImageSource): string | null {
+  const base = image.url_thumbnail ?? image.url_standard ?? image.url_zoom;
+  if (!base) return null;
+  return base.replace(CF_VARIANT_REGEX, "/tiny?");
+}
 
 function resolveSrc(
   image: StorefrontImageSource | null | undefined,
@@ -46,33 +42,28 @@ function resolveSrc(
   return null;
 }
 
-function buildSrcSet(
-  image: StorefrontImageSource | null | undefined,
-  variant: StorefrontImageVariant,
-  fallbackSrc: string
-): string | undefined {
+function buildSrcSet(image: StorefrontImageSource | null | undefined): string | undefined {
   if (!image) return undefined;
 
-  const entries: Array<{ density: string; src: string }> = [];
+  const entries: Array<{ w: number; src: string }> = [];
+  const seen = new Set<string>();
 
-  for (const { density, key } of SRCSET_VARIANTS[variant]) {
-    const candidate = image[key];
-    if (candidate && !entries.some((e) => e.density === density)) {
-      entries.push({ density, src: candidate });
+  function add(url: string | null | undefined, w: number) {
+    if (url && !seen.has(url)) {
+      seen.add(url);
+      entries.push({ w, src: url });
     }
   }
 
-  if (!entries.some((e) => e.density === "1x")) {
-    entries.unshift({ density: "1x", src: fallbackSrc });
-  }
+  add(image.url_thumbnail, 256);
+  add(deriveTinyUrl(image), 512);
+  add(image.url_standard, 1366);
+  add(image.url_zoom, 1920);
 
-  const uniqueEntries = entries.filter(
-    ({ src }, index, all) => all.findIndex((e) => e.src === src) === index
-  );
+  if (entries.length < 2) return undefined;
 
-  if (uniqueEntries.length <= 1) return undefined;
-
-  return uniqueEntries.map(({ density, src }) => `${src} ${density}`).join(", ");
+  entries.sort((a, b) => a.w - b.w);
+  return entries.map(({ w, src }) => `${src} ${w}w`).join(", ");
 }
 
 interface Props {
@@ -86,8 +77,8 @@ interface Props {
 
 let { image, alt, variant = "standard", sizes, class: className = "", ...rest }: Props = $props();
 
-let src = $derived(resolveSrc(image, variant));
-let srcset = $derived(src ? buildSrcSet(image, variant, src) : undefined);
+const src = $derived(resolveSrc(image, variant));
+const srcset = $derived(buildSrcSet(image));
 </script>
 
 {#if src}

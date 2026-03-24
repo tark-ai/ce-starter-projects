@@ -2,9 +2,10 @@ import { useEffect } from "react";
 
 export const SITE_URL = "https://linea.demo.commercengine.com";
 export const SITE_NAME = "Linea";
+export const FRAMEWORK = "React";
 const TWITTER_SITE = "@commerceengine";
 const DEFAULT_DESCRIPTION =
-  "Shop Linea's curated collection of minimalist jewelry — rings, necklaces, earrings, and bracelets crafted for the modern individual. Free shipping on all orders.";
+  "Linea is a production-ready e-commerce starter template built with Commerce Engine and React. A reference implementation featuring a minimalist jewelry storefront with full catalog, cart, checkout, and search.";
 
 interface SEOProps {
   title?: string;
@@ -31,7 +32,7 @@ const SEO = ({
 }: SEOProps) => {
   const fullTitle = title
     ? `${title} | ${SITE_NAME}`
-    : `${SITE_NAME} - Minimalist jewelry crafted for the modern individual`;
+    : `${SITE_NAME} — Commerce Engine + ${FRAMEWORK} Starter Template`;
   const ogImageUrl = ogImage ?? `${SITE_URL}/og-image.jpg`;
 
   const schemas = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];

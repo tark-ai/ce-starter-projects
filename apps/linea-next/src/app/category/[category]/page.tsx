@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import { storefront } from "@/lib/storefront";
 import { CategoryContent } from "./category-content";
 
-const SITE_URL = "https://linea.demo.commercengine.com";
+const SITE_URL = "https://linea-next.demo.commercengine.com";
 const SITE_NAME = "Linea";
 
 export const revalidate = 3600;

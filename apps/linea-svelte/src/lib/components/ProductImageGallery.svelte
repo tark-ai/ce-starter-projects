@@ -61,6 +61,25 @@ function handleTouchEnd() {
   touchStartX = null;
   touchEndX = null;
 }
+
+$effect(() => {
+  const maxIndex = images.length - 1;
+
+  if (maxIndex < 0) {
+    currentImageIndex = 0;
+    zoomInitialIndex = 0;
+    isZoomOpen = false;
+    return;
+  }
+
+  if (currentImageIndex > maxIndex) {
+    currentImageIndex = maxIndex;
+  }
+
+  if (zoomInitialIndex > maxIndex) {
+    zoomInitialIndex = maxIndex;
+  }
+});
 </script>
 
 {#if images.length === 0}

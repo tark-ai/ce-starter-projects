@@ -1,3 +1,13 @@
+<script lang="ts">
+import { SITE_URL } from "$lib/seo";
+</script>
+
+<svelte:head>
+	<title>Terms of Service | Linea</title>
+	<meta name="description" content="Linea's terms of service — conditions for using our website and purchasing our products." />
+	<link rel="canonical" href="{SITE_URL}/terms-of-service" />
+</svelte:head>
+
 <div class="max-w-4xl mx-auto px-6 py-12">
 	<header class="mb-12 text-center">
 		<h1 class="text-4xl font-light text-foreground mb-4">Terms of Service</h1>
