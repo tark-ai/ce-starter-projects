@@ -11,6 +11,7 @@ Commerce Engine starter monorepo. Use the `ce` skill for Commerce Engine work.
    - `apps/linea-ssr/src/routes`, `apps/linea-ssr/src/lib/linea-routing.tsx`
    - `apps/linea-next/src/app`, `apps/linea-next/src/lib/linea-routing.tsx`
    - `apps/linea-astro/src/pages`, `apps/linea-astro/src/lib/linea-routing.tsx`
+   - `apps/linea-svelte/src/routes`, `apps/linea-svelte/src/lib/linea-routing.ts`
 
 ## Boundaries
 
@@ -19,6 +20,7 @@ Commerce Engine starter monorepo. Use the `ce` skill for Commerce Engine work.
 - Apps own routing, search navigation, SDK/bootstrap code, page entrypoints, and framework-specific asset wiring.
 - Prefer adding props/contracts to shared components over hard-coding app-local routes or public asset paths.
 - Prefer thin wrappers in apps over duplicating shared feature components.
+- `apps/linea-svelte` is the Svelte 5 / SvelteKit port. It has its own component implementations (not wrappers around `@ce/linea-shared` React components) but reuses `@ce/ui` utilities, theme, and assets.
 
 ## Commands
 
@@ -32,4 +34,5 @@ bun run dev:linea
 bun run dev:linea-ssr
 bunx turbo run dev --filter=@ce/linea-next
 bun run dev:linea-astro
+bun run dev:linea-svelte
 ```

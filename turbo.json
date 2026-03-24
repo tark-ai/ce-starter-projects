@@ -3,7 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".output/**", ".next/**", "!.next/cache/**", ".astro/**"],
+      "outputs": ["dist/**", ".output/**", ".next/**", "!.next/cache/**", ".astro/**", ".svelte-kit/**", "build/**"],
       "inputs": [
         "src/**",
         "index.html",
@@ -13,7 +13,8 @@
         "tsconfig.app.json",
         "postcss.config.js",
         "postcss.config.mjs",
-        "astro.config.mjs"
+        "astro.config.mjs",
+        "svelte.config.js"
       ],
       "env": ["VITE_STORE_ID", "VITE_API_KEY", "VITE_CE_ENV", "NEXT_PUBLIC_STORE_ID", "NEXT_PUBLIC_API_KEY", "NEXT_PUBLIC_CE_ENV", "PUBLIC_STORE_ID", "PUBLIC_API_KEY", "PUBLIC_CE_ENV"]
     },

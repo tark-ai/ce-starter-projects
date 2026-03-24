@@ -13,12 +13,18 @@
     "dev:linea-ssr": "turbo run dev --filter=@ce/linea-ssr",
     "dev:linea-next": "turbo run dev --filter=@ce/linea-next",
     "dev:linea-astro": "turbo run dev --filter=@ce/linea-astro",
+    "dev:linea-svelte": "turbo run dev --filter=@ce/linea-svelte",
     "build:linea": "turbo run build --filter=@ce/linea",
     "build:linea-ssr": "turbo run build --filter=@ce/linea-ssr",
     "build:linea-next": "turbo run build --filter=@ce/linea-next",
     "build:linea-astro": "turbo run build --filter=@ce/linea-astro",
-    "build:all": "turbo run build --filter=@ce/linea --filter=@ce/linea-ssr --filter=@ce/linea-next --filter=@ce/linea-astro",
+    "build:linea-svelte": "turbo run build --filter=@ce/linea-svelte",
+    "build:all": "turbo run build --filter=@ce/linea --filter=@ce/linea-ssr --filter=@ce/linea-next --filter=@ce/linea-astro --filter=@ce/linea-svelte",
+    "preview:linea": "turbo run preview --filter=@ce/linea",
+    "preview:linea-ssr": "turbo run preview --filter=@ce/linea-ssr",
     "preview:linea-next": "turbo run preview --filter=@ce/linea-next",
+    "preview:linea-astro": "turbo run preview --filter=@ce/linea-astro",
+    "preview:linea-svelte": "turbo run preview --filter=@ce/linea-svelte",
     "lint": "turbo run lint",
     "lint:fix": "turbo run lint:fix",
     "format": "turbo run format",
@@ -28,7 +34,7 @@
     "prepare": "husky"
   },
   "lint-staged": {
-    "*.{js,ts,jsx,tsx,json,css,md}": [
+    "*.{js,ts,jsx,tsx,svelte,json,css,md}": [
       "biome format --write --no-errors-on-unmatched",
       "biome check --write --no-errors-on-unmatched"
     ],

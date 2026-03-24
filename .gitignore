@@ -15,6 +15,7 @@ dist-ssr
 *.local
 .vercel
 .next
+.svelte-kit
 *.tsbuildinfo
 
 # Turborepo
