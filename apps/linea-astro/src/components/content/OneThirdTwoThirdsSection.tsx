@@ -1,4 +1,5 @@
-import { images } from "@ce/ui/lib/images";
+import { IMAGEKIT_ENDPOINT, imagePaths } from "@ce/ui/lib/images";
+import { Image } from "@imagekit/react";
 
 const OneThirdTwoThirdsSection = () => {
   return (
@@ -7,9 +8,14 @@ const OneThirdTwoThirdsSection = () => {
         <div className="lg:col-span-1">
           <a href="/category/rings" className="block">
             <div className="w-full h-[500px] lg:h-[800px] mb-3 overflow-hidden">
-              <img
-                src={images.organicEarring}
+              <Image
+                urlEndpoint={IMAGEKIT_ENDPOINT}
+                src={imagePaths.organicEarring}
                 alt="Artisan crafted jewelry"
+                width={1590}
+                height={1592}
+                sizes="(max-width: 1024px) calc(100vw - 48px), calc(33vw - 40px)"
+                transformation={[{ quality: 80 }]}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
@@ -25,9 +31,14 @@ const OneThirdTwoThirdsSection = () => {
         <div className="lg:col-span-2">
           <a href="/category/necklaces" className="block">
             <div className="w-full h-[500px] lg:h-[800px] mb-3 overflow-hidden">
-              <img
-                src={images.circularCollection}
+              <Image
+                urlEndpoint={IMAGEKIT_ENDPOINT}
+                src={imagePaths.circularCollection}
                 alt="Circular jewelry collection"
+                width={1792}
+                height={1792}
+                sizes="(max-width: 1024px) calc(100vw - 48px), calc(67vw - 40px)"
+                transformation={[{ quality: 80 }]}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>

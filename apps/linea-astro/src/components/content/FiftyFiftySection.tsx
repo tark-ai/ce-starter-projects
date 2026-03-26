@@ -1,4 +1,5 @@
-import { images } from "@ce/ui/lib/images";
+import { IMAGEKIT_ENDPOINT, imagePaths } from "@ce/ui/lib/images";
+import { Image } from "@imagekit/react";
 
 const FiftyFiftySection = () => {
   return (
@@ -7,12 +8,16 @@ const FiftyFiftySection = () => {
         <div>
           <a href="/category/earrings" className="block">
             <div className="w-full aspect-square mb-3 overflow-hidden">
-              <img
-                src={images.earringsCollection}
+              <Image
+                urlEndpoint={IMAGEKIT_ENDPOINT}
+                src={imagePaths.earringsCollection}
                 alt="Earrings collection"
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+                width={1788}
+                height={1792}
+                sizes="(max-width: 768px) calc(100vw - 48px), calc(50vw - 36px)"
+                transformation={[{ quality: 80 }]}
                 loading="eager"
-                fetchPriority="high"
+                className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>
           </a>
@@ -27,9 +32,14 @@ const FiftyFiftySection = () => {
         <div>
           <a href="/category/bracelets" className="block">
             <div className="w-full aspect-square mb-3 overflow-hidden">
-              <img
-                src={images.linkBracelet}
+              <Image
+                urlEndpoint={IMAGEKIT_ENDPOINT}
+                src={imagePaths.linkBracelet}
                 alt="Chain link bracelet"
+                width={1742}
+                height={1744}
+                sizes="(max-width: 768px) calc(100vw - 48px), calc(50vw - 36px)"
+                transformation={[{ quality: 80 }]}
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
               />
             </div>

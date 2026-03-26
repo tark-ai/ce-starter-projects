@@ -48,6 +48,7 @@
         "@commercengine/checkout": "^0.3.1",
         "@commercengine/storefront": "^0.1.5",
         "@fontsource-variable/dm-sans": "^5.2.8",
+        "@imagekit/react": "^5.0.2",
         "@tanstack/react-query": "^5.90.21",
         "astro": "^6.0.4",
         "lucide-react": "^0.577.0",
@@ -1731,7 +1732,13 @@
 
     "@babel/traverse/@babel/code-frame": ["@babel/code-frame@7.29.0", "", { "dependencies": { "@babel/helper-validator-identifier": "^7.28.5", "js-tokens": "^4.0.0", "picocolors": "^1.1.1" } }, "sha512-9NhCeYjq9+3uxgdtp20LSiJXJvN0FeCtNGpJxuMFZ1Kv3cWUNb6DOhJwUvcVCzKGR66cw4njwM6hrJLqgOwbcw=="],
 
+    "@ce/linea-astro/@commercengine/storefront": ["@commercengine/storefront@0.1.6", "", { "dependencies": { "@commercengine/ssr-utils": "0.3.0", "@commercengine/storefront-sdk": "0.14.3" }, "peerDependencies": { "@sveltejs/kit": ">=2.0.0", "@tanstack/react-start": ">=1.0.0", "astro": ">=5.0.0", "next": ">=15.0.0", "react": ">=19.0.0", "react-dom": ">=19.0.0" }, "optionalPeers": ["@sveltejs/kit", "@tanstack/react-start", "astro", "next", "react", "react-dom"] }, "sha512-NMifvcrRLr3tFN6KOFrDHo6O3AHLSjGqdlcMLob10liLSEVnikQ7dFxp6JqeUc4citlSCbR/Vevx5gCO9Hijig=="],
+
     "@ce/linea-astro/lucide-react": ["lucide-react@0.577.0", "", { "peerDependencies": { "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-4LjoFv2eEPwYDPg/CUdBJQSDfPyzXCRrVW1X7jrx/trgxnxkHFjnVZINbzvzxjN70dxychOfg+FTYwBiS3pQ5A=="],
+
+    "@ce/linea-astro/tailwindcss": ["tailwindcss@4.2.2", "", {}, "sha512-KWBIxs1Xb6NoLdMVqhbhgwZf2PGBpPEiwOqgI4pFIYbNTfBXiKYyWoTsXgBQ9WFg/OlhnvHaY+AEpW7wSmFo2Q=="],
+
+    "@ce/linea-shared/@commercengine/storefront": ["@commercengine/storefront@0.1.6", "", { "dependencies": { "@commercengine/ssr-utils": "0.3.0", "@commercengine/storefront-sdk": "0.14.3" }, "peerDependencies": { "@sveltejs/kit": ">=2.0.0", "@tanstack/react-start": ">=1.0.0", "astro": ">=5.0.0", "next": ">=15.0.0", "react": ">=19.0.0", "react-dom": ">=19.0.0" }, "optionalPeers": ["@sveltejs/kit", "@tanstack/react-start", "astro", "next", "react", "react-dom"] }, "sha512-NMifvcrRLr3tFN6KOFrDHo6O3AHLSjGqdlcMLob10liLSEVnikQ7dFxp6JqeUc4citlSCbR/Vevx5gCO9Hijig=="],
 
     "@ce/linea-ssr/lucide-react": ["lucide-react@0.577.0", "", { "peerDependencies": { "react": "^16.5.1 || ^17.0.0 || ^18.0.0 || ^19.0.0" } }, "sha512-4LjoFv2eEPwYDPg/CUdBJQSDfPyzXCRrVW1X7jrx/trgxnxkHFjnVZINbzvzxjN70dxychOfg+FTYwBiS3pQ5A=="],
 
@@ -1852,6 +1859,10 @@
     "@astrojs/react/@vitejs/plugin-react/@rolldown/pluginutils": ["@rolldown/pluginutils@1.0.0-rc.3", "", {}, "sha512-eybk3TjzzzV97Dlj5c+XrBFW57eTNhzod66y9HrBlzJ6NsCrWCp/2kaPS3K9wJmurBC0Tdw4yPjXKZqlznim3Q=="],
 
     "@astrojs/react/vite/esbuild": ["esbuild@0.27.4", "", { "optionalDependencies": { "@esbuild/aix-ppc64": "0.27.4", "@esbuild/android-arm": "0.27.4", "@esbuild/android-arm64": "0.27.4", "@esbuild/android-x64": "0.27.4", "@esbuild/darwin-arm64": "0.27.4", "@esbuild/darwin-x64": "0.27.4", "@esbuild/freebsd-arm64": "0.27.4", "@esbuild/freebsd-x64": "0.27.4", "@esbuild/linux-arm": "0.27.4", "@esbuild/linux-arm64": "0.27.4", "@esbuild/linux-ia32": "0.27.4", "@esbuild/linux-loong64": "0.27.4", "@esbuild/linux-mips64el": "0.27.4", "@esbuild/linux-ppc64": "0.27.4", "@esbuild/linux-riscv64": "0.27.4", "@esbuild/linux-s390x": "0.27.4", "@esbuild/linux-x64": "0.27.4", "@esbuild/netbsd-arm64": "0.27.4", "@esbuild/netbsd-x64": "0.27.4", "@esbuild/openbsd-arm64": "0.27.4", "@esbuild/openbsd-x64": "0.27.4", "@esbuild/openharmony-arm64": "0.27.4", "@esbuild/sunos-x64": "0.27.4", "@esbuild/win32-arm64": "0.27.4", "@esbuild/win32-ia32": "0.27.4", "@esbuild/win32-x64": "0.27.4" }, "bin": { "esbuild": "bin/esbuild" } }, "sha512-Rq4vbHnYkK5fws5NF7MYTU68FPRE1ajX7heQ/8QXXWqNgqqJ/GkmmyxIzUnf2Sr/bakf8l54716CcMGHYhMrrQ=="],
+
+    "@ce/linea-astro/@commercengine/storefront/@commercengine/storefront-sdk": ["@commercengine/storefront-sdk@0.14.3", "", { "dependencies": { "openapi-fetch": "^0.17.0" } }, "sha512-QQIQXItJ69bpQ+j6CTdk6Oyu1GthTFysSL0QeK7V1mo4LantPZFlLvUUyB2nsqmn4q5C5kslEt0KSAt2CgJ25Q=="],
+
+    "@ce/linea-shared/@commercengine/storefront/@commercengine/storefront-sdk": ["@commercengine/storefront-sdk@0.14.3", "", { "dependencies": { "openapi-fetch": "^0.17.0" } }, "sha512-QQIQXItJ69bpQ+j6CTdk6Oyu1GthTFysSL0QeK7V1mo4LantPZFlLvUUyB2nsqmn4q5C5kslEt0KSAt2CgJ25Q=="],
 
     "@ce/linea-svelte/@commercengine/storefront/@commercengine/storefront-sdk": ["@commercengine/storefront-sdk@0.14.3", "", { "dependencies": { "openapi-fetch": "^0.17.0" } }, "sha512-QQIQXItJ69bpQ+j6CTdk6Oyu1GthTFysSL0QeK7V1mo4LantPZFlLvUUyB2nsqmn4q5C5kslEt0KSAt2CgJ25Q=="],
 

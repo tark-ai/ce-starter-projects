@@ -1,4 +1,5 @@
-import { images } from "@ce/ui/lib/images";
+import { IMAGEKIT_ENDPOINT, imagePaths } from "@ce/ui/lib/images";
+import { Image } from "@imagekit/react";
 import { ArrowRight } from "lucide-react";
 
 const EditorialSection = () => {
@@ -26,9 +27,14 @@ const EditorialSection = () => {
 
         <div className="order-first md:order-last">
           <div className="w-full aspect-square overflow-hidden">
-            <img
-              src={images.founders}
+            <Image
+              urlEndpoint={IMAGEKIT_ENDPOINT}
+              src={imagePaths.founders}
               alt="Linea founders - two women in minimalist jewelry"
+              width={1792}
+              height={1794}
+              sizes="(max-width: 768px) calc(100vw - 48px), calc(50vw - 48px)"
+              transformation={[{ quality: 80 }]}
               className="w-full h-full object-cover"
             />
           </div>
