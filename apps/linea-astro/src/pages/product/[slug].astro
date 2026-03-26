@@ -19,8 +19,84 @@ const [productResult, similarResult] = await Promise.all([
 
 const product = productResult.data?.product;
 const similarItems = similarResult.data?.products ?? [];
+
+const siteUrl = import.meta.env.SITE || "https://linea-astro.demo.commercengine.com";
+
+const productName = product?.name ?? "Product";
+const productTitle = `${productName} | LINEA`;
+const productDescription =
+  product?.short_description ||
+  `Shop ${productName} from LINEA. Discover timeless elegance with our curated collection of fine jewelry.`;
+const productImage =
+  product?.images?.[0]?.url_standard ||
+  product?.images?.[0]?.url_zoom ||
+  product?.images?.[0]?.url_thumbnail ||
+  "/og-image.jpg";
+
+const categoryName = product?.categories?.[0]?.name;
+const categorySlug = product?.categories?.[0]?.slug;
+
+const breadcrumbItems = [
+  { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+];
+if (categoryName && categorySlug) {
+  breadcrumbItems.push({
+    "@type": "ListItem",
+    position: 2,
+    name: categoryName,
+    item: `${siteUrl}/category/${categorySlug}`,
+  });
+}
+breadcrumbItems.push({
+  "@type": "ListItem",
+  position: breadcrumbItems.length + 1,
+  name: productName,
+  item: `${siteUrl}/product/${slug}`,
+});
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: breadcrumbItems,
+};
+
+const productSchema = {
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: productName,
+  description: productDescription,
+  image: productImage.startsWith("http") ? productImage : `${siteUrl}${productImage}`,
+  url: `${siteUrl}/product/${slug}`,
+  ...(product?.pricing
+    ? {
+        offers: {
+          "@type": "Offer",
+          price: product.pricing.selling_price,
+          priceCurrency: product.pricing.currency || "USD",
+          availability: "https://schema.org/InStock",
+        },
+      }
+    : {}),
+};
 ---
 
-<Layout title={product?.name ? `${product.name} | Linea` : "Product | Linea"} description={product?.short_description ?? `Shop ${product?.name ?? "this product"} from Linea`}>
+<Layout
+  title={productTitle}
+  description={productDescription}
+  image={productImage}
+  ogType="product"
+>
+  <script
+    is:inline
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(breadcrumbSchema)}
+  />
+  <script
+    is:inline
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(productSchema)}
+  />
   <ProductContent client:idle serverProduct={product} serverSimilarItems={similarItems} />
 </Layout>

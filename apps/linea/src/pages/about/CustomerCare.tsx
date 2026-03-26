@@ -12,10 +12,16 @@ import ContentSection from "../../components/about/ContentSection";
 import PageHeader from "../../components/about/PageHeader";
 import Footer from "../../components/footer/Footer";
 import Header from "../../components/header/Header";
+import SEO, { SITE_URL } from "../../components/Seo";
 
 const CustomerCare = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Customer Care"
+        description="Get help with orders, shipping, returns, and more. LINEA's customer care team is here to assist you."
+        canonical={`${SITE_URL}/about/customer-care`}
+      />
       <Header />
 
       <div className="flex">

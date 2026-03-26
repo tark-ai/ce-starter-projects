@@ -5,8 +5,50 @@ import { publicSdk } from "../lib/storefront";
 
 const { data } = await publicSdk.catalog.listSkus({ page: 1, limit: 6 });
 const products = data?.skus ?? [];
+
+const siteUrl = import.meta.env.SITE || "https://linea-astro.demo.commercengine.com";
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "LINEA",
+  url: siteUrl,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${siteUrl}/search?q={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Commerce Engine",
+  url: "https://www.commercengine.io",
+  logo: `${siteUrl}/favicon.svg`,
+  description:
+    "Commerce Engine is a headless e-commerce platform. LINEA is an open-source reference storefront built with Astro.",
+};
 ---
 
-<Layout>
+<Layout
+  title="LINEA — Commerce Engine + Astro Starter Template"
+  description="LINEA is a production-ready e-commerce starter template built with Commerce Engine and Astro. A reference implementation featuring a minimalist jewelry storefront with full catalog, cart, checkout, and search."
+>
+  <script
+    is:inline
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(websiteSchema)}
+  />
+  <script
+    is:inline
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(organizationSchema)}
+  />
   <HomeContent client:idle initialProducts={products} />
 </Layout>

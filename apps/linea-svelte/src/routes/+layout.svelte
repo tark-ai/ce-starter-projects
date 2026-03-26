@@ -9,8 +9,9 @@ import PoweredByBadge from "$lib/components/PoweredByBadge.svelte";
 import { OG_IMAGE, SITE_NAME, TWITTER_SITE } from "$lib/seo";
 import { initStorefront } from "$lib/storefront";
 import { wishlist } from "$lib/wishlist.svelte";
+import type { LayoutData } from "./$types";
 
-let { data, children }: { data: any; children: Snippet } = $props();
+let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
 onMount(() => {
   initStorefront().then(() => {

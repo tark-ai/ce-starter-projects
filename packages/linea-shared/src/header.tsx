@@ -189,13 +189,7 @@ export function Navigation({
   };
 
   return (
-    <nav
-      className="relative"
-      style={{
-        backgroundColor: "rgba(255, 255, 255, 0.9)",
-        backdropFilter: "blur(10px)",
-      }}
-    >
+    <nav className="relative bg-background/90 backdrop-blur-sm">
       <div className="flex items-center justify-between h-16 px-6">
         <button
           type="button"
@@ -323,7 +317,7 @@ export function Navigation({
               />
             </svg>
             {cartCount > 0 && (
-              <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[30%] text-[0.5rem] font-semibold text-black pointer-events-none">
+              <span className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-[30%] text-[0.5rem] font-semibold text-foreground pointer-events-none">
                 {cartCount}
               </span>
             )}

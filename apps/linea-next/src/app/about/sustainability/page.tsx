@@ -1,6 +1,13 @@
+import type { Metadata } from "next";
 import AboutSidebar from "@/components/about/AboutSidebar";
 import ContentSection from "@/components/about/ContentSection";
 import PageHeader from "@/components/about/PageHeader";
+
+export const metadata: Metadata = {
+  title: "Sustainability",
+  description:
+    "Learn about LINEA's commitment to ethical sourcing, sustainable materials, and responsible jewelry craftsmanship.",
+};
 
 export default function SustainabilityPage() {
   return (
@@ -40,7 +47,7 @@ export default function SustainabilityPage() {
             <div className="grid md:grid-cols-3 gap-8">
               <div>
                 <div className="text-3xl font-light text-primary mb-2">100%</div>
-                <p className="text-sm text-muted-foreground">Carbon neutral operations by 2025</p>
+                <p className="text-sm text-muted-foreground">Carbon neutral operations by 2030</p>
               </div>
               <div>
                 <div className="text-3xl font-light text-primary mb-2">90%</div>

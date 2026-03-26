@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Terms of Service",
+  description: "Review the terms and conditions governing the use of LINEA's website and services.",
+};
+
 export default function TermsOfServicePage() {
   return (
     <main className="pt-6">

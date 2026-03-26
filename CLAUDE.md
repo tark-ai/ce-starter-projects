@@ -8,7 +8,7 @@ Commerce Engine starter monorepo. Use the `ce` skill for Commerce Engine work.
 2. If the change is a primitive, theme token, shared utility, or shared asset, start in `packages/ui/src`.
 3. If the change touches routing, page composition, SDK setup, or framework APIs, start in the target app:
    - `apps/linea/src/App.tsx`, `apps/linea/src/pages`, `apps/linea/src/lib/linea-routing.tsx`
-   - `apps/linea-ssr/src/routes`, `apps/linea-ssr/src/lib/linea-routing.tsx`
+   - `apps/linea-tanstack/src/routes`, `apps/linea-tanstack/src/lib/linea-routing.tsx`
    - `apps/linea-next/src/app`, `apps/linea-next/src/lib/linea-routing.tsx`
    - `apps/linea-astro/src/pages`, `apps/linea-astro/src/lib/linea-routing.tsx`
    - `apps/linea-svelte/src/routes`, `apps/linea-svelte/src/lib/linea-routing.ts`
@@ -31,7 +31,7 @@ bun run check
 bun run typecheck
 bun run build
 bun run dev:linea
-bun run dev:linea-ssr
+bun run dev:linea-tanstack
 bunx turbo run dev --filter=@ce/linea-next
 bun run dev:linea-astro
 bun run dev:linea-svelte

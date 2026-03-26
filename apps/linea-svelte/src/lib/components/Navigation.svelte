@@ -137,8 +137,7 @@ function getImageRoute(groupName: string, label: string): LineaRoute {
 </script>
 
 <nav
-	class="relative"
-	style="background-color: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px)"
+	class="relative bg-background/90 backdrop-blur-sm"
 >
 	<div class="flex items-center justify-between h-16 px-6">
 		<!-- Mobile hamburger -->

@@ -1,14 +1,15 @@
-import { useEffect } from "react";
 import Footer from "../components/footer/Footer";
 import Header from "../components/header/Header";
+import SEO, { SITE_URL } from "../components/Seo";
 
 const PrivacyPolicy = () => {
-  useEffect(() => {
-    document.title = "Privacy Policy - Linea Jewelry";
-  }, []);
-
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Privacy Policy"
+        description="Learn how LINEA collects, uses, and protects your personal information."
+        canonical={`${SITE_URL}/privacy-policy`}
+      />
       <Header />
 
       <main className="pt-6">

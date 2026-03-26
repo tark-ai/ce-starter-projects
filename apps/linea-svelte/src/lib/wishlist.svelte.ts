@@ -20,6 +20,7 @@ class WishlistStore {
       if (error) throw new Error(error.message);
       this.items = data?.products ?? [];
     } catch (e) {
+      // biome-ignore lint/suspicious/noConsole: surface wishlist API errors for debugging
       console.error("Failed to load wishlist:", e);
     } finally {
       this.isLoading = false;
@@ -52,6 +53,7 @@ class WishlistStore {
       this.items = data?.products ?? this.items;
       for (const fn of this.#addListeners) fn();
     } catch (e) {
+      // biome-ignore lint/suspicious/noConsole: surface wishlist API errors for debugging
       console.error("Failed to add to wishlist:", e);
     }
   }
@@ -65,6 +67,7 @@ class WishlistStore {
       if (error) throw new Error(error.message);
       this.items = data?.products ?? this.items;
     } catch (e) {
+      // biome-ignore lint/suspicious/noConsole: surface wishlist API errors for debugging
       console.error("Failed to remove from wishlist:", e);
     }
   }

@@ -1,7 +1,14 @@
 import { Button } from "@ce/ui/components/ui/button";
+import type { Metadata } from "next";
 import AboutSidebar from "@/components/about/AboutSidebar";
 import ContentSection from "@/components/about/ContentSection";
 import PageHeader from "@/components/about/PageHeader";
+
+export const metadata: Metadata = {
+  title: "Size Guide",
+  description:
+    "Find your perfect fit with LINEA's comprehensive jewelry sizing guide for rings, bracelets, and necklaces.",
+};
 
 export default function SizeGuidePage() {
   return (

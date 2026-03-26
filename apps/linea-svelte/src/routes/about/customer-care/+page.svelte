@@ -1,7 +1,11 @@
 <script lang="ts">
-import { SITE_URL } from "$lib/seo";
+import { SITE_NAME, SITE_URL } from "$lib/seo";
 import ContentSection from "$lib/components/about/ContentSection.svelte";
 import PageHeader from "$lib/components/about/PageHeader.svelte";
+
+const title = `Customer Care | ${SITE_NAME}`;
+const description = "Get help with orders, shipping, returns, and more. LINEA's customer care team is here to assist you.";
+const url = `${SITE_URL}/about/customer-care`;
 
 const faqs = [
   {
@@ -50,9 +54,15 @@ function toggleFaq(id: string) {
 </script>
 
 <svelte:head>
-	<title>Customer Care | Linea</title>
-	<meta name="description" content="Get help with orders, shipping, returns, and product care. Linea's customer care team is here for you." />
-	<link rel="canonical" href="{SITE_URL}/about/customer-care" />
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<link rel="canonical" href={url} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={url} />
+	<meta name="twitter:title" content={title} />
+	<meta name="twitter:description" content={description} />
 </svelte:head>
 
 <PageHeader title="Customer Care" subtitle="We're here to help you with all your jewelry needs" />
@@ -74,7 +84,7 @@ function toggleFaq(id: string) {
 		</div>
 		<div class="space-y-4">
 			<h3 class="text-lg font-light text-foreground">Live Chat</h3>
-			<button class="px-6 py-2 border border-border text-foreground text-sm font-light hover:bg-muted transition-colors">
+			<button type="button" class="px-6 py-2 border border-border text-foreground text-sm font-light hover:bg-muted transition-colors">
 				Start Chat
 			</button>
 			<p class="text-sm text-muted-foreground">Available during business hours</p>

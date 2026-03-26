@@ -7,7 +7,7 @@ let { data } = $props();
 const product = $derived(data.product);
 const title = $derived(product.seo?.title || `${product.name} | ${SITE_NAME}`);
 const description = $derived(
-  product.seo?.description || product.short_description || `Shop ${product.name} from ${SITE_NAME}`,
+  product.seo?.description || product.short_description || `Shop ${product.name} from ${SITE_NAME}. Discover timeless elegance with our curated collection of fine jewelry.`,
 );
 const image = $derived(product.images?.[0]?.url_zoom ?? product.images?.[0]?.url_standard ?? "");
 const url = $derived(`${SITE_URL}/product/${product.slug}`);

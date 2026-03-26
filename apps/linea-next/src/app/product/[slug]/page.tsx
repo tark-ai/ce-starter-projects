@@ -2,11 +2,9 @@
 /** biome-ignore-all lint/style/useComponentExportOnlyModules: Next.js page conventions */
 import type { Metadata } from "next";
 import { Suspense } from "react";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { storefront } from "@/lib/storefront";
 import { ProductContent } from "./product-content";
-
-const SITE_URL = "https://linea-next.demo.commercengine.com";
-const SITE_NAME = "Linea";
 
 export const revalidate = 3600;
 
@@ -31,15 +29,24 @@ export async function generateMetadata({
   if (!product) return { title: "Product Not Found" };
 
   const image = product.images?.[0]?.url_zoom ?? product.images?.[0]?.url_standard;
+  const fallbackDescription = `Shop ${product.name} from ${SITE_NAME}. Discover timeless elegance with our curated collection of fine jewelry.`;
+  const description = product.short_description ?? fallbackDescription;
 
   return {
     title: product.name,
-    description: product.short_description ?? `Shop ${product.name} from ${SITE_NAME}`,
+    description,
     openGraph: {
-      title: product.name,
-      description: product.short_description ?? undefined,
-      type: "website",
+      title: `${product.name} | ${SITE_NAME}`,
+      description,
+      url: `${SITE_URL}/product/${product.slug}`,
       ...(image ? { images: [{ url: image }] } : {}),
+    },
+    other: {
+      "og:type": "product",
+    },
+    twitter: {
+      title: `${product.name} | ${SITE_NAME}`,
+      description,
     },
   };
 }
@@ -121,7 +128,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
       ))}
-      <Suspense>
+      <Suspense fallback={<div className="min-h-screen bg-background" />}>
         <ProductContent serverProduct={product} serverSimilarItems={similarItems} />
       </Suspense>
     </>

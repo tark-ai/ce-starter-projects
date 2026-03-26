@@ -5,6 +5,7 @@ import PageHeader from "../../components/about/PageHeader";
 import StoreMap from "../../components/about/StoreMap";
 import Footer from "../../components/footer/Footer";
 import Header from "../../components/header/Header";
+import SEO, { SITE_URL } from "../../components/Seo";
 
 const StoreLocator = () => {
   const stores = [
@@ -33,6 +34,11 @@ const StoreLocator = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Store Locator"
+        description="Find a LINEA jewelry store near you. Visit our boutiques for a personalized shopping experience."
+        canonical={`${SITE_URL}/about/store-locator`}
+      />
       <Header />
 
       <div className="flex">

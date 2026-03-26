@@ -1,7 +1,11 @@
 <script lang="ts">
-import { SITE_URL } from "$lib/seo";
+import { SITE_NAME, SITE_URL } from "$lib/seo";
 import ContentSection from "$lib/components/about/ContentSection.svelte";
 import PageHeader from "$lib/components/about/PageHeader.svelte";
+
+const title = `Size Guide | ${SITE_NAME}`;
+const description = "Find your perfect fit with LINEA's comprehensive jewelry sizing guide for rings, bracelets, and necklaces.";
+const url = `${SITE_URL}/about/size-guide`;
 
 const ringSizes = [
   { us: "5", uk: "J", eu: "49", diameter: "15.6", circumference: "49.0" },
@@ -17,9 +21,15 @@ const ringSizes = [
 </script>
 
 <svelte:head>
-	<title>Size Guide | Linea</title>
-	<meta name="description" content="Find your perfect fit with Linea's comprehensive ring, bracelet, and necklace sizing guide." />
-	<link rel="canonical" href="{SITE_URL}/about/size-guide" />
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<link rel="canonical" href={url} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={url} />
+	<meta name="twitter:title" content={title} />
+	<meta name="twitter:description" content={description} />
 </svelte:head>
 
 <PageHeader title="Size Guide" subtitle="Find your perfect fit with our comprehensive sizing guide" />
@@ -127,10 +137,10 @@ const ringSizes = [
 			fit. Download our printable size guide or schedule a virtual consultation.
 		</p>
 		<div class="flex flex-col sm:flex-row gap-4">
-			<button class="px-6 py-2 border border-border text-foreground text-sm font-light hover:bg-muted transition-colors">
+			<button type="button" class="px-6 py-2 border border-border text-foreground text-sm font-light hover:bg-muted transition-colors">
 				Download PDF Guide
 			</button>
-			<button class="px-6 py-2 bg-foreground text-background text-sm font-light hover:bg-foreground/90 transition-colors">
+			<button type="button" class="px-6 py-2 bg-foreground text-background text-sm font-light hover:bg-foreground/90 transition-colors">
 				Schedule Consultation
 			</button>
 		</div>

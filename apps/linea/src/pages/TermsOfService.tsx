@@ -1,14 +1,15 @@
-import { useEffect } from "react";
 import Footer from "../components/footer/Footer";
 import Header from "../components/header/Header";
+import SEO, { SITE_URL } from "../components/Seo";
 
 const TermsOfService = () => {
-  useEffect(() => {
-    document.title = "Terms of Service - Linea Jewelry";
-  }, []);
-
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Terms of Service"
+        description="Review the terms and conditions governing the use of LINEA's website and services."
+        canonical={`${SITE_URL}/terms-of-service`}
+      />
       <Header />
 
       <main className="pt-6">

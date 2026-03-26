@@ -10,23 +10,63 @@ export async function getStaticPaths() {
     props: { categoryData: c },
   }));
   // Add "shop" as a catch-all page for /category/shop (linked from nav)
-  paths.push({ params: { category: "shop" }, props: { categoryData: null as any } });
+  paths.push({ params: { category: "shop" }, props: { categoryData: null! } });
   return paths;
 }
 
 const { category } = Astro.params;
 const { categoryData } = Astro.props;
 
-const displayName = categoryData?.name ?? (category ? category.charAt(0).toUpperCase() + category.slice(1) : "All Products");
+const displayName =
+  categoryData?.name ??
+  (category ? category.charAt(0).toUpperCase() + category.slice(1) : "All Products");
+
+const siteUrl = import.meta.env.SITE || "https://linea-astro.demo.commercengine.com";
 
 const { data: skusData } = await publicSdk.catalog.listSkus({
   page: 1,
   limit: 20,
   category_id: categoryData?.id ? [categoryData.id] : undefined,
 });
+
+const categoryDescription = `Shop ${displayName} from LINEA. Discover our curated collection of minimalist jewelry crafted for the modern individual.`;
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: displayName,
+      item: `${siteUrl}/category/${category}`,
+    },
+  ],
+};
+
+const collectionSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: displayName,
+  description: categoryDescription,
+  url: `${siteUrl}/category/${category}`,
+};
 ---
 
-<Layout title={`${displayName} | Linea`} description={`Shop ${displayName} from Linea.`}>
+<Layout title={`${displayName} | LINEA`} description={categoryDescription}>
+  <script
+    is:inline
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(breadcrumbSchema)}
+  />
+  <script
+    is:inline
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(collectionSchema)}
+  />
   <CategoryContent
     client:idle
     category={category!}

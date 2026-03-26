@@ -8,25 +8,25 @@ interface FooterProps {
 
 export function Footer({ LinkComponent, logoSrc = defaultLogoSrc }: FooterProps) {
   return (
-    <footer className="w-full bg-white text-black pt-8 pb-2 px-6 border-t border-[#e5e5e5] mt-48">
+    <footer className="w-full bg-background text-foreground pt-8 pb-2 px-6 border-t border-border mt-48">
       <div className="">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-8">
           {/* Brand - Left side */}
           <div>
             <img src={logoSrc} alt="Linea Jewelry Inc." className="mb-4 h-6 w-auto" />
-            <p className="text-sm font-light text-black/70 leading-relaxed max-w-md mb-6">
+            <p className="text-sm font-light text-muted-foreground leading-relaxed max-w-md mb-6">
               Minimalist jewelry crafted for the modern individual
             </p>
 
             {/* Contact Information */}
-            <div className="space-y-2 text-sm font-light text-black/70">
+            <div className="space-y-2 text-sm font-light text-muted-foreground">
               <div>
-                <p className="font-normal text-black mb-1">Visit Us</p>
+                <p className="font-normal text-foreground mb-1">Visit Us</p>
                 <p>123 Madison Avenue</p>
                 <p>New York, NY 10016</p>
               </div>
               <div>
-                <p className="font-normal text-black mb-1 mt-3">Contact</p>
+                <p className="font-normal text-foreground mb-1 mt-3">Contact</p>
                 <p>+1 (212) 555-0123</p>
                 <p>hello@lineajewelry.com</p>
               </div>
@@ -49,7 +49,7 @@ export function Footer({ LinkComponent, logoSrc = defaultLogoSrc }: FooterProps)
                   <li key={route}>
                     <LinkComponent
                       route={{ path: route }}
-                      className="text-sm font-light text-black/70 hover:text-black transition-colors"
+                      className="text-sm font-light text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {label}
                     </LinkComponent>
@@ -72,7 +72,7 @@ export function Footer({ LinkComponent, logoSrc = defaultLogoSrc }: FooterProps)
                   <li key={label}>
                     <LinkComponent
                       route={{ path: route }}
-                      className="text-sm font-light text-black/70 hover:text-black transition-colors"
+                      className="text-sm font-light text-muted-foreground hover:text-foreground transition-colors"
                     >
                       {label}
                     </LinkComponent>
@@ -90,7 +90,7 @@ export function Footer({ LinkComponent, logoSrc = defaultLogoSrc }: FooterProps)
                     href="https://instagram.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-light text-black/70 hover:text-black transition-colors"
+                    className="text-sm font-light text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Instagram
                   </a>
@@ -100,7 +100,7 @@ export function Footer({ LinkComponent, logoSrc = defaultLogoSrc }: FooterProps)
                     href="https://pinterest.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-sm font-light text-black/70 hover:text-black transition-colors"
+                    className="text-sm font-light text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Pinterest
                   </a>
@@ -108,7 +108,7 @@ export function Footer({ LinkComponent, logoSrc = defaultLogoSrc }: FooterProps)
                 <li>
                   <LinkComponent
                     route={{ path: "/about/customer-care" }}
-                    className="text-sm font-light text-black/70 hover:text-black transition-colors"
+                    className="text-sm font-light text-muted-foreground hover:text-foreground transition-colors"
                   >
                     Newsletter
                   </LinkComponent>
@@ -120,15 +120,15 @@ export function Footer({ LinkComponent, logoSrc = defaultLogoSrc }: FooterProps)
       </div>
 
       {/* Bottom section - edge to edge separator */}
-      <div className="border-t border-[#e5e5e5] -mx-6 px-6 pt-2">
+      <div className="border-t border-border -mx-6 px-6 pt-2">
         <div className="flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm font-light text-black mb-1 md:mb-0">
+          <p className="text-sm font-light text-foreground mb-1 md:mb-0">
             MIT Licensed. A{" "}
             <a
               href="https://www.commercengine.io"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-black/70 transition-colors underline"
+              className="hover:text-muted-foreground transition-colors underline"
             >
               Commerce Engine
             </a>{" "}
@@ -137,13 +137,13 @@ export function Footer({ LinkComponent, logoSrc = defaultLogoSrc }: FooterProps)
           <div className="flex space-x-6">
             <LinkComponent
               route={{ path: "/privacy-policy" }}
-              className="text-sm font-light text-black hover:text-black/70 transition-colors"
+              className="text-sm font-light text-foreground hover:text-muted-foreground transition-colors"
             >
               Privacy Policy
             </LinkComponent>
             <LinkComponent
               route={{ path: "/terms-of-service" }}
-              className="text-sm font-light text-black hover:text-black/70 transition-colors"
+              className="text-sm font-light text-foreground hover:text-muted-foreground transition-colors"
             >
               Terms of Service
             </LinkComponent>

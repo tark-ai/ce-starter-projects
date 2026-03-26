@@ -1,11 +1,21 @@
 <script lang="ts">
-import { SITE_URL } from "$lib/seo";
+import { SITE_NAME, SITE_URL } from "$lib/seo";
+
+const title = `Terms of Service | ${SITE_NAME}`;
+const description = "Review the terms and conditions governing the use of LINEA's website and services.";
+const url = `${SITE_URL}/terms-of-service`;
 </script>
 
 <svelte:head>
-	<title>Terms of Service | Linea</title>
-	<meta name="description" content="Linea's terms of service — conditions for using our website and purchasing our products." />
-	<link rel="canonical" href="{SITE_URL}/terms-of-service" />
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<link rel="canonical" href={url} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={url} />
+	<meta name="twitter:title" content={title} />
+	<meta name="twitter:description" content={description} />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto px-6 py-12">

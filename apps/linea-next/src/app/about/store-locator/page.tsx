@@ -1,8 +1,15 @@
 import { Button } from "@ce/ui/components/ui/button";
+import type { Metadata } from "next";
 import AboutSidebar from "@/components/about/AboutSidebar";
 import ContentSection from "@/components/about/ContentSection";
 import PageHeader from "@/components/about/PageHeader";
 import StoreMap from "@/components/about/StoreMap";
+
+export const metadata: Metadata = {
+  title: "Store Locator",
+  description:
+    "Find a LINEA jewelry store near you. Visit our boutiques for a personalized shopping experience.",
+};
 
 export default function StoreLocatorPage() {
   const stores = [

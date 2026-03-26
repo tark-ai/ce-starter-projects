@@ -1,11 +1,21 @@
 <script lang="ts">
-import { SITE_URL } from "$lib/seo";
+import { SITE_NAME, SITE_URL } from "$lib/seo";
+
+const title = `Privacy Policy | ${SITE_NAME}`;
+const description = "Learn how LINEA collects, uses, and protects your personal information.";
+const url = `${SITE_URL}/privacy-policy`;
 </script>
 
 <svelte:head>
-	<title>Privacy Policy | Linea</title>
-	<meta name="description" content="Linea's privacy policy — how we collect, use, and protect your personal information." />
-	<link rel="canonical" href="{SITE_URL}/privacy-policy" />
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<link rel="canonical" href={url} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={url} />
+	<meta name="twitter:title" content={title} />
+	<meta name="twitter:description" content={description} />
 </svelte:head>
 
 <div class="max-w-4xl mx-auto px-6 py-12">

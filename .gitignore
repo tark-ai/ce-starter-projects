@@ -19,6 +19,14 @@ dist-ssr
 build
 *.tsbuildinfo
 
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Cloudflare
+.wrangler/
+
 # Turborepo
 .turbo
 

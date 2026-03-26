@@ -10,9 +10,24 @@ import { publicSdk } from "../lib/storefront";
 interface Props {
   title?: string;
   description?: string;
+  image?: string;
+  canonicalUrl?: string;
+  ogType?: string;
+  noindex?: boolean;
 }
 
-const { title = "Linea — Commerce Engine + Astro Starter Template", description = "Linea is a production-ready e-commerce starter template built with Commerce Engine and Astro. A reference implementation featuring a minimalist jewelry storefront with full catalog, cart, checkout, and search." } = Astro.props;
+const {
+  title = "LINEA | Fine Jewelry",
+  description = "Discover timeless elegance with LINEA's curated collection of fine jewelry.",
+  image = "/og-image.jpg",
+  canonicalUrl,
+  ogType = "website",
+  noindex = false,
+} = Astro.props;
+
+const siteUrl = import.meta.env.SITE || "https://linea-astro.demo.commercengine.com";
+const imageUrl = image.startsWith("http") ? image : `${siteUrl}${image}`;
+const canonical = canonicalUrl || new URL(Astro.url.pathname, siteUrl).href;
 
 const { data } = await publicSdk.catalog.listCategories();
 const categories = data?.categories ?? [];
@@ -25,6 +40,22 @@ const categories = data?.categories ?? [];
     <link rel="icon" href="/favicon.svg" />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:site_name" content="LINEA" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@commerceengine" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <slot name="head" />
     <ClientRouter />
   </head>
   <body>

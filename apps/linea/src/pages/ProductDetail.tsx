@@ -59,6 +59,7 @@ const ProductDetail = () => {
   const selectedVariant = useMemo(() => {
     if (!product?.has_variant) return null;
     if (optionKeys.length === 0) {
+      // Type assertion needed: app and shared package resolve different @commercengine/storefront-sdk versions
       return variantFromUrl ?? getDefaultVariant(product);
     }
     return findVariantBySelection(product.variants, optionKeys, selectedOptions);

@@ -1,12 +1,11 @@
 "use client";
 
 import { ProductInfo as SharedProductInfo } from "@ce/linea-shared/product";
-import type { Product } from "@commercengine/storefront";
 import { LineaLink } from "@/lib/linea-routing";
 import { useWishlist } from "@/lib/wishlist";
 
 interface ProductInfoProps {
-  product: Product;
+  product: Parameters<typeof SharedProductInfo>[0]["product"];
   selectedVariantId: string | null;
   selectedOptions: Record<string, string>;
   allOptionsSelected: boolean;

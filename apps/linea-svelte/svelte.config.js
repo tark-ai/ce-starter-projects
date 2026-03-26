@@ -11,8 +11,17 @@ const config = {
     },
     prerender: {
       crawl: true,
-      entries: ["/", "/category/shop", "/about/our-story"],
-      handleUnseenRoutes: "warn",
+      entries: [
+        "/",
+        "/category/shop",
+        "/about/our-story",
+        "/about/sustainability",
+        "/about/size-guide",
+        "/about/customer-care",
+        "/about/store-locator",
+        "/privacy-policy",
+        "/terms-of-service",
+      ],
     },
   },
 };

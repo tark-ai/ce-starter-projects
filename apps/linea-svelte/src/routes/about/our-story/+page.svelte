@@ -1,15 +1,25 @@
 <script lang="ts">
-import { SITE_URL } from "$lib/seo";
+import { SITE_NAME, SITE_URL } from "$lib/seo";
 import { images } from "@ce/ui/lib/images";
 import ContentSection from "$lib/components/about/ContentSection.svelte";
 import ImageTextBlock from "$lib/components/about/ImageTextBlock.svelte";
 import PageHeader from "$lib/components/about/PageHeader.svelte";
+
+const title = `Our Story | ${SITE_NAME}`;
+const description = "Discover the story behind LINEA — a journey of passion, craftsmanship, and timeless elegance in fine jewelry.";
+const url = `${SITE_URL}/about/our-story`;
 </script>
 
 <svelte:head>
-	<title>Our Story | Linea</title>
-	<meta name="description" content="Discover Linea's journey — minimalist jewelry born from architecture and fine arts, crafted for the modern individual." />
-	<link rel="canonical" href="{SITE_URL}/about/our-story" />
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<link rel="canonical" href={url} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={url} />
+	<meta name="twitter:title" content={title} />
+	<meta name="twitter:description" content={description} />
 </svelte:head>
 
 <PageHeader title="Our Story" subtitle="A journey of passion, craftsmanship, and timeless elegance" />

@@ -43,6 +43,7 @@ const jsonLd = [
 	<link rel="canonical" href={SITE_URL} />
 	<meta property="og:title" content={HOME_TITLE} />
 	<meta property="og:description" content={DEFAULT_DESCRIPTION} />
+	<meta property="og:type" content="website" />
 	<meta property="og:url" content={SITE_URL} />
 	{#each jsonLd as schema}
 		{@html `<script type="application/ld+json">${JSON.stringify(schema)}</script>`}

@@ -1,11 +1,11 @@
 import { useEffect } from "react";
+import { SITE_NAME, SITE_URL } from "../lib/constants";
 
-export const SITE_URL = "https://linea.demo.commercengine.com";
-export const SITE_NAME = "Linea";
+export { SITE_NAME, SITE_URL };
 export const FRAMEWORK = "React";
 const TWITTER_SITE = "@commerceengine";
 const DEFAULT_DESCRIPTION =
-  "Linea is a production-ready e-commerce starter template built with Commerce Engine and React. A reference implementation featuring a minimalist jewelry storefront with full catalog, cart, checkout, and search.";
+  "LINEA is a production-ready e-commerce starter template built with Commerce Engine and React. A reference implementation featuring a minimalist jewelry storefront with full catalog, cart, checkout, and search.";
 
 interface SEOProps {
   title?: string;
@@ -64,6 +64,7 @@ const SEO = ({
       {noindex && <meta name="robots" content="noindex, follow" />}
 
       {/* Open Graph */}
+      <meta property="og:site_name" content={SITE_NAME} />
       <meta property="og:title" content={fullTitle} />
       <meta property="og:description" content={description} />
       <meta property="og:type" content={ogType} />

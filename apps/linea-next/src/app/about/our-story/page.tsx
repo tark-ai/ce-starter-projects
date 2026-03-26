@@ -1,8 +1,15 @@
 import { images } from "@ce/ui/lib/images";
+import type { Metadata } from "next";
 import AboutSidebar from "@/components/about/AboutSidebar";
 import ContentSection from "@/components/about/ContentSection";
 import ImageTextBlock from "@/components/about/ImageTextBlock";
 import PageHeader from "@/components/about/PageHeader";
+
+export const metadata: Metadata = {
+  title: "Our Story",
+  description:
+    "Discover the story behind LINEA — a journey of passion, craftsmanship, and timeless elegance in fine jewelry.",
+};
 
 export default function OurStoryPage() {
   return (

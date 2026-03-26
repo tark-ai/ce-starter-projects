@@ -7,9 +7,16 @@ import {
 import { Button } from "@ce/ui/components/ui/button";
 import { Input } from "@ce/ui/components/ui/input";
 import { Textarea } from "@ce/ui/components/ui/textarea";
+import type { Metadata } from "next";
 import AboutSidebar from "@/components/about/AboutSidebar";
 import ContentSection from "@/components/about/ContentSection";
 import PageHeader from "@/components/about/PageHeader";
+
+export const metadata: Metadata = {
+  title: "Customer Care",
+  description:
+    "Get help with orders, shipping, returns, and more. LINEA's customer care team is here to assist you.",
+};
 
 export default function CustomerCarePage() {
   return (

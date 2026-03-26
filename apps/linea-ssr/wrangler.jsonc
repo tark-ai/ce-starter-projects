@@ -1,9 +1,0 @@
-{
-  "name": "linea-ssr",
-  "compatibility_date": "2025-04-01",
-  "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry",
-  "routes": [
-    { "pattern": "linea-static.demo.commercengine.io", "custom_domain": true }
-  ]
-}

@@ -1,8 +1,12 @@
 <script lang="ts">
-import { SITE_URL } from "$lib/seo";
+import { SITE_NAME, SITE_URL } from "$lib/seo";
 import ContentSection from "$lib/components/about/ContentSection.svelte";
 import PageHeader from "$lib/components/about/PageHeader.svelte";
 import StoreMap from "$lib/components/about/StoreMap.svelte";
+
+const title = `Store Locator | ${SITE_NAME}`;
+const description = "Find a LINEA jewelry store near you. Visit our boutiques for a personalized shopping experience.";
+const url = `${SITE_URL}/about/store-locator`;
 
 const stores = [
   {
@@ -30,9 +34,15 @@ const stores = [
 </script>
 
 <svelte:head>
-	<title>Store Locator | Linea</title>
-	<meta name="description" content="Find a Linea jewelry store near you. Visit our boutiques in New York, Beverly Hills, and SoHo." />
-	<link rel="canonical" href="{SITE_URL}/about/store-locator" />
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<link rel="canonical" href={url} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={url} />
+	<meta name="twitter:title" content={title} />
+	<meta name="twitter:description" content={description} />
 </svelte:head>
 
 <PageHeader
@@ -58,10 +68,10 @@ const stores = [
 						</div>
 
 						<div class="flex flex-col sm:flex-row gap-3 pt-4">
-							<button class="px-6 py-2 border border-border text-foreground text-sm font-light hover:bg-muted transition-colors">
+							<button type="button" class="px-6 py-2 border border-border text-foreground text-sm font-light hover:bg-muted transition-colors">
 								Get Directions
 							</button>
-							<button class="px-6 py-2 bg-foreground text-background text-sm font-light hover:bg-foreground/90 transition-colors">
+							<button type="button" class="px-6 py-2 bg-foreground text-background text-sm font-light hover:bg-foreground/90 transition-colors">
 								Book Appointment
 							</button>
 						</div>
@@ -114,7 +124,7 @@ const stores = [
 		</div>
 
 		<div class="pt-8">
-			<button class="px-8 py-3 bg-foreground text-background text-sm font-light hover:bg-foreground/90 transition-colors">
+			<button type="button" class="px-8 py-3 bg-foreground text-background text-sm font-light hover:bg-foreground/90 transition-colors">
 				Schedule Your Appointment
 			</button>
 		</div>
@@ -129,7 +139,7 @@ const stores = [
 			video call, answer your questions, and help you make the perfect selection from the comfort
 			of your home.
 		</p>
-		<button class="px-6 py-2 border border-border text-foreground text-sm font-light hover:bg-muted transition-colors">
+		<button type="button" class="px-6 py-2 border border-border text-foreground text-sm font-light hover:bg-muted transition-colors">
 			Book Virtual Consultation
 		</button>
 	</div>

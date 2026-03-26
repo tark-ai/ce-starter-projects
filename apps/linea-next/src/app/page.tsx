@@ -1,9 +1,8 @@
 /** biome-ignore-all lint/security/noDangerouslySetInnerHtml: used to set JSON-LD data during build time */
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { storefront } from "@/lib/storefront";
 import { HomeContent } from "./home-content";
 
-const SITE_URL = "https://linea-next.demo.commercengine.com";
-const SITE_NAME = "Linea";
 const FRAMEWORK = "Next.js";
 
 export const revalidate = 3600;

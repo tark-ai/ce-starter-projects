@@ -1,11 +1,9 @@
 /** biome-ignore-all lint/security/noDangerouslySetInnerHtml: JSON-LD at build time */
 /** biome-ignore-all lint/style/useComponentExportOnlyModules: Next.js page conventions */
 import type { Metadata } from "next";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { storefront } from "@/lib/storefront";
 import { CategoryContent } from "./category-content";
-
-const SITE_URL = "https://linea-next.demo.commercengine.com";
-const SITE_NAME = "Linea";
 
 export const revalidate = 3600;
 
@@ -26,9 +24,21 @@ export async function generateMetadata({
   const decoded = decodeURIComponent(category);
   const displayName = decoded.charAt(0).toUpperCase() + decoded.slice(1);
 
+  const description = `Shop ${displayName} from ${SITE_NAME}. Discover our curated collection of minimalist jewelry crafted for the modern individual.`;
+
   return {
     title: displayName,
-    description: `Shop ${displayName} from ${SITE_NAME}. Discover our curated collection of minimalist jewelry crafted for the modern individual.`,
+    description,
+    openGraph: {
+      title: `${displayName} | ${SITE_NAME}`,
+      description,
+      type: "website",
+      url: `${SITE_URL}/category/${category}`,
+    },
+    twitter: {
+      title: `${displayName} | ${SITE_NAME}`,
+      description,
+    },
   };
 }
 

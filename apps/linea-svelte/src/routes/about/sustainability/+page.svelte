@@ -1,13 +1,23 @@
 <script lang="ts">
-import { SITE_URL } from "$lib/seo";
+import { SITE_NAME, SITE_URL } from "$lib/seo";
 import ContentSection from "$lib/components/about/ContentSection.svelte";
 import PageHeader from "$lib/components/about/PageHeader.svelte";
+
+const title = `Sustainability | ${SITE_NAME}`;
+const description = "Learn about LINEA's commitment to ethical sourcing, sustainable materials, and responsible jewelry craftsmanship.";
+const url = `${SITE_URL}/about/sustainability`;
 </script>
 
 <svelte:head>
-	<title>Sustainability | Linea</title>
-	<meta name="description" content="Learn about Linea's commitment to sustainable jewelry — responsibly sourced materials, ethical practices, and eco-friendly packaging." />
-	<link rel="canonical" href="{SITE_URL}/about/sustainability" />
+	<title>{title}</title>
+	<meta name="description" content={description} />
+	<link rel="canonical" href={url} />
+	<meta property="og:title" content={title} />
+	<meta property="og:description" content={description} />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content={url} />
+	<meta name="twitter:title" content={title} />
+	<meta name="twitter:description" content={description} />
 </svelte:head>
 
 <PageHeader
@@ -39,7 +49,7 @@ import PageHeader from "$lib/components/about/PageHeader.svelte";
 		<div class="grid md:grid-cols-3 gap-8">
 			<div>
 				<div class="text-3xl font-light text-primary mb-2">100%</div>
-				<p class="text-sm text-muted-foreground">Carbon neutral operations by 2025</p>
+				<p class="text-sm text-muted-foreground">Carbon neutral operations by 2030</p>
 			</div>
 			<div>
 				<div class="text-3xl font-light text-primary mb-2">90%</div>

@@ -5,6 +5,7 @@ import { TooltipProvider } from "@ce/ui/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
 import { destroyCheckout, initStorefront } from "./lib/storefront";
 import { WishlistProvider } from "./lib/wishlist";
@@ -28,7 +29,13 @@ const App = () => {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    initStorefront().then(() => setReady(true));
+    initStorefront()
+      .then(() => setReady(true))
+      .catch((err) => {
+        // biome-ignore lint/suspicious/noConsole: surface SDK init failures for debugging
+        console.error("Failed to initialize storefront:", err);
+        setReady(true); // Still show the app so error boundary can catch render errors
+      });
     return () => destroyCheckout();
   }, []);
 
@@ -49,22 +56,24 @@ const App = () => {
           <PoweredByBadge />
           <BrowserRouter>
             <ScrollToTop />
-            <Suspense>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/category/:category" element={<Category />} />
-                <Route path="/search" element={<Search />} />
-                <Route path="/product/:slug" element={<ProductDetail />} />
-                <Route path="/about/our-story" element={<OurStory />} />
-                <Route path="/about/sustainability" element={<Sustainability />} />
-                <Route path="/about/size-guide" element={<SizeGuide />} />
-                <Route path="/about/customer-care" element={<CustomerCare />} />
-                <Route path="/about/store-locator" element={<StoreLocator />} />
-                <Route path="/privacy-policy" element={<PrivacyPolicy />} />
-                <Route path="/terms-of-service" element={<TermsOfService />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
+            <ErrorBoundary>
+              <Suspense fallback={<div className="min-h-screen bg-background" />}>
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/category/:category" element={<Category />} />
+                  <Route path="/search" element={<Search />} />
+                  <Route path="/product/:slug" element={<ProductDetail />} />
+                  <Route path="/about/our-story" element={<OurStory />} />
+                  <Route path="/about/sustainability" element={<Sustainability />} />
+                  <Route path="/about/size-guide" element={<SizeGuide />} />
+                  <Route path="/about/customer-care" element={<CustomerCare />} />
+                  <Route path="/about/store-locator" element={<StoreLocator />} />
+                  <Route path="/privacy-policy" element={<PrivacyPolicy />} />
+                  <Route path="/terms-of-service" element={<TermsOfService />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </ErrorBoundary>
           </BrowserRouter>
         </TooltipProvider>
       </WishlistProvider>

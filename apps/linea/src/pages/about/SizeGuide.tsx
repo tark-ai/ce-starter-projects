@@ -4,10 +4,16 @@ import ContentSection from "../../components/about/ContentSection";
 import PageHeader from "../../components/about/PageHeader";
 import Footer from "../../components/footer/Footer";
 import Header from "../../components/header/Header";
+import SEO, { SITE_URL } from "../../components/Seo";
 
 const SizeGuide = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Size Guide"
+        description="Find your perfect fit with LINEA's comprehensive jewelry sizing guide for rings, bracelets, and necklaces."
+        canonical={`${SITE_URL}/about/size-guide`}
+      />
       <Header />
 
       <div className="flex">

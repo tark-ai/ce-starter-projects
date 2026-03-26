@@ -6,19 +6,19 @@ import { PoweredByBadge } from "@ce/ui/components/ui/powered-by-badge";
 import type { Metadata } from "next";
 import Footer from "@/components/footer/Footer";
 import Header from "@/components/header/Header";
+import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { storefront } from "@/lib/storefront";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
   title: {
-    default: "Linea — Commerce Engine + Next.js Starter Template",
-    template: "%s | Linea",
+    default: `${SITE_NAME} — Commerce Engine + Next.js Starter Template`,
+    template: `%s | ${SITE_NAME}`,
   },
-  description:
-    "Linea is a production-ready e-commerce starter template built with Commerce Engine and Next.js. A reference implementation featuring a minimalist jewelry storefront with full catalog, cart, checkout, and search.",
-  metadataBase: new URL("https://linea-next.demo.commercengine.com"),
+  description: `${SITE_NAME} is a production-ready e-commerce starter template built with Commerce Engine and Next.js. A reference implementation featuring a minimalist jewelry storefront with full catalog, cart, checkout, and search.`,
+  metadataBase: new URL(SITE_URL),
   openGraph: {
-    siteName: "Linea",
+    siteName: SITE_NAME,
     type: "website",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
   },

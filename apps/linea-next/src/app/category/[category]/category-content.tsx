@@ -6,41 +6,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import CategoryHeader from "@/components/category/CategoryHeader";
 import FilterSortBar from "@/components/category/FilterSortBar";
 import ProductGrid from "@/components/category/ProductGrid";
+import { buildFilter } from "@/lib/build-filter";
 import { useCategories, useListSkus, useSearchProducts } from "@/lib/hooks";
-
-function buildFilter(
-  categoryName: string | undefined,
-  userFilters: Record<string, unknown>
-): (string | string[])[] {
-  const conditions: (string | string[])[] = [];
-
-  if (categoryName) {
-    conditions.push(`categories.name = '${categoryName}'`);
-  }
-
-  const priceRange = userFilters.price_range as { min: number; max: number } | undefined;
-  if (priceRange) {
-    conditions.push(`pricing.selling_price ${priceRange.min} TO ${priceRange.max}`);
-  }
-
-  const minRating = userFilters.min_rating as number | undefined;
-  if (minRating != null) {
-    conditions.push(`rating >= ${minRating}`);
-  }
-
-  for (const [key, values] of Object.entries(userFilters)) {
-    if (key === "price_range" || key === "min_rating") continue;
-    if (!Array.isArray(values) || values.length === 0) continue;
-
-    if (values.length === 1) {
-      conditions.push(`${key} = '${values[0]}'`);
-    } else {
-      conditions.push(values.map((v: string) => `${key} = '${v}'`));
-    }
-  }
-
-  return conditions;
-}
 
 interface CategoryContentProps {
   initialSkus: Item[];
@@ -70,7 +37,7 @@ export function CategoryContent({ initialSkus, initialPagination }: CategoryCont
   });
 
   const searchEnabled = hasUserFilters || filtersOpen;
-  const filter = useMemo(() => buildFilter(categoryName, filters), [categoryName, filters]);
+  const filter = useMemo(() => buildFilter(filters, categoryName), [categoryName, filters]);
 
   const searchResult = useSearchProducts({
     query: "",

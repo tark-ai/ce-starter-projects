@@ -16,7 +16,7 @@ const supportLinks = [
 ];
 </script>
 
-<footer class="w-full bg-white text-black pt-8 pb-2 px-6 border-t border-[#e5e5e5] mt-48">
+<footer class="w-full bg-white text-black pt-8 pb-2 px-6 border-t border-border mt-48">
 	<div>
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-8">
 			<!-- Brand - Left side -->
@@ -116,7 +116,7 @@ const supportLinks = [
 	</div>
 
 	<!-- Bottom section - edge to edge separator -->
-	<div class="border-t border-[#e5e5e5] -mx-6 px-6 pt-2">
+	<div class="border-t border-border -mx-6 px-6 pt-2">
 		<div class="flex flex-col md:flex-row justify-between items-center">
 			<p class="text-sm font-light text-black mb-1 md:mb-0">
 				MIT Licensed. A

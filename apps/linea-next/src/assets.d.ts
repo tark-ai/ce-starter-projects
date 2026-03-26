@@ -4,3 +4,5 @@ declare module "@ce/ui/assets/*.jpg" {
   const src: string;
   export default src;
 }
+
+declare module "@fontsource-variable/dm-sans";

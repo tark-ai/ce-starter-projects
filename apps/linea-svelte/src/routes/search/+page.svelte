@@ -8,7 +8,7 @@ import { browser } from "$app/environment";
 import { page as pageState } from "$app/state";
 import FilterSortBar from "$lib/components/FilterSortBar.svelte";
 import ProductGrid from "$lib/components/ProductGrid.svelte";
-import { SITE_NAME } from "$lib/seo";
+import { SITE_NAME, SITE_URL } from "$lib/seo";
 import { getSdk } from "$lib/storefront";
 
 let skus = $state<Item[]>([]);
@@ -117,7 +117,9 @@ function handleFiltersChange(newFilters: Record<string, unknown>) {
 </script>
 
 <svelte:head>
-	<title>{query ? `Search: ${query} | ${SITE_NAME}` : `Search | ${SITE_NAME}`}</title>
+	<title>Search | {SITE_NAME}</title>
+	<meta name="description" content="Search the full LINEA jewelry collection." />
+	<link rel="canonical" href={`${SITE_URL}/search`} />
 	<meta name="robots" content="noindex, follow" />
 </svelte:head>
 

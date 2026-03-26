@@ -42,7 +42,7 @@ export default function SustainabilityContent() {
               <div className="grid md:grid-cols-3 gap-8">
                 <div>
                   <div className="text-3xl font-light text-primary mb-2">100%</div>
-                  <p className="text-sm text-muted-foreground">Carbon neutral operations by 2025</p>
+                  <p className="text-sm text-muted-foreground">Carbon neutral operations by 2030</p>
                 </div>
                 <div>
                   <div className="text-3xl font-light text-primary mb-2">90%</div>

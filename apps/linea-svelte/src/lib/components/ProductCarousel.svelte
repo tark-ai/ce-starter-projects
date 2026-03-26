@@ -43,7 +43,7 @@ function handleWishlistClick(e: MouseEvent, item: Item) {
 	</section>
 {:else}
 	<section class="w-full mb-16 px-6">
-		<div class="flex w-full overflow-x-auto scroll-snap-x-mandatory gap-2 md:gap-4">
+		<div class="flex w-full overflow-x-auto snap-x snap-mandatory gap-2 md:gap-4">
 			{#each items as item (`${item.product_id}:${item.variant_id ?? 'product'}`)}
 				<div class="basis-1/2 md:basis-1/3 lg:basis-1/4 shrink-0 snap-start">
 					<a href={getItemHref(item)} class="block group">
@@ -93,13 +93,3 @@ function handleWishlistClick(e: MouseEvent, item: Item) {
 		</div>
 	</section>
 {/if}
-
-<style>
-	.scroll-snap-x-mandatory {
-		scroll-snap-type: x mandatory;
-		-webkit-overflow-scrolling: touch;
-	}
-	.snap-start {
-		scroll-snap-align: start;
-	}
-</style>

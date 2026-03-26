@@ -3,10 +3,16 @@ import ContentSection from "../../components/about/ContentSection";
 import PageHeader from "../../components/about/PageHeader";
 import Footer from "../../components/footer/Footer";
 import Header from "../../components/header/Header";
+import SEO, { SITE_URL } from "../../components/Seo";
 
 const Sustainability = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Sustainability"
+        description="Learn about LINEA's commitment to ethical sourcing, sustainable materials, and responsible jewelry craftsmanship."
+        canonical={`${SITE_URL}/about/sustainability`}
+      />
       <Header />
 
       <div className="flex">
@@ -45,7 +51,7 @@ const Sustainability = () => {
               <div className="grid md:grid-cols-3 gap-8">
                 <div>
                   <div className="text-3xl font-light text-primary mb-2">100%</div>
-                  <p className="text-sm text-muted-foreground">Carbon neutral operations by 2025</p>
+                  <p className="text-sm text-muted-foreground">Carbon neutral operations by 2030</p>
                 </div>
                 <div>
                   <div className="text-3xl font-light text-primary mb-2">90%</div>

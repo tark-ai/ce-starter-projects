@@ -5,10 +5,16 @@ import ImageTextBlock from "../../components/about/ImageTextBlock";
 import PageHeader from "../../components/about/PageHeader";
 import Footer from "../../components/footer/Footer";
 import Header from "../../components/header/Header";
+import SEO, { SITE_URL } from "../../components/Seo";
 
 const OurStory = () => {
   return (
     <div className="min-h-screen bg-background">
+      <SEO
+        title="Our Story"
+        description="Discover the story behind LINEA — a journey of passion, craftsmanship, and timeless elegance in fine jewelry."
+        canonical={`${SITE_URL}/about/our-story`}
+      />
       <Header />
 
       <div className="flex">
