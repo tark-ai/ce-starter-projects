@@ -1,0 +1,12 @@
+---
+import BlogContent from "../../components/blog/BlogContent";
+import Layout from "../../layouts/Layout.astro";
+import { SITE_NAME } from "../../lib/constants";
+---
+
+<Layout
+  title={`Blog | ${SITE_NAME}`}
+  description={`Stories, thoughts, and things we've been building at ${SITE_NAME}.`}
+>
+  <BlogContent client:idle />
+</Layout>

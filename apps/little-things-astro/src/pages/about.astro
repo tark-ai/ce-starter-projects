@@ -1,0 +1,12 @@
+---
+import AboutContent from "../components/about/AboutContent";
+import Layout from "../layouts/Layout.astro";
+import { SITE_NAME } from "../lib/constants";
+---
+
+<Layout
+  title={`About | ${SITE_NAME}`}
+  description={`${SITE_NAME} sells the good stuff, minus the fluff — a tight, opinionated catalog where everything earns its spot.`}
+>
+  <AboutContent />
+</Layout>

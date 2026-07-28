@@ -1,0 +1,87 @@
+---
+import type { Item, Pagination } from "@commercengine/storefront";
+import CategoryContent from "../../components/category/CategoryContent";
+import Layout from "../../layouts/Layout.astro";
+import { SITE_NAME, SITE_URL } from "../../lib/constants";
+import { publicSdk } from "../../lib/storefront";
+
+export async function getStaticPaths() {
+  try {
+    const { data } = await publicSdk.catalog.listCategories();
+    return (data?.categories ?? []).map((c) => ({
+      params: { category: c.slug ?? c.id },
+      props: { categoryData: c },
+    }));
+  } catch {
+    return [];
+  }
+}
+
+const { category } = Astro.params;
+const { categoryData } = Astro.props;
+
+let displayName =
+  categoryData?.name ??
+  (category ? category.charAt(0).toUpperCase() + category.slice(1) : "All products");
+
+const siteUrl = import.meta.env.SITE || SITE_URL;
+
+let skus: Item[] = [];
+let pagination: Pagination | undefined;
+try {
+  const { data: skusData } = await publicSdk.catalog.listSkus({
+    page: 1,
+    limit: 20,
+    category_id: categoryData?.id ? [categoryData.id] : undefined,
+  });
+  skus = skusData?.skus ?? [];
+  pagination = skusData?.pagination;
+} catch {
+  skus = [];
+}
+
+const categoryDescription = `Shop ${displayName} from ${SITE_NAME}. A tight, opinionated selection of everyday goods worth owning.`;
+
+const breadcrumbSchema = {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  itemListElement: [
+    { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+    {
+      "@type": "ListItem",
+      position: 2,
+      name: displayName,
+      item: `${siteUrl}/category/${category}`,
+    },
+  ],
+};
+
+const collectionSchema = {
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  name: displayName,
+  description: categoryDescription,
+  url: `${siteUrl}/category/${category}`,
+};
+---
+
+<Layout title={`${displayName} | ${SITE_NAME}`} description={categoryDescription}>
+  <script
+    is:inline
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(breadcrumbSchema)}
+  />
+  <script
+    is:inline
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(collectionSchema)}
+  />
+  <CategoryContent
+    client:idle
+    categorySlug={category!}
+    initialSkus={skus}
+    initialPagination={pagination}
+  />
+</Layout>

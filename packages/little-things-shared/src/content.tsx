@@ -207,7 +207,7 @@ const DEFAULT_FEATURED: EditorialItem[] = [
   {
     title: "Freshly dropped. Still warm.",
     description: "The newest stuff we could slap a price tag on. Blink and it's gone—probably.",
-    route: { path: "/category/latest-drops" },
+    route: { path: "/all-products" },
   },
 ];
 
@@ -216,13 +216,13 @@ const DEFAULT_CATEGORIES: EditorialItem[] = [
     title: "Seasonal goods only available online",
     description:
       "Only available online. Only for now. Only if you're fast. Miss it and it's gone till next year—or forever.",
-    route: { path: "/category/season" },
+    route: { path: "/all-products" },
   },
   {
     title: "This week's deals",
     description:
       "Blink and you'll miss it. Weekly deals that won't stick around—because good taste moves fast.",
-    route: { path: "/category/week-products" },
+    route: { path: "/all-products" },
   },
   {
     title: "Categories worth scrolling",

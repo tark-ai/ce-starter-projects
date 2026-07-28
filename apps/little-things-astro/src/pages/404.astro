@@ -1,0 +1,25 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { SITE_NAME } from "../lib/constants";
+---
+
+<Layout
+  title={`Page Not Found | ${SITE_NAME}`}
+  description="The page you were looking for could not be found."
+  noindex={true}
+>
+  <main class="flex min-h-[60vh] items-center justify-center bg-background px-6">
+    <div class="text-center">
+      <h1 class="mb-4 text-6xl font-bold tracking-tight text-foreground">404</h1>
+      <p class="mb-6 text-xl font-light text-muted-foreground">
+        Well, this page doesn't exist. But plenty of good things do.
+      </p>
+      <a
+        href="/"
+        class="text-sm font-medium text-brand underline transition-opacity hover:opacity-80"
+      >
+        Back to home
+      </a>
+    </div>
+  </main>
+</Layout>

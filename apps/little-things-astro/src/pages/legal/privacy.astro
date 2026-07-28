@@ -1,0 +1,12 @@
+---
+import PrivacyPolicyContent from "../../components/about/PrivacyPolicyContent";
+import Layout from "../../layouts/Layout.astro";
+import { SITE_NAME } from "../../lib/constants";
+---
+
+<Layout
+  title={`Privacy Policy | ${SITE_NAME}`}
+  description={`How ${SITE_NAME} collects, uses, and protects your personal data.`}
+>
+  <PrivacyPolicyContent />
+</Layout>

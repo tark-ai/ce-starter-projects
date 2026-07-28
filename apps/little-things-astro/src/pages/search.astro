@@ -1,0 +1,13 @@
+---
+import SearchContent from "../components/category/SearchContent";
+import Layout from "../layouts/Layout.astro";
+import { SITE_NAME } from "../lib/constants";
+---
+
+<Layout
+  title={`Search | ${SITE_NAME}`}
+  description={`Search the full ${SITE_NAME} catalog.`}
+  noindex={true}
+>
+  <SearchContent client:idle />
+</Layout>

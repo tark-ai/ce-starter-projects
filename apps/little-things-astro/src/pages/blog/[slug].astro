@@ -1,0 +1,49 @@
+---
+import ArticlePost from "../../components/blog/ArticlePost";
+import Layout from "../../layouts/Layout.astro";
+import { ARTICLES, getArticleBySlug, getRelatedArticles } from "../../lib/blog-data";
+import { SITE_NAME, SITE_URL } from "../../lib/constants";
+
+export function getStaticPaths() {
+  return ARTICLES.map((article) => ({ params: { slug: article.slug } }));
+}
+
+const { slug } = Astro.params;
+const article = getArticleBySlug(slug!);
+
+if (!article) {
+  return Astro.redirect("/404");
+}
+
+const related = getRelatedArticles(article.slug);
+const siteUrl = import.meta.env.SITE || SITE_URL;
+
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: article.title,
+  description: article.excerpt,
+  image: article.image,
+  author: { "@type": "Person", name: article.author },
+  datePublished: article.date,
+  url: `${siteUrl}/blog/${article.slug}`,
+  publisher: { "@type": "Organization", name: SITE_NAME },
+};
+---
+
+<Layout
+  title={`${article.title} | ${SITE_NAME}`}
+  description={article.excerpt}
+  image={article.image}
+  ogType="article"
+>
+  <script
+    is:inline
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(articleSchema)}
+  />
+  <main class="pt-6">
+    <ArticlePost article={article} related={related} />
+  </main>
+</Layout>
