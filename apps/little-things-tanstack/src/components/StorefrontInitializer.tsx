@@ -17,12 +17,16 @@ import { storefront, storefrontConfig } from "@/lib/storefront";
  */
 export function StorefrontInitializer() {
   useEffect(() => {
+    let active = true;
+
     const init = async () => {
       await ensureClientSessionBootstrapped();
+      if (!active) return;
 
       const sdk = storefront.clientStorefront();
       const accessToken = await sdk.getAccessToken();
       const refreshToken = await sdk.session.peekRefreshToken();
+      if (!active) return;
 
       initCheckout({
         storeId: storefrontConfig.storeId,
@@ -37,9 +41,13 @@ export function StorefrontInitializer() {
       });
     };
 
-    void init();
+    void init().catch((err) => {
+      // biome-ignore lint/suspicious/noConsole: surface bootstrap/checkout init failures
+      console.error("Failed to initialize hosted checkout", err);
+    });
 
     return () => {
+      active = false;
       destroyCheckout();
     };
   }, []);

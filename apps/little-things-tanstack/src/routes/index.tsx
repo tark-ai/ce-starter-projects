@@ -44,11 +44,8 @@ export const Route = createFileRoute("/")({
           "Little Things is a production-ready e-commerce starter template built with Commerce Engine and TanStack Start. A reference implementation featuring a tight, opinionated everyday-goods storefront with full catalog, cart, checkout, and search.",
       },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: `${SITE_URL}/og-image.jpg` },
-      { property: "og:image:width", content: "1200" },
-      { property: "og:image:height", content: "630" },
       { property: "og:url", content: SITE_URL },
-      { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:card", content: "summary" },
       {
         name: "twitter:title",
         content: `${SITE_NAME} — Commerce Engine + TanStack Start Starter Template`,
@@ -58,7 +55,6 @@ export const Route = createFileRoute("/")({
         content:
           "Little Things is a production-ready e-commerce starter template built with Commerce Engine and TanStack Start. A reference implementation featuring a tight, opinionated everyday-goods storefront with full catalog, cart, checkout, and search.",
       },
-      { name: "twitter:image", content: `${SITE_URL}/og-image.jpg` },
     ],
     links: [{ rel: "canonical", href: SITE_URL }],
     scripts: [
