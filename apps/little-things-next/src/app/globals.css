@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@ce/little-things-ui/theme.css";
+
+@source "../../../../packages/little-things-ui/src";
+@source "../../../../packages/little-things-shared/src";
