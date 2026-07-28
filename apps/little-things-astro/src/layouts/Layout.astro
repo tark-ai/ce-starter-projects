@@ -8,6 +8,7 @@ import { PoweredByBadge } from "@ce/little-things-ui/components/ui/powered-by-ba
 import type { Category } from "@commercengine/storefront";
 import Navigation from "../components/header/Navigation";
 import Footer from "../components/footer/Footer";
+import Toasts from "../components/Toasts";
 import { SITE_NAME, SITE_URL } from "../lib/constants";
 import { publicSdk } from "../lib/storefront";
 
@@ -23,14 +24,16 @@ interface Props {
 const {
   title = `${SITE_NAME} | Everyday goods, minus the fluff`,
   description = `${SITE_NAME} is a tight, opinionated storefront for everyday goods worth owning.`,
-  image = "/og-image.jpg",
+  image = "",
   canonicalUrl,
   ogType = "website",
   noindex = false,
 } = Astro.props;
 
 const siteUrl = import.meta.env.SITE || SITE_URL;
-const imageUrl = image.startsWith("http") ? image : `${siteUrl}${image}`;
+// Only emit an og:image when a real one exists (e.g. a product image). Avoid
+// advertising a placeholder path that would 404.
+const imageUrl = image ? (image.startsWith("http") ? image : `${siteUrl}${image}`) : "";
 const canonical = canonicalUrl || new URL(Astro.url.pathname, siteUrl).href;
 
 let categories: Category[] = [];
@@ -55,15 +58,15 @@ try {
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={imageUrl} />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
+    {imageUrl && <meta property="og:image" content={imageUrl} />}
+    {imageUrl && <meta property="og:image:width" content="1200" />}
+    {imageUrl && <meta property="og:image:height" content="630" />}
     <meta property="og:site_name" content={SITE_NAME} />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content={imageUrl ? "summary_large_image" : "summary"} />
     <meta name="twitter:site" content="@commerceengine" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={imageUrl} />
+    {imageUrl && <meta name="twitter:image" content={imageUrl} />}
     <slot name="head" />
     <ClientRouter />
   </head>
@@ -77,6 +80,7 @@ try {
       </div>
       <Footer client:load transition:persist />
       <PoweredByBadge client:load transition:persist />
+      <Toasts client:idle transition:persist />
     </div>
 
     <!-- App-level checkout bootstrapping + partial swap for the persistent shell -->

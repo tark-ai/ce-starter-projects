@@ -3,17 +3,36 @@ import type { Product } from "@commercengine/storefront";
 import ProductContent from "../../components/product/ProductContent";
 import Layout from "../../layouts/Layout.astro";
 import { SITE_NAME, SITE_URL } from "../../lib/constants";
+import { safeJsonLd } from "../../lib/json-ld";
 import { publicSdk } from "../../lib/storefront";
 
 export async function getStaticPaths() {
+  const paths: Array<{ params: { slug: string } }> = [];
   try {
-    const { data } = await publicSdk.catalog.listProducts({ limit: 100 });
-    return (data?.products ?? []).map((p) => ({
-      params: { slug: p.slug || p.id },
-    }));
-  } catch {
-    return [];
+    // Paginate through the full catalog so every product gets a static route.
+    // A single fixed page would 404 for products reachable via client-side
+    // pagination/search once the catalog exceeds one page.
+    let page = 1;
+    const limit = 100;
+    // Hard cap as a safety valve against an unexpected pagination loop.
+    for (let guard = 0; guard < 200; guard++) {
+      const { data } = await publicSdk.catalog.listProducts({ page, limit });
+      for (const p of data?.products ?? []) {
+        paths.push({ params: { slug: p.slug || p.id } });
+      }
+      const nextPage = data?.pagination?.next_page;
+      if (!nextPage || nextPage === page) break;
+      page = nextPage;
+    }
+  } catch (error) {
+    // Build stays green without live catalog access; pages render on request in dev.
+    // Surface the outage so an empty/partial static build isn't silently shipped.
+    console.warn(
+      "[little-things] Failed to list products for getStaticPaths; product routes may be missing.",
+      error
+    );
   }
+  return paths;
 }
 
 const { slug } = Astro.params;
@@ -22,8 +41,9 @@ let product: Product | undefined;
 try {
   const { data } = await publicSdk.catalog.getProductDetail({ product_id: slug! });
   product = data?.product;
-} catch {
+} catch (error) {
   product = undefined;
+  console.warn(`[little-things] Failed to load product detail for "${slug}".`, error);
 }
 
 const siteUrl = import.meta.env.SITE || SITE_URL;
@@ -36,7 +56,7 @@ const productImage =
   product?.images?.[0]?.url_zoom ||
   product?.images?.[0]?.url_standard ||
   product?.images?.[0]?.url_thumbnail ||
-  "/og-image.jpg";
+  "";
 
 const jsonLd = product
   ? [
@@ -100,6 +120,7 @@ const jsonLd = product
   description={productDescription}
   image={productImage}
   ogType="product"
+  noindex={!product}
 >
   {
     jsonLd.map((schema) => (
@@ -107,7 +128,7 @@ const jsonLd = product
         is:inline
         slot="head"
         type="application/ld+json"
-        set:html={JSON.stringify(schema)}
+        set:html={safeJsonLd(schema)}
       />
     ))
   }

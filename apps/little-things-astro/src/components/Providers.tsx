@@ -1,5 +1,3 @@
-import { Toaster as Sonner } from "@ce/little-things-ui/components/ui/sonner";
-import { Toaster } from "@ce/little-things-ui/components/ui/toaster";
 import { TooltipProvider } from "@ce/little-things-ui/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { ReactNode } from "react";
@@ -12,11 +10,7 @@ export default function Providers({ children }: { children: ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <WishlistProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          {children}
-        </TooltipProvider>
+        <TooltipProvider>{children}</TooltipProvider>
       </WishlistProvider>
     </QueryClientProvider>
   );

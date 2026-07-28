@@ -3,6 +3,7 @@ import type { Item, Pagination } from "@commercengine/storefront";
 import CategoryContent from "../../components/category/CategoryContent";
 import Layout from "../../layouts/Layout.astro";
 import { SITE_NAME, SITE_URL } from "../../lib/constants";
+import { safeJsonLd } from "../../lib/json-ld";
 import { publicSdk } from "../../lib/storefront";
 
 export async function getStaticPaths() {
@@ -70,13 +71,13 @@ const collectionSchema = {
     is:inline
     slot="head"
     type="application/ld+json"
-    set:html={JSON.stringify(breadcrumbSchema)}
+    set:html={safeJsonLd(breadcrumbSchema)}
   />
   <script
     is:inline
     slot="head"
     type="application/ld+json"
-    set:html={JSON.stringify(collectionSchema)}
+    set:html={safeJsonLd(collectionSchema)}
   />
   <CategoryContent
     client:idle

@@ -33,7 +33,10 @@ function CategoryContentInner({
   const { categories } = useCategories();
   const matchedCategory = categorySlug
     ? categories.find(
-        (c) => c.slug === categorySlug || c.name.toLowerCase().replace(/\s+/g, "-") === categorySlug
+        (c) =>
+          c.slug === categorySlug ||
+          c.id === categorySlug ||
+          c.name.toLowerCase().replace(/\s+/g, "-") === categorySlug
       )
     : undefined;
   const categoryId = matchedCategory?.id;
@@ -41,12 +44,16 @@ function CategoryContentInner({
 
   const hasUserFilters = Object.keys(filters).length > 0;
   const hasPaginated = page > 1;
+  // When the build-time fetch failed (or the catalog was empty at build), page 1
+  // has no server data to show. Fall back to a client listSkus so the page isn't
+  // permanently empty.
+  const initialDataMissing = initialSkus.length === 0;
 
   const listSkusResult = useListSkus({
     page,
     limit: 20,
     category_id: categoryId ? [categoryId] : undefined,
-    enabled: !hasUserFilters && hasPaginated,
+    enabled: !hasUserFilters && (hasPaginated || initialDataMissing),
   });
 
   const searchEnabled = hasUserFilters || filtersOpen;
@@ -86,7 +93,7 @@ function CategoryContentInner({
   const baseFacetStats =
     Object.keys(baseFacetsRef.current.stats).length > 0 ? baseFacetsRef.current.stats : searchStats;
 
-  const useInitialData = !hasUserFilters && !hasPaginated;
+  const useInitialData = !hasUserFilters && !hasPaginated && !initialDataMissing;
   const skus = hasUserFilters
     ? searchResult.skus
     : useInitialData

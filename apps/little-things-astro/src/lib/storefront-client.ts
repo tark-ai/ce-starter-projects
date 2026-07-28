@@ -55,3 +55,16 @@ export function initStorefront() {
 
   return initPromise;
 }
+
+// Readiness gate for session-dependent calls (wishlist, etc.). getSdk() hands back
+// a usable SDK before bootstrap() has created a session, so the first wishlist
+// request can race session creation. Awaiting this ensures bootstrap has run first.
+// A failed bootstrap is swallowed here so the request still proceeds on a best-effort
+// basis (the SDK will create a session on demand) rather than being blocked entirely.
+export async function whenStorefrontReady(): Promise<void> {
+  try {
+    await initStorefront();
+  } catch {
+    // Ignore bootstrap failure; fall through to the on-demand session path.
+  }
+}

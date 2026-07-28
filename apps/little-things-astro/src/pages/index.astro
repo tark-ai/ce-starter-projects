@@ -11,8 +11,12 @@ let products: Item[] = [];
 try {
   const { data } = await publicSdk.catalog.listSkus({ page: 1, limit: 6 });
   products = data?.skus ?? [];
-} catch {
+} catch (error) {
   products = [];
+  console.warn(
+    "[little-things] Failed to load featured products for the home page; shipping without them.",
+    error
+  );
 }
 
 const siteUrl = import.meta.env.SITE || SITE_URL;

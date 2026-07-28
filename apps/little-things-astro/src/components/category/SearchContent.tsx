@@ -15,14 +15,17 @@ export default function SearchContent() {
 }
 
 function SearchContentInner() {
-  const [query] = useState(() => {
-    if (typeof window === "undefined") return "";
-    return new URLSearchParams(window.location.search).get("q") ?? "";
-  });
+  // Start empty on both SSR and the first client render so hydration matches the
+  // server-rendered markup. Read the actual query from the URL only after mount.
+  const [query, setQuery] = useState("");
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<Record<string, unknown>>({});
+
+  useEffect(() => {
+    setQuery(new URLSearchParams(window.location.search).get("q") ?? "");
+  }, []);
 
   const prevQuery = useRef(query);
   useEffect(() => {

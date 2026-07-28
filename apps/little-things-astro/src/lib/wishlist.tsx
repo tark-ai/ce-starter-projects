@@ -10,7 +10,7 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { getSdk } from "./storefront-client";
+import { getSdk, whenStorefrontReady } from "./storefront-client";
 
 type OnAddListener = () => void;
 
@@ -27,6 +27,13 @@ interface WishlistContextValue {
 const WishlistContext = createContext<WishlistContextValue | null>(null);
 
 const WISHLIST_KEY = ["wishlist"];
+
+// Module-level so every Astro island (Navigation, ProductContent, listings…)
+// shares the same add-listener registry. Each island mounts its own
+// WishlistProvider, so a per-instance ref would only notify listeners from the
+// same island — the nav's "open favorites drawer on add" would never fire when
+// adding from a product/listing island.
+const addListeners = new Set<OnAddListener>();
 
 function getWishlistErrorMessage(error: unknown, fallback: string): string {
   if (error instanceof Error && error.message) {
@@ -47,12 +54,13 @@ function getWishlistErrorMessage(error: unknown, fallback: string): string {
 
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
-  const addListeners = useRef(new Set<OnAddListener>());
   const hasShownQueryError = useRef(false);
 
   const { data, error, isLoading } = useQuery({
     queryKey: WISHLIST_KEY,
     queryFn: async () => {
+      // Wait for bootstrap so the first wishlist read doesn't race session creation.
+      await whenStorefrontReady();
       const { data, error } = await getSdk().cart.getWishlist();
       if (error) throw new Error(error.message);
       return data ?? { products: [] as Item[] };
@@ -91,7 +99,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     },
     onSuccess: (data) => {
       queryClient.setQueryData(WISHLIST_KEY, data);
-      for (const fn of addListeners.current) fn();
+      for (const fn of addListeners) fn();
     },
     onError: (mutationError) => {
       toast.error(
@@ -154,9 +162,9 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   );
 
   const onAdd = useCallback((listener: OnAddListener) => {
-    addListeners.current.add(listener);
+    addListeners.add(listener);
     return () => {
-      addListeners.current.delete(listener);
+      addListeners.delete(listener);
     };
   }, []);
 
