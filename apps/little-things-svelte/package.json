@@ -1,0 +1,36 @@
+{
+  "name": "@ce/little-things-svelte",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite dev --port 8094",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "biome check ./src",
+    "check:fix": "biome check --write ./src",
+    "typecheck": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json"
+  },
+  "dependencies": {
+    "@ce/little-things-ui": "workspace:*",
+    "@fontsource-variable/inter": "^5.0.0",
+    "@fontsource/instrument-serif": "^5.0.0",
+    "@commercengine/checkout": "^0.3.1",
+    "@commercengine/storefront": "^0.1.6",
+    "clsx": "^2.1.1",
+    "lucide-svelte": "^1.0.1",
+    "tailwind-merge": "^3.5.0",
+    "tw-animate-css": "^1.4.0"
+  },
+  "devDependencies": {
+    "@sveltejs/adapter-static": "^3.0.10",
+    "@sveltejs/kit": "^2.55.0",
+    "@sveltejs/vite-plugin-svelte": "^7.0.0",
+    "@tailwindcss/vite": "^4.2.2",
+    "svelte": "^5.55.0",
+    "svelte-check": "^4.4.5",
+    "tailwindcss": "^4.2.2",
+    "typescript": "^6.0.2",
+    "vite": "^8.0.2"
+  }
+}
