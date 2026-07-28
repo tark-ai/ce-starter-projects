@@ -18,11 +18,21 @@ function pillClass(active: boolean): string {
 
 <section class="mx-auto w-full max-w-[1400px] px-6 pb-8 lg:px-20">
 	<div class="flex flex-wrap gap-2">
-		<button type="button" class={pillClass(!activeTag)} onclick={() => onselecttag(null)}>
+		<button
+			type="button"
+			class={pillClass(!activeTag)}
+			aria-pressed={!activeTag}
+			onclick={() => onselecttag(null)}
+		>
 			All
 		</button>
 		{#each tags as tag (tag)}
-			<button type="button" class={pillClass(activeTag === tag)} onclick={() => onselecttag(tag)}>
+			<button
+				type="button"
+				class={pillClass(activeTag === tag)}
+				aria-pressed={activeTag === tag}
+				onclick={() => onselecttag(tag)}
+			>
 				{tag}
 			</button>
 		{/each}

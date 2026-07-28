@@ -1,5 +1,6 @@
 <script lang="ts">
 import ProductContent from "$lib/components/product/ProductContent.svelte";
+import { safeJsonLd } from "$lib/json-ld";
 import { SITE_NAME, SITE_URL } from "$lib/seo";
 
 let { data } = $props();
@@ -33,6 +34,10 @@ const jsonLd = $derived(
             "@type": "Offer",
             url,
             priceCurrency: product.pricing.currency,
+            // The static/SSR page has no selected variant at render time, so the
+            // base product's selling price is used as the representative Offer
+            // price. Variant-specific pricing is reflected client-side once a
+            // variant is chosen.
             price: product.pricing.selling_price,
             availability:
               product.stock_available || product.backorder
@@ -57,7 +62,7 @@ const jsonLd = $derived(
 		<meta property="og:image" content={image} />
 	{/if}
 	{#each jsonLd as schema}
-		{@html `<script type="application/ld+json">${JSON.stringify(schema)}</script>`}
+		{@html `<script type="application/ld+json">${safeJsonLd(schema)}</script>`}
 	{/each}
 </svelte:head>
 

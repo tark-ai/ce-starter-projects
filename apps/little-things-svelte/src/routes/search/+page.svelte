@@ -69,7 +69,13 @@ $effect(() => {
   fetchResults(query, currentPage, currentFilters);
 });
 
+// Monotonically increasing id per request. Rapid query/page/filter changes
+// fire overlapping requests; only the latest one may apply its result so an
+// older (slower) response can't overwrite a newer one.
+let requestSeq = 0;
+
 async function fetchResults(q: string, p: number, userFilters: Record<string, unknown>) {
+  const seq = ++requestSeq;
   isLoading = true;
 
   const filter = buildFilter(userFilters);
@@ -78,6 +84,7 @@ async function fetchResults(q: string, p: number, userFilters: Record<string, un
 
   try {
     const { data, error } = await getSdk().catalog.searchProducts(body);
+    if (seq !== requestSeq) return; // a newer request superseded this one
     if (error) {
       // biome-ignore lint/suspicious/noConsole: surface search errors for debugging
       console.error("Search error:", error.message);
@@ -92,10 +99,11 @@ async function fetchResults(q: string, p: number, userFilters: Record<string, un
       baseFacetStats = (data?.facet_stats as Record<string, { min: number; max: number }>) ?? {};
     }
   } catch (e) {
+    if (seq !== requestSeq) return;
     // biome-ignore lint/suspicious/noConsole: surface search errors for debugging
     console.error("Failed to search:", e);
   } finally {
-    isLoading = false;
+    if (seq === requestSeq) isLoading = false;
   }
 }
 

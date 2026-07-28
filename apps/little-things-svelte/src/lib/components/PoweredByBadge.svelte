@@ -9,8 +9,7 @@
 		viewBox="0 0 914 1000"
 		fill="none"
 		xmlns="http://www.w3.org/2000/svg"
-		role="img"
-		aria-label="Commerce Engine"
+		aria-hidden="true"
 	>
 		<path d="M365.436 1000H776.54L913.575 863.655V727.311H365.436V1000Z" fill="#00BF6F" />
 		<path d="M274.069 1000H137.081L0.0461426 863.655V727.311H274.069V1000Z" fill="#8EDD65" />

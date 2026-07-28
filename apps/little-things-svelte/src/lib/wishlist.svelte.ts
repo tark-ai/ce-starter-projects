@@ -10,15 +10,20 @@ class WishlistStore {
 
   #addListeners = new Set<OnAddListener>();
   #initialized = false;
+  // Monotonic id per mutating operation; ensures a slower/older toggle response
+  // can't overwrite the state produced by a newer one.
+  #opSeq = 0;
 
   async load() {
     if (this.#initialized) return;
-    this.#initialized = true;
     this.isLoading = true;
     try {
       const { data, error } = await getSdk().cart.getWishlist();
       if (error) throw new Error(error.message);
       this.items = data?.products ?? [];
+      // Only mark initialized on success so a transient failure doesn't
+      // permanently block retries.
+      this.#initialized = true;
     } catch (e) {
       // biome-ignore lint/suspicious/noConsole: surface wishlist API errors for debugging
       console.error("Failed to load wishlist:", e);
@@ -44,12 +49,14 @@ class WishlistStore {
   }
 
   async addToWishlist(productId: string, variantId?: string | null) {
+    const seq = ++this.#opSeq;
     try {
       const { data, error } = await getSdk().cart.addToWishlist({
         product_id: productId,
         variant_id: variantId ?? null,
       });
       if (error) throw new Error(error.message);
+      if (seq !== this.#opSeq) return; // a newer toggle superseded this one
       this.items = data?.products ?? this.items;
       for (const fn of this.#addListeners) fn();
     } catch (e) {
@@ -59,12 +66,14 @@ class WishlistStore {
   }
 
   async removeFromWishlist(productId: string, variantId?: string | null) {
+    const seq = ++this.#opSeq;
     try {
       const { data, error } = await getSdk().cart.removeFromWishlist({
         product_id: productId,
         variant_id: variantId ?? null,
       });
       if (error) throw new Error(error.message);
+      if (seq !== this.#opSeq) return; // a newer toggle superseded this one
       this.items = data?.products ?? this.items;
     } catch (e) {
       // biome-ignore lint/suspicious/noConsole: surface wishlist API errors for debugging

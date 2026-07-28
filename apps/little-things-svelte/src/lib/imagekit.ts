@@ -7,7 +7,10 @@ const WIDTHS = [320, 640, 768, 1024, 1280, 1536, 1792] as const;
  * e.g. https://images.tarkai.com/tr:w-640,q-80/path.jpg
  */
 export function ikUrl(path: string, width: number, quality = 80): string {
-  return `${IMAGEKIT_ENDPOINT}/tr:w-${width},q-${quality}${path}`;
+  // Ensure the path is absolute; a missing leading slash would concatenate
+  // straight onto the transformation string and yield a malformed URL / 404.
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${IMAGEKIT_ENDPOINT}/tr:w-${width},q-${quality}${normalizedPath}`;
 }
 
 /**

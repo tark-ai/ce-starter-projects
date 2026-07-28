@@ -14,19 +14,27 @@ import type { LayoutData } from "./$types";
 let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
 onMount(() => {
-  initStorefront().then(() => {
-    wishlist.load();
-    checkout.init();
-  });
+  initStorefront()
+    .then(() => {
+      wishlist.load();
+      checkout.init();
+    })
+    .catch((error) => {
+      // Surface the failure instead of leaving an unhandled rejection; cart and
+      // wishlist will simply be unavailable until the next successful init.
+      console.error("Storefront bootstrap failed:", error);
+    });
 });
 </script>
 
 <svelte:head>
 	<meta property="og:site_name" content={SITE_NAME} />
-	<meta property="og:image" content={OG_IMAGE} />
-	<meta property="og:image:width" content="1200" />
-	<meta property="og:image:height" content="630" />
-	<meta name="twitter:card" content="summary_large_image" />
+	{#if OG_IMAGE}
+		<meta property="og:image" content={OG_IMAGE} />
+		<meta property="og:image:width" content="1200" />
+		<meta property="og:image:height" content="630" />
+	{/if}
+	<meta name="twitter:card" content={OG_IMAGE ? 'summary_large_image' : 'summary'} />
 	<meta name="twitter:site" content={TWITTER_SITE} />
 </svelte:head>
 
