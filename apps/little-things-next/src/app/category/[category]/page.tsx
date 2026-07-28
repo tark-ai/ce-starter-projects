@@ -3,6 +3,7 @@
 import type { Item, Pagination } from "@commercengine/storefront";
 import type { Metadata } from "next";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { safeJsonLd } from "@/lib/safe-json-ld";
 import { storefront } from "@/lib/storefront";
 import { CategoryContent } from "../../category-content";
 
@@ -54,6 +55,8 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
   let pagination: Pagination | undefined;
   let displayName = decodeURIComponent(category);
   displayName = displayName.charAt(0).toUpperCase() + displayName.slice(1);
+  let categoryId: string | undefined;
+  let categoryName: string | undefined;
 
   try {
     const sdk = storefront.publicStorefront();
@@ -61,18 +64,30 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
     const { data: categoriesData } = await sdk.catalog.listCategories();
     const categories = categoriesData?.categories ?? [];
     const matched = categories.find(
-      (c) => c.slug === category || c.name.toLowerCase().replace(/\s+/g, "-") === category
+      (c) =>
+        c.slug === category ||
+        c.name.toLowerCase().replace(/\s+/g, "-") === category ||
+        c.id === category
     );
 
-    const { data: skusData } = await sdk.catalog.listSkus({
-      page: 1,
-      limit: 20,
-      category_id: matched?.id ? [matched.id] : undefined,
-    });
+    // Only query catalog once the category is resolved; otherwise the request
+    // would silently return the whole catalog instead of this category.
+    if (matched?.id) {
+      const { data: skusData } = await sdk.catalog.listSkus({
+        page: 1,
+        limit: 20,
+        category_id: [matched.id],
+      });
 
-    skus = skusData?.skus ?? [];
-    pagination = skusData?.pagination;
-    if (matched?.name) displayName = matched.name;
+      skus = skusData?.skus ?? [];
+      pagination = skusData?.pagination;
+    }
+
+    if (matched) {
+      categoryId = matched.id;
+      categoryName = matched.name;
+      if (matched.name) displayName = matched.name;
+    }
   } catch {
     skus = [];
   }
@@ -116,10 +131,16 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
         <script
           key={schema["@type"]}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(schema) }}
         />
       ))}
-      <CategoryContent categorySlug={category} initialSkus={skus} initialPagination={pagination} />
+      <CategoryContent
+        categorySlug={category}
+        categoryId={categoryId}
+        categoryName={categoryName}
+        initialSkus={skus}
+        initialPagination={pagination}
+      />
     </>
   );
 }

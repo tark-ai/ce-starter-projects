@@ -16,12 +16,20 @@ export function SearchContent() {
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<Record<string, unknown>>({});
 
+  const baseFacetsRef = useRef({
+    distribution: {} as Record<string, Record<string, number>>,
+    stats: {} as Record<string, { min: number; max: number }>,
+  });
+
   const prevQuery = useRef(query);
   useEffect(() => {
     if (prevQuery.current !== query) {
       prevQuery.current = query;
       setPage(1);
       setFilters({});
+      // Drop facets captured for the previous query so the drawer rebuilds
+      // its base facets from the new query's results.
+      baseFacetsRef.current = { distribution: {}, stats: {} };
     }
   }, [query]);
 
@@ -35,11 +43,6 @@ export function SearchContent() {
     facets: ["*"],
     filter: filter.length > 0 ? filter : undefined,
     enabled: !!query,
-  });
-
-  const baseFacetsRef = useRef({
-    distribution: {} as Record<string, Record<string, number>>,
-    stats: {} as Record<string, { min: number; max: number }>,
   });
 
   const searchDistribution = searchResult.facetDistribution;

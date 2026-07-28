@@ -10,12 +10,16 @@ import { useCategories, useListSkus, useSearchProducts } from "@/lib/hooks";
 
 interface CategoryContentProps {
   categorySlug?: string;
+  categoryId?: string;
+  categoryName?: string;
   initialSkus: Item[];
   initialPagination: Pagination | undefined;
 }
 
 export function CategoryContent({
   categorySlug,
+  categoryId: serverCategoryId,
+  categoryName: serverCategoryName,
   initialSkus,
   initialPagination,
 }: CategoryContentProps) {
@@ -23,14 +27,26 @@ export function CategoryContent({
   const [page, setPage] = useState(1);
   const [filters, setFilters] = useState<Record<string, unknown>>({});
 
-  const { categories } = useCategories();
-  const matchedCategory = categorySlug
+  // The server resolves the category from the URL and passes its identity down.
+  // Only fetch categories on the client when we still need to resolve one
+  // (e.g. a build without live credentials couldn't resolve it server-side).
+  const needsClientResolve = Boolean(categorySlug) && !serverCategoryId;
+  const { categories } = useCategories({ enabled: needsClientResolve });
+  const clientMatched = needsClientResolve
     ? categories.find(
-        (c) => c.slug === categorySlug || c.name.toLowerCase().replace(/\s+/g, "-") === categorySlug
+        (c) =>
+          c.slug === categorySlug ||
+          c.name.toLowerCase().replace(/\s+/g, "-") === categorySlug ||
+          c.id === categorySlug
       )
     : undefined;
-  const categoryId = matchedCategory?.id;
-  const categoryName = matchedCategory?.name;
+
+  const categoryId = serverCategoryId ?? clientMatched?.id;
+  const categoryName = serverCategoryName ?? clientMatched?.name;
+
+  // A category route whose category has not resolved yet: don't run
+  // category-scoped requests, or they would return the whole catalog.
+  const categoryPending = Boolean(categorySlug) && !categoryId;
 
   const hasUserFilters = Object.keys(filters).length > 0;
   const hasPaginated = page > 1;
@@ -39,10 +55,10 @@ export function CategoryContent({
     page,
     limit: 20,
     category_id: categoryId ? [categoryId] : undefined,
-    enabled: !hasUserFilters && hasPaginated,
+    enabled: !hasUserFilters && hasPaginated && !categoryPending,
   });
 
-  const searchEnabled = hasUserFilters || filtersOpen;
+  const searchEnabled = (hasUserFilters || filtersOpen) && !categoryPending;
   const filter = useMemo(() => buildFilter(filters, categoryName), [categoryName, filters]);
 
   const searchResult = useSearchProducts({
@@ -107,7 +123,13 @@ export function CategoryContent({
     setPage(1);
   };
 
-  const displayName = categoryName ?? "All products";
+  const slugDisplayName = categorySlug
+    ? (() => {
+        const decoded = decodeURIComponent(categorySlug).replace(/-/g, " ");
+        return decoded.charAt(0).toUpperCase() + decoded.slice(1);
+      })()
+    : undefined;
+  const displayName = categoryName ?? slugDisplayName ?? "All products";
 
   return (
     <main>

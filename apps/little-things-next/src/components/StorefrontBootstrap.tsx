@@ -7,12 +7,18 @@ import { storefront } from "@/lib/storefront";
 
 export function StorefrontBootstrap() {
   useEffect(() => {
+    let active = true;
+
     async function init() {
       await storefront.bootstrap();
 
       const sdk = storefront.clientStorefront();
       const accessToken = await sdk.getAccessToken();
       const refreshToken = await sdk.session.peekRefreshToken();
+
+      // The component unmounted while bootstrapping; the cleanup already ran
+      // destroyCheckout(), so don't resurrect the checkout singleton.
+      if (!active) return;
 
       initCheckout({
         storeId: process.env.NEXT_PUBLIC_STORE_ID ?? "",
@@ -30,8 +36,15 @@ export function StorefrontBootstrap() {
       });
     }
 
-    init();
-    return () => destroyCheckout();
+    init().catch((error) => {
+      // biome-ignore lint/suspicious/noConsole: surface bootstrap failures for debugging
+      console.error("Storefront bootstrap failed", error);
+    });
+
+    return () => {
+      active = false;
+      destroyCheckout();
+    };
   }, []);
 
   return null;
