@@ -19,5 +19,11 @@ const ESCAPE_MAP: Record<string, string> = {
 };
 
 export function safeJsonLd(value: unknown): string {
-  return JSON.stringify(value).replace(/[<>&]/g, (char) => ESCAPE_MAP[char] ?? char);
+  // JSON.stringify returns `undefined` (not the string "undefined") for a
+  // top-level value it can't represent — undefined, a function, or a symbol.
+  // Calling .replace on that would throw, so fall back to "null" and always
+  // hand callers valid, injectable JSON.
+  const json = JSON.stringify(value);
+  if (json === undefined) return "null";
+  return json.replace(/[<>&]/g, (char) => ESCAPE_MAP[char] ?? char);
 }
