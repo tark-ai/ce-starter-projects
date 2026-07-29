@@ -212,11 +212,13 @@ function ProductContentInner({ serverProduct }: ProductContentProps) {
     <main className="pt-8 lg:pt-16">
       <section className="mx-auto w-full max-w-[1400px] px-6 lg:px-20">
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
-          <ProductImageGallery
-            key={selectedVariant?.id ?? "base"}
-            images={displayImages}
-            productName={product.name}
-          />
+          <div className="lg:sticky lg:top-24 lg:self-start">
+            <ProductImageGallery
+              key={selectedVariant?.id ?? "base"}
+              images={displayImages}
+              productName={product.name}
+            />
+          </div>
 
           <div className="space-y-10">
             <ProductInfo
