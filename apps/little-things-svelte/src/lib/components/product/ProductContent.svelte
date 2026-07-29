@@ -182,9 +182,11 @@ function handleOptionChange(optionKey: string, optionValue: string) {
 <main class="pt-8 lg:pt-16">
 	<section class="mx-auto w-full max-w-[1400px] px-6 lg:px-20">
 		<div class="grid grid-cols-1 gap-8 lg:grid-cols-2 lg:gap-12">
-			{#key selectedVariant?.id ?? 'base'}
-				<ProductImageGallery images={displayImages} productName={product.name} />
-			{/key}
+			<div class="lg:sticky lg:top-24 lg:self-start">
+				{#key selectedVariant?.id ?? 'base'}
+					<ProductImageGallery images={displayImages} productName={product.name} />
+				{/key}
+			</div>
 
 			<div class="space-y-10">
 				<ProductInfo
