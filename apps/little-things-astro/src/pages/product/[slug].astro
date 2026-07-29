@@ -1,0 +1,152 @@
+---
+import type { Product } from "@commercengine/storefront";
+import ProductContent from "../../components/product/ProductContent";
+import Layout from "../../layouts/Layout.astro";
+import { SITE_NAME, SITE_URL } from "../../lib/constants";
+import { safeJsonLd } from "../../lib/json-ld";
+import { publicSdk } from "../../lib/storefront";
+
+export async function getStaticPaths() {
+  const paths: Array<{ params: { slug: string } }> = [];
+  try {
+    // Paginate through the full catalog so every product gets a static route.
+    // A single fixed page would 404 for products reachable via client-side
+    // pagination/search once the catalog exceeds one page.
+    let page = 1;
+    const limit = 100;
+    // Hard cap as a safety valve against an unexpected pagination loop.
+    for (let guard = 0; guard < 200; guard++) {
+      const { data, error } = await publicSdk.catalog.listProducts({ page, limit });
+      if (error) {
+        // API failure returned in-band (not thrown). Surface it on the same
+        // diagnostic path as the catch and stop paginating so we don't silently
+        // ship partial routes; the build stays green without live catalog creds.
+        console.warn(
+          "[little-things] Failed to list products for getStaticPaths; product routes may be missing.",
+          error
+        );
+        break;
+      }
+      for (const p of data?.products ?? []) {
+        paths.push({ params: { slug: p.slug || p.id } });
+      }
+      const nextPage = data?.pagination?.next_page;
+      if (!nextPage || nextPage === page) break;
+      page = nextPage;
+    }
+  } catch (error) {
+    // Build stays green without live catalog access; pages render on request in dev.
+    // Surface the outage so an empty/partial static build isn't silently shipped.
+    console.warn(
+      "[little-things] Failed to list products for getStaticPaths; product routes may be missing.",
+      error
+    );
+  }
+  return paths;
+}
+
+const { slug } = Astro.params;
+
+let product: Product | undefined;
+try {
+  const { data } = await publicSdk.catalog.getProductDetail({ product_id: slug! });
+  product = data?.product;
+} catch (error) {
+  product = undefined;
+  console.warn(`[little-things] Failed to load product detail for "${slug}".`, error);
+}
+
+const siteUrl = import.meta.env.SITE || SITE_URL;
+
+const productName = product?.name ?? "Product";
+const productTitle = `${productName} | ${SITE_NAME}`;
+const productDescription =
+  product?.short_description || `Shop ${productName} from ${SITE_NAME}. The good stuff, minus the fluff.`;
+const productImage =
+  product?.images?.[0]?.url_zoom ||
+  product?.images?.[0]?.url_standard ||
+  product?.images?.[0]?.url_thumbnail ||
+  "";
+
+const jsonLd = product
+  ? [
+      {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.name,
+        description: product.short_description ?? `Shop ${product.name} from ${SITE_NAME}`,
+        ...(productImage
+          ? {
+              image: productImage.startsWith("http")
+                ? productImage
+                : `${siteUrl}${productImage}`,
+            }
+          : {}),
+        sku: product.sku ?? product.slug,
+        url: `${siteUrl}/product/${slug}`,
+        brand: { "@type": "Brand", name: SITE_NAME },
+        offers: {
+          "@type": "Offer",
+          url: `${siteUrl}/product/${slug}`,
+          priceCurrency: product.pricing.currency,
+          price: product.pricing.selling_price,
+          availability:
+            product.stock_available || product.backorder
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+        },
+        ...(product.reviews_count > 0
+          ? {
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: (product.reviews_rating_sum / product.reviews_count).toFixed(1),
+                reviewCount: product.reviews_count,
+              },
+            }
+          : {}),
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+          ...(product.categories?.[0]
+            ? [
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: product.categories[0].name,
+                  item: `${siteUrl}/category/${product.categories[0].slug}`,
+                },
+              ]
+            : []),
+          {
+            "@type": "ListItem",
+            position: product.categories?.[0] ? 3 : 2,
+            name: product.name,
+          },
+        ],
+      },
+    ]
+  : [];
+---
+
+<Layout
+  title={productTitle}
+  description={productDescription}
+  image={productImage}
+  ogType="product"
+  noindex={!product}
+>
+  {
+    jsonLd.map((schema) => (
+      <script
+        is:inline
+        slot="head"
+        type="application/ld+json"
+        set:html={safeJsonLd(schema)}
+      />
+    ))
+  }
+  <ProductContent client:idle serverProduct={product} />
+</Layout>

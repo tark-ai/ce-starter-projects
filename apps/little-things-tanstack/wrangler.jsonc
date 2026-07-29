@@ -1,0 +1,7 @@
+{
+  "name": "little-things-tanstack",
+  "compatibility_date": "2025-04-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@tanstack/react-start/server-entry",
+  "routes": [{ "pattern": "little-things-tanstack.demo.commercengine.io", "custom_domain": true }]
+}

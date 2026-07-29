@@ -1,0 +1,25 @@
+---
+import type { Item, Pagination } from "@commercengine/storefront";
+import CategoryContent from "../components/category/CategoryContent";
+import Layout from "../layouts/Layout.astro";
+import { SITE_NAME } from "../lib/constants";
+import { publicSdk } from "../lib/storefront";
+
+let skus: Item[] = [];
+let pagination: Pagination | undefined;
+
+try {
+  const { data } = await publicSdk.catalog.listSkus({ page: 1, limit: 20 });
+  skus = data?.skus ?? [];
+  pagination = data?.pagination;
+} catch {
+  skus = [];
+}
+---
+
+<Layout
+  title={`All products | ${SITE_NAME}`}
+  description={`Browse every product from ${SITE_NAME} in one place — a tight, opinionated catalog where everything earns its spot.`}
+>
+  <CategoryContent client:idle initialSkus={skus} initialPagination={pagination} />
+</Layout>
