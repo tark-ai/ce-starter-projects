@@ -13,7 +13,14 @@ export const entries: EntryGenerator = async () => {
     const sdk = serverStorefront.publicStorefront();
     let page = 1;
     for (let guard = 0; guard < 200; guard++) {
-      const { data } = await sdk.catalog.listProducts({ page, limit: 100 });
+      const { data, error } = await sdk.catalog.listProducts({ page, limit: 100 });
+      if (error) {
+        // Don't silently ship a static site with missing product pages — leave
+        // a visible build-log signal (but keep the build green: no throw).
+        // biome-ignore lint/suspicious/noConsole: surface catalog enumeration failures during build
+        console.warn("[little-things] product slug enumeration failed:", error);
+        break;
+      }
       for (const product of data?.products ?? []) {
         slugs.push({ slug: product.slug || product.id });
       }
@@ -21,8 +28,11 @@ export const entries: EntryGenerator = async () => {
       if (!nextPage || nextPage === page) break;
       page = nextPage;
     }
-  } catch {
-    // Build stays green without live catalog access.
+  } catch (err) {
+    // Build stays green without live catalog access, but surface the failure so
+    // a catalog outage during the build is visible in the log.
+    // biome-ignore lint/suspicious/noConsole: surface catalog enumeration failures during build
+    console.warn("[little-things] product slug enumeration errored:", err);
   }
   return slugs;
 };
@@ -38,6 +48,15 @@ export const load: PageServerLoad = async ({ params }) => {
       sdk.catalog.getProductDetail({ product_id: params.slug }),
       sdk.catalog.listSimilarProducts({ product_id: [params.slug] }).catch(() => null),
     ]);
+
+    // A non-404 in-band SDK error is a transient/API failure, not a genuine
+    // miss — take the resilient 200 fallback instead of letting it become a 404
+    // below. A 404 status falls through so it surfaces as a real 404.
+    if (productResult.error && productResult.response?.status !== 404) {
+      // biome-ignore lint/suspicious/noConsole: surface catalog fetch failures during build/prerender
+      console.warn("[little-things] product detail request failed:", productResult.error);
+      return { product: null as Product | null, similarItems: [] as Item[] };
+    }
 
     product = (productResult.data?.product ?? null) as Product | null;
     similarItems = (similarResult?.data?.products ?? []) as Item[];

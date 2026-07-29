@@ -10,9 +10,13 @@ class WishlistStore {
 
   #addListeners = new Set<OnAddListener>();
   #initialized = false;
-  // Monotonic id per mutating operation; ensures a slower/older toggle response
-  // can't overwrite the state produced by a newer one.
+  // Monotonic id assigned to each mutating operation when it STARTS.
   #opSeq = 0;
+  // Seq of the newest operation whose SUCCESSFUL result has been applied. Only a
+  // successful response with a seq >= this may commit, so a later request that
+  // FAILS can't discard an earlier successful add/remove. Failures never advance
+  // this marker.
+  #appliedSeq = 0;
 
   async load() {
     if (this.#initialized) return;
@@ -56,7 +60,10 @@ class WishlistStore {
         variant_id: variantId ?? null,
       });
       if (error) throw new Error(error.message);
-      if (seq !== this.#opSeq) return; // a newer toggle superseded this one
+      // Only commit if no newer operation has already applied a successful
+      // result; a later request that errors must not invalidate this one.
+      if (seq < this.#appliedSeq) return;
+      this.#appliedSeq = seq;
       this.items = data?.products ?? this.items;
       for (const fn of this.#addListeners) fn();
     } catch (e) {
@@ -73,7 +80,10 @@ class WishlistStore {
         variant_id: variantId ?? null,
       });
       if (error) throw new Error(error.message);
-      if (seq !== this.#opSeq) return; // a newer toggle superseded this one
+      // Only commit if no newer operation has already applied a successful
+      // result; a later request that errors must not invalidate this one.
+      if (seq < this.#appliedSeq) return;
+      this.#appliedSeq = seq;
       this.items = data?.products ?? this.items;
     } catch (e) {
       // biome-ignore lint/suspicious/noConsole: surface wishlist API errors for debugging

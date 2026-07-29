@@ -15,9 +15,16 @@ export const storefront = createSvelteKitStorefront({
     // the server bundle by importing it dynamically inside this client-only
     // callback.
     if (!browser) return;
-    import("@commercengine/checkout").then(({ getCheckout }) => {
-      getCheckout().updateTokens(accessToken, refreshToken);
-    });
+    import("@commercengine/checkout")
+      .then(({ getCheckout }) => {
+        getCheckout().updateTokens(accessToken, refreshToken);
+      })
+      .catch((err) => {
+        // Checkout is normally already loaded by initStorefront, so this is
+        // defensive — just avoid an unhandled rejection if the import fails.
+        // biome-ignore lint/suspicious/noConsole: surface checkout import failures for debugging
+        console.error("Failed to update checkout tokens:", err);
+      });
   },
 });
 

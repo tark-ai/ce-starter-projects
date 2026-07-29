@@ -52,6 +52,10 @@ $effect(() => {
   if (q === lastQuery) return;
   lastQuery = q;
 
+  // Bump the request sequence so any in-flight request issued for the previous
+  // query is treated as superseded and can't write stale results after reset.
+  requestSeq++;
+
   filters = {};
   page = 1;
   skus = [];
@@ -84,7 +88,9 @@ async function fetchResults(q: string, p: number, userFilters: Record<string, un
 
   try {
     const { data, error } = await getSdk().catalog.searchProducts(body);
-    if (seq !== requestSeq) return; // a newer request superseded this one
+    // Drop the response if a newer request superseded this one, or if the query
+    // it was issued for is no longer the current query (e.g. cleared to empty).
+    if (seq !== requestSeq || q !== query) return;
     if (error) {
       // biome-ignore lint/suspicious/noConsole: surface search errors for debugging
       console.error("Search error:", error.message);
@@ -99,7 +105,7 @@ async function fetchResults(q: string, p: number, userFilters: Record<string, un
       baseFacetStats = (data?.facet_stats as Record<string, { min: number; max: number }>) ?? {};
     }
   } catch (e) {
-    if (seq !== requestSeq) return;
+    if (seq !== requestSeq || q !== query) return;
     // biome-ignore lint/suspicious/noConsole: surface search errors for debugging
     console.error("Failed to search:", e);
   } finally {
