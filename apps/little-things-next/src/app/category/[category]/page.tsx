@@ -70,23 +70,33 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
         c.id === category
     );
 
-    // Only query catalog once the category is resolved; otherwise the request
-    // would silently return the whole catalog instead of this category.
-    if (matched?.id) {
-      const { data: skusData } = await sdk.catalog.listSkus({
-        page: 1,
-        limit: 20,
-        category_id: [matched.id],
-      });
-
-      skus = skusData?.skus ?? [];
-      pagination = skusData?.pagination;
-    }
-
+    // Resolve the category identity from listCategories first, before touching
+    // the catalog. A later SKU-fetch failure must not discard it, or the hero
+    // and JSON-LD fall back to the raw slug and CategoryContent needlessly
+    // re-resolves the category on the client.
     if (matched) {
       categoryId = matched.id;
       categoryName = matched.name;
       if (matched.name) displayName = matched.name;
+    }
+
+    // Only query catalog once the category is resolved; otherwise the request
+    // would silently return the whole catalog instead of this category.
+    if (matched?.id) {
+      try {
+        const { data: skusData } = await sdk.catalog.listSkus({
+          page: 1,
+          limit: 20,
+          category_id: [matched.id],
+        });
+
+        skus = skusData?.skus ?? [];
+        pagination = skusData?.pagination;
+      } catch {
+        // A SKU outage only empties the product/facet data; the resolved
+        // category identity above is preserved.
+        skus = [];
+      }
     }
   } catch {
     skus = [];

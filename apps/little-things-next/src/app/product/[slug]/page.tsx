@@ -68,71 +68,86 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
   const { slug } = await params;
 
   let product: Product | undefined;
+  let confirmedNotFound = false;
   try {
     const sdk = storefront.publicStorefront();
-    const { data } = await sdk.catalog.getProductDetail({ product_id: slug });
-    product = data?.product;
+    const { data, error, response } = await sdk.catalog.getProductDetail({ product_id: slug });
+
+    if (error) {
+      // Only a 404 means the product is genuinely absent; any other status is a
+      // transient API failure that ProductContent can retry on the client.
+      confirmedNotFound = response.status === 404;
+    } else {
+      product = data?.product;
+      // The request succeeded but returned no product: a real not-found.
+      confirmedNotFound = !product;
+    }
   } catch {
+    // Transport/server failure: fall through to the client-retry fallback.
     product = undefined;
   }
 
-  if (!product) {
+  // Serve the global 404 only for a confirmed not-found. A transient failure
+  // renders the fallback so ProductContent's client query can retry.
+  if (confirmedNotFound) {
     notFound();
   }
 
-  const jsonLd = [
-    {
-      "@context": "https://schema.org",
-      "@type": "Product",
-      name: product.name,
-      description: product.short_description ?? `Shop ${product.name} from ${SITE_NAME}`,
-      image: product.images?.[0]?.url_zoom ?? product.images?.[0]?.url_standard,
-      sku: product.sku ?? product.slug,
-      url: `${SITE_URL}/product/${product.slug}`,
-      brand: { "@type": "Brand", name: SITE_NAME },
-      offers: {
-        "@type": "Offer",
-        url: `${SITE_URL}/product/${product.slug}`,
-        priceCurrency: product.pricing.currency,
-        price: product.pricing.selling_price,
-        availability:
-          product.stock_available || product.backorder
-            ? "https://schema.org/InStock"
-            : "https://schema.org/OutOfStock",
-      },
-      ...(product.reviews_count > 0
-        ? {
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: (product.reviews_rating_sum / product.reviews_count).toFixed(1),
-              reviewCount: product.reviews_count,
-            },
-          }
-        : {}),
-    },
-    {
-      "@context": "https://schema.org",
-      "@type": "BreadcrumbList",
-      itemListElement: [
-        { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-        ...(product.categories?.[0]
-          ? [
-              {
-                "@type": "ListItem",
-                position: 2,
-                name: product.categories[0].name,
-                item: `${SITE_URL}/category/${product.categories[0].slug}`,
-              },
-            ]
-          : []),
+  const jsonLd = product
+    ? [
         {
-          "@type": "ListItem",
-          position: product.categories?.[0] ? 3 : 2,
+          "@context": "https://schema.org",
+          "@type": "Product",
           name: product.name,
+          description: product.short_description ?? `Shop ${product.name} from ${SITE_NAME}`,
+          image: product.images?.[0]?.url_zoom ?? product.images?.[0]?.url_standard,
+          sku: product.sku ?? product.slug,
+          url: `${SITE_URL}/product/${product.slug}`,
+          brand: { "@type": "Brand", name: SITE_NAME },
+          offers: {
+            "@type": "Offer",
+            url: `${SITE_URL}/product/${product.slug}`,
+            priceCurrency: product.pricing.currency,
+            price: product.pricing.selling_price,
+            availability:
+              product.stock_available || product.backorder
+                ? "https://schema.org/InStock"
+                : "https://schema.org/OutOfStock",
+          },
+          ...(product.reviews_count > 0
+            ? {
+                aggregateRating: {
+                  "@type": "AggregateRating",
+                  ratingValue: (product.reviews_rating_sum / product.reviews_count).toFixed(1),
+                  reviewCount: product.reviews_count,
+                },
+              }
+            : {}),
         },
-      ],
-    },
-  ];
+        {
+          "@context": "https://schema.org",
+          "@type": "BreadcrumbList",
+          itemListElement: [
+            { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
+            ...(product.categories?.[0]
+              ? [
+                  {
+                    "@type": "ListItem",
+                    position: 2,
+                    name: product.categories[0].name,
+                    item: `${SITE_URL}/category/${product.categories[0].slug}`,
+                  },
+                ]
+              : []),
+            {
+              "@type": "ListItem",
+              position: product.categories?.[0] ? 3 : 2,
+              name: product.name,
+            },
+          ],
+        },
+      ]
+    : [];
 
   return (
     <>

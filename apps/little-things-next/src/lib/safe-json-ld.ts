@@ -1,12 +1,4 @@
-/**
- * Serialize an object to JSON for embedding inside a <script> tag via
- * dangerouslySetInnerHTML. Escapes the characters that could otherwise let
- * untrusted catalog data (names, descriptions) break out of the script
- * context, e.g. a value containing `</script>`.
- */
-export function safeJsonLd(value: unknown): string {
-  return JSON.stringify(value)
-    .replace(/</g, "\\u003c")
-    .replace(/>/g, "\\u003e")
-    .replace(/&/g, "\\u0026");
-}
+// Re-exported from the shared design-system package so the JSON-LD escaping
+// behaviour is defined once for every Little Things storefront (avoids drift of
+// this security-sensitive serializer across apps).
+export { safeJsonLd } from "@ce/little-things-ui/lib/json-ld";
