@@ -1,4 +1,5 @@
 /** biome-ignore-all lint/suspicious/noConsole: used to detect API errors during build time */
+import { safeJsonLd } from "@ce/little-things-ui/lib/json-ld";
 import { createFileRoute } from "@tanstack/react-router";
 import BrowseCategories from "@/components/content/BrowseCategories";
 import FeaturedProducts from "@/components/content/FeaturedProducts";
@@ -60,7 +61,7 @@ export const Route = createFileRoute("/")({
     scripts: [
       {
         type: "application/ld+json",
-        children: JSON.stringify({
+        children: safeJsonLd({
           "@context": "https://schema.org",
           "@type": "WebSite",
           name: SITE_NAME,
@@ -77,7 +78,7 @@ export const Route = createFileRoute("/")({
       },
       {
         type: "application/ld+json",
-        children: JSON.stringify({
+        children: safeJsonLd({
           "@context": "https://schema.org",
           "@type": "Organization",
           name: "Commerce Engine",

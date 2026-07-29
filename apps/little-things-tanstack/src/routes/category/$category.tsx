@@ -1,3 +1,4 @@
+import { safeJsonLd } from "@ce/little-things-ui/lib/json-ld";
 import type { Item, Pagination } from "@commercengine/storefront";
 import { createFileRoute } from "@tanstack/react-router";
 import { CategoryView } from "@/components/category/CategoryView";
@@ -45,7 +46,7 @@ export const Route = createFileRoute("/category/$category")({
     const scripts: Array<{ type: string; children: string }> = [
       {
         type: "application/ld+json",
-        children: JSON.stringify({
+        children: safeJsonLd({
           "@context": "https://schema.org",
           "@type": "BreadcrumbList",
           itemListElement: [
@@ -56,7 +57,7 @@ export const Route = createFileRoute("/category/$category")({
       },
       {
         type: "application/ld+json",
-        children: JSON.stringify({
+        children: safeJsonLd({
           "@context": "https://schema.org",
           "@type": "CollectionPage",
           name: displayName,
