@@ -90,6 +90,8 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       productId: string;
       variantId?: string | null;
     }) => {
+      // Wait for bootstrap so the add doesn't race session creation.
+      await whenStorefrontReady();
       const { data, error } = await getSdk().cart.addToWishlist({
         product_id: productId,
         variant_id: variantId ?? null,
@@ -116,6 +118,8 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
       productId: string;
       variantId?: string | null;
     }) => {
+      // Wait for bootstrap so the remove doesn't race session creation.
+      await whenStorefrontReady();
       const { data, error } = await getSdk().cart.removeFromWishlist({
         product_id: productId,
         variant_id: variantId ?? null,

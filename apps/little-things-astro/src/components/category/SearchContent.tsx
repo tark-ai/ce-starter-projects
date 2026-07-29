@@ -18,6 +18,11 @@ function SearchContentInner() {
   // Start empty on both SSR and the first client render so hydration matches the
   // server-rendered markup. Read the actual query from the URL only after mount.
   const [query, setQuery] = useState("");
+  // `ready` is false on the server render AND the first client paint, so the
+  // hydration HTML matches and no mismatch occurs. It flips true in the mount
+  // effect once the URL query has been read. Until then we render a skeleton
+  // over the hero area instead of the empty-hero state, avoiding the flash.
+  const [ready, setReady] = useState(false);
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [page, setPage] = useState(1);
@@ -25,6 +30,7 @@ function SearchContentInner() {
 
   useEffect(() => {
     setQuery(new URLSearchParams(window.location.search).get("q") ?? "");
+    setReady(true);
   }, []);
 
   const prevQuery = useRef(query);
@@ -84,6 +90,20 @@ function SearchContentInner() {
     setFilters(newFilters);
     setPage(1);
   };
+
+  if (!ready) {
+    // Placeholder covering the hero area while the URL query is read on mount.
+    // Matches the hero's spacing so there's no layout shift, and identical on
+    // SSR + first client paint so hydration stays consistent.
+    return (
+      <main>
+        <section className="mx-auto w-full max-w-[1400px] px-6 lg:px-20 py-16 md:py-20 border-b border-border">
+          <div className="h-10 md:h-12 w-3/4 max-w-xl bg-muted/20 animate-pulse rounded" />
+          <div className="mt-4 h-6 w-1/2 max-w-md bg-muted/20 animate-pulse rounded" />
+        </section>
+      </main>
+    );
+  }
 
   return (
     <main>

@@ -16,7 +16,17 @@ export async function getStaticPaths() {
     const limit = 100;
     // Hard cap as a safety valve against an unexpected pagination loop.
     for (let guard = 0; guard < 200; guard++) {
-      const { data } = await publicSdk.catalog.listProducts({ page, limit });
+      const { data, error } = await publicSdk.catalog.listProducts({ page, limit });
+      if (error) {
+        // API failure returned in-band (not thrown). Surface it on the same
+        // diagnostic path as the catch and stop paginating so we don't silently
+        // ship partial routes; the build stays green without live catalog creds.
+        console.warn(
+          "[little-things] Failed to list products for getStaticPaths; product routes may be missing.",
+          error
+        );
+        break;
+      }
       for (const p of data?.products ?? []) {
         paths.push({ params: { slug: p.slug || p.id } });
       }
@@ -65,7 +75,13 @@ const jsonLd = product
         "@type": "Product",
         name: product.name,
         description: product.short_description ?? `Shop ${product.name} from ${SITE_NAME}`,
-        image: productImage.startsWith("http") ? productImage : `${siteUrl}${productImage}`,
+        ...(productImage
+          ? {
+              image: productImage.startsWith("http")
+                ? productImage
+                : `${siteUrl}${productImage}`,
+            }
+          : {}),
         sku: product.sku ?? product.slug,
         url: `${siteUrl}/product/${slug}`,
         brand: { "@type": "Brand", name: SITE_NAME },
