@@ -3,7 +3,7 @@
   "tasks": {
     "build": {
       "dependsOn": ["^build"],
-      "outputs": ["dist/**", ".output/**", ".next/**", "!.next/cache/**", ".astro/**", ".svelte-kit/**", "build/**"],
+      "outputs": ["dist/**", ".output/**", ".vercel/output/**", ".next/**", "!.next/cache/**", ".astro/**", ".svelte-kit/**", "build/**"],
       "inputs": [
         "src/**",
         "index.html",
