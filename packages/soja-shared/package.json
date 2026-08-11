@@ -1,0 +1,40 @@
+{
+  "name": "@ce/soja-shared",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "exports": {
+    "./about": "./src/about.tsx",
+    "./category": "./src/category.tsx",
+    "./content": "./src/content.tsx",
+    "./faq": "./src/faq.tsx",
+    "./footer": "./src/footer.tsx",
+    "./header": "./src/header.tsx",
+    "./logo": "./src/logo.tsx",
+    "./photo-band": "./src/photo-band.tsx",
+    "./product": "./src/product.tsx",
+    "./wishlist": "./src/wishlist.tsx",
+    "./lib/*": "./src/lib/*.ts"
+  },
+  "scripts": {
+    "check": "biome check ./src",
+    "check:fix": "biome check --write ./src",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@ce/soja-ui": "workspace:*",
+    "@commercengine/checkout": "^0.3.1",
+    "@commercengine/storefront": "^0.1.6",
+    "@imagekit/react": "^5.0.2",
+    "lucide-react": "^1.7.0"
+  },
+  "peerDependencies": {
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.14",
+    "@types/react-dom": "^19.2.3",
+    "typescript": "^6.0.2"
+  }
+}

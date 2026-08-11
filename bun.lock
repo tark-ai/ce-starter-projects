@@ -293,6 +293,35 @@
         "wrangler": "^4.77.0",
       },
     },
+    "apps/soja": {
+      "name": "@ce/soja",
+      "version": "0.0.0",
+      "dependencies": {
+        "@ce/soja-shared": "workspace:*",
+        "@ce/soja-ui": "workspace:*",
+        "@commercengine/checkout": "^0.3.1",
+        "@commercengine/storefront": "^0.1.6",
+        "@fontsource/average": "^5.3.0",
+        "@fontsource/averia-serif-libre": "^5.3.0",
+        "@tailwindcss/postcss": "^4.2.2",
+        "@tanstack/react-query": "^5.95.2",
+        "lucide-react": "^1.7.0",
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4",
+        "react-router-dom": "^7.13.2",
+        "tw-animate-css": "^1.4.0",
+      },
+      "devDependencies": {
+        "@types/node": "^25.5.0",
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react-swc": "^4.3.0",
+        "postcss": "^8.5.8",
+        "tailwindcss": "^4.2.2",
+        "typescript": "^6.0.2",
+        "vite": "^8.0.2",
+      },
+    },
     "packages/linea-shared": {
       "name": "@ce/linea-shared",
       "version": "0.0.0",
@@ -335,6 +364,58 @@
     },
     "packages/little-things-ui": {
       "name": "@ce/little-things-ui",
+      "version": "0.0.0",
+      "dependencies": {
+        "@radix-ui/react-accordion": "^1.2.12",
+        "@radix-ui/react-checkbox": "^1.3.3",
+        "@radix-ui/react-dialog": "^1.1.15",
+        "@radix-ui/react-label": "^2.1.8",
+        "@radix-ui/react-radio-group": "^1.3.8",
+        "@radix-ui/react-select": "^2.2.6",
+        "@radix-ui/react-separator": "^1.1.8",
+        "@radix-ui/react-slider": "^1.3.6",
+        "@radix-ui/react-slot": "^1.2.4",
+        "@radix-ui/react-toast": "^1.2.15",
+        "@radix-ui/react-tooltip": "^1.2.8",
+        "class-variance-authority": "^0.7.1",
+        "clsx": "^2.1.1",
+        "embla-carousel-react": "^8.6.0",
+        "lucide-react": "^1.7.0",
+        "sonner": "^2.0.7",
+        "tailwind-merge": "^3.5.0",
+      },
+      "devDependencies": {
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "typescript": "^6.0.2",
+      },
+      "peerDependencies": {
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4",
+      },
+    },
+    "packages/soja-shared": {
+      "name": "@ce/soja-shared",
+      "version": "0.0.0",
+      "dependencies": {
+        "@ce/soja-ui": "workspace:*",
+        "@commercengine/checkout": "^0.3.1",
+        "@commercengine/storefront": "^0.1.6",
+        "@imagekit/react": "^5.0.2",
+        "lucide-react": "^1.7.0",
+      },
+      "devDependencies": {
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "typescript": "^6.0.2",
+      },
+      "peerDependencies": {
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4",
+      },
+    },
+    "packages/soja-ui": {
+      "name": "@ce/soja-ui",
       "version": "0.0.0",
       "dependencies": {
         "@radix-ui/react-accordion": "^1.2.12",
@@ -507,6 +588,12 @@
 
     "@ce/little-things-ui": ["@ce/little-things-ui@workspace:packages/little-things-ui"],
 
+    "@ce/soja": ["@ce/soja@workspace:apps/soja"],
+
+    "@ce/soja-shared": ["@ce/soja-shared@workspace:packages/soja-shared"],
+
+    "@ce/soja-ui": ["@ce/soja-ui@workspace:packages/soja-ui"],
+
     "@ce/ui": ["@ce/ui@workspace:packages/ui"],
 
     "@clack/core": ["@clack/core@1.1.0", "", { "dependencies": { "sisteransi": "^1.0.5" } }, "sha512-SVcm4Dqm2ukn64/8Gub2wnlA5nS2iWJyCkdNHcvNHPIeBTGojpdJ+9cZKwLfmqy7irD4N5qLteSilJlE0WLAtA=="],
@@ -624,6 +711,10 @@
     "@fontsource-variable/dm-sans": ["@fontsource-variable/dm-sans@5.2.8", "", {}, "sha512-AxkvMTvNWgfrmlyjiV05vlHYJa+nRQCf1EfvIrQAPBpFJW0O9VTz7oAFr9S3lvbWdmnFoBk7yFqQL86u64nl2g=="],
 
     "@fontsource-variable/inter": ["@fontsource-variable/inter@5.3.0", "", {}, "sha512-OupL48va4JNofb97w6NYeF9S7W/kHNKM0Er8Dem5nqi4jeOLrVJDoE8tZEpnMJmtkvNbB1EIPPwHcdkF6b1oUA=="],
+
+    "@fontsource/average": ["@fontsource/average@5.3.0", "", {}, "sha512-Do1qHLMKHoRKzEHWPGtD09HpTZn/8MXr/p50hwbIYHSBj9ht4TDCnrkRHAb2+hwyavPSM/JMcV0EzDYElV1EWw=="],
+
+    "@fontsource/averia-serif-libre": ["@fontsource/averia-serif-libre@5.3.0", "", {}, "sha512-rjZmEKNuUrh1AmjCiikhMwCBO0Ce5is9Y1BhSuo6PY5S9bymdI84TRMO96pUDgBIPpClLivFDp7pUBDWGckEpA=="],
 
     "@fontsource/instrument-serif": ["@fontsource/instrument-serif@5.3.0", "", {}, "sha512-mDiaIg0u67sYV59fie92Wz4sM8UiVlbL7fLxnFPCKkX15DMASEnQTREbaP5S5/3DCcsoAOcQ0sV9E4AeY4QqYQ=="],
 
