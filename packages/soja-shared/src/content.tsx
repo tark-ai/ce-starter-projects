@@ -9,14 +9,8 @@ import type { SojaWishlistControls } from "./lib/wishlist";
 import { PhotoBand } from "./photo-band";
 import { WishlistButton } from "./wishlist";
 
-/* -------------------------------------------------------------------------- */
-/* Reveal — scroll-triggered entrance                                          */
-/* -------------------------------------------------------------------------- */
+// --- Reveal — scroll-triggered entrance ---
 
-/**
- * Content rises a little and fades in once, when it first enters the viewport.
- * `prefers-reduced-motion` is handled by the global rule in theme.css.
- */
 export function Reveal({
   children,
   delay = 0,
@@ -28,8 +22,6 @@ export function Reveal({
   className?: string;
   as?: "div" | "section" | "li" | "article";
 }) {
-  // ElementType, so the shared ref isn't checked against the intersection of
-  // every element the `as` union allows.
   const Tag = as as React.ElementType;
   const ref = React.useRef<HTMLElement>(null);
   const [shown, setShown] = React.useState(false);
@@ -38,16 +30,11 @@ export function Reveal({
     const node = ref.current;
     if (!node) return;
 
-    // No IntersectionObserver (older browsers, some SSR/test envs): show at once
-    // rather than leaving the page permanently blank.
     if (typeof IntersectionObserver === "undefined") {
       setShown(true);
       return;
     }
 
-    // Anything already on screen at mount reveals synchronously — the observer's
-    // first callback is async, which would leave above-the-fold content invisible
-    // for a frame or more.
     const rect = node.getBoundingClientRect();
     if (rect.top < window.innerHeight && rect.bottom > 0) {
       setShown(true);
@@ -83,9 +70,7 @@ export function Reveal({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* EyebrowLink — the site's link affordance: label plus a filled square         */
-/* -------------------------------------------------------------------------- */
+// --- EyebrowLink — the site's link affordance: label plus a filled square ---
 
 export interface EyebrowLinkProps {
   label: string;
@@ -112,9 +97,7 @@ export function EyebrowLink({ label, route, LinkComponent, className }: EyebrowL
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* SectionLede — the 28px display paragraph that heads each home section       */
-/* -------------------------------------------------------------------------- */
+// --- SectionLede — the 28px display paragraph that heads each home section ---
 
 export function SectionLede({
   children,
@@ -132,28 +115,17 @@ export function SectionLede({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* ProductCard — canonical, reused everywhere                                  */
-/* -------------------------------------------------------------------------- */
+// --- ProductCard — canonical, reused everywhere ---
 
 export interface ProductCardProps {
   item: Item;
   LinkComponent: SojaLinkComponent;
-  /** Cards sit on photographic bands as well as on bone. */
   tone?: "default" | "onPhoto";
-  /**
-   * Drop the name and price and render the photograph alone — for the card that
-   * overlaps the testimonial band, where the meta would be clipped.
-   */
   showMeta?: boolean;
   wishlist?: SojaWishlistControls;
   className?: string;
 }
 
-/**
- * Zero chrome by design: no fill, no border, no shadow, no padding. The 2:3
- * photograph *is* the card.
- */
 export function ProductCard({
   item,
   LinkComponent,
@@ -167,8 +139,6 @@ export function ProductCard({
   const secondary = item.images?.[1];
 
   return (
-    // The favourite control is a sibling of the link, not a descendant: a button
-    // nested inside an anchor is invalid and needs event-cancelling to work.
     <div className={cn("group relative", className)}>
       <LinkComponent
         route={{
@@ -184,15 +154,10 @@ export function ProductCard({
             variant="standard"
             className={cn(
               "h-full w-full object-cover transition-[opacity,transform] duration-700 ease-soja",
-              // With a second shot to reveal, the first simply fades out. Without
-              // one, keep a slow zoom so the card still answers the cursor.
               secondary ? "group-hover:opacity-0" : "duration-[1200ms] group-hover:scale-[1.04]"
             )}
           />
 
-          {/* Decorative: the first image already carries the product's alt text.
-              Deliberately not preloaded — hover is a desktop-only affordance and
-              this would otherwise double every listing's image payload. */}
           {secondary && (
             <StorefrontImage
               image={secondary}
@@ -202,11 +167,6 @@ export function ProductCard({
               className="absolute inset-0 h-full w-full object-cover opacity-0 transition-opacity duration-700 ease-soja group-hover:opacity-100"
             />
           )}
-
-          {/* No stock badge, deliberately: `searchProducts` reports
-              `stock_available: false` for every SKU while `listSkus` and
-              `getProductDetail` report `true` for the same catalog. Stock state
-              is shown on the PDP, where it is correct and blocks the purchase. */}
         </div>
 
         {showMeta && (
@@ -235,7 +195,6 @@ export function ProductCard({
   );
 }
 
-/** Skeleton matching the card's 2:3 footprint, so grids don't reflow on load. */
 export function ProductCardSkeleton() {
   return (
     <div className="animate-pulse">
@@ -246,15 +205,12 @@ export function ProductCardSkeleton() {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* ProductRow — full-bleed 4-across                                            */
-/* -------------------------------------------------------------------------- */
+// --- ProductRow — full-bleed 4-across ---
 
 export interface ProductRowProps {
   items: Item[];
   LinkComponent: SojaLinkComponent;
   isLoading?: boolean;
-  /** How many cards to show — the reference runs rows of 4. */
   limit?: number;
   wishlist?: SojaWishlistControls;
   className?: string;
@@ -294,9 +250,7 @@ export function ProductRow({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Hero — full-bleed 100vh photograph                                          */
-/* -------------------------------------------------------------------------- */
+// --- Hero — full-bleed 100vh photograph ---
 
 export interface HeroProps {
   LinkComponent: SojaLinkComponent;
@@ -320,8 +274,6 @@ export function Hero({
   return (
     <PhotoBand
       image={image}
-      // Capping at the viewport is what keeps the bottom-anchored copy inside the
-      // first frame rather than below the fold on a wide monitor.
       height="screen"
       className="max-h-dvh"
       align="bottom-right"
@@ -332,15 +284,18 @@ export function Hero({
         <h1 className="font-display text-[2.5rem] tracking-display tablet:text-display">
           {words.map((word, index) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: a title may repeat a word, so position is part of the identity
-            <span key={`${word}-${index}`} className="inline-block overflow-hidden align-bottom">
-              <span
-                className="inline-block animate-rise"
-                style={{ animationDelay: `${200 + index * 90}ms` }}
-              >
-                {word}
-                {index < words.length - 1 ? " " : ""}
+            <React.Fragment key={`${word}-${index}`}>
+              <span className="inline-block overflow-hidden align-bottom">
+                <span
+                  className="inline-block animate-rise"
+                  style={{ animationDelay: `${200 + index * 90}ms` }}
+                >
+                  {word}
+                </span>
               </span>
-            </span>
+              {/* Space stays outside the box above: inside, CSS trims it as trailing white space. */}
+              {index < words.length - 1 ? " " : null}
+            </React.Fragment>
           ))}
         </h1>
 
@@ -359,14 +314,11 @@ export function Hero({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* FeaturedProducts — lede + eyebrow + edge-to-edge row + optional CTAs        */
-/* -------------------------------------------------------------------------- */
+// --- FeaturedProducts — lede + eyebrow + edge-to-edge row + optional CTAs ---
 
 export interface FeaturedCta {
   label: string;
   route: SojaRoute;
-  /** Supplying an image promotes the CTA row into full category tiles. */
   image?: string;
   imageAlt?: string;
 }
@@ -424,8 +376,6 @@ export function FeaturedProducts({
 
       {ctas &&
         ctas.length > 0 &&
-        // Same gutter and gap as the product grid above, so the two blocks sit
-        // on one edge.
         (hasTiles ? (
           <div className="mt-20 grid w-full grid-cols-1 gap-3 px-3 pb-4 tablet:mt-28 sm:grid-cols-2">
             {ctas.map((cta, index) => (
@@ -450,7 +400,6 @@ export function FeaturedProducts({
   );
 }
 
-/** A category entry point: eyebrow label, then the 2:3 photograph beneath it. */
 function CategoryTile({
   cta,
   LinkComponent,
@@ -483,15 +432,12 @@ function CategoryTile({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Testimonial — photographic band with an overlapping product card            */
-/* -------------------------------------------------------------------------- */
+// --- Testimonial — photographic band with an overlapping product card ---
 
 export interface TestimonialProps {
   quote?: string;
   author?: string;
   image?: string;
-  /** Card that overlaps the band's bottom-right corner. */
   featured?: Item;
   LinkComponent: SojaLinkComponent;
   wishlist?: SojaWishlistControls;
@@ -533,9 +479,7 @@ export function Testimonial({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* BrandPillars — four Roman-numeral columns with hairline dividers            */
-/* -------------------------------------------------------------------------- */
+// --- BrandPillars — four Roman-numeral columns with hairline dividers ---
 
 export interface Pillar {
   numeral: string;
@@ -580,8 +524,6 @@ export function BrandPillars({ pillars = DEFAULT_PILLARS }: { pillars?: Pillar[]
             key={pillar.numeral}
             delay={index * 110}
             className={cn(
-              // Mobile is a row — numeral and claim left, image right. From `sm`
-              // up it becomes the stacked column the multi-column grid needs.
               "flex flex-row items-start gap-6 sm:flex-col sm:gap-0 tablet:px-8",
               index > 0 && "tablet:border-l tablet:border-border",
               index === 0 && "tablet:pl-0",

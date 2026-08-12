@@ -13,7 +13,6 @@ import {
 } from "react";
 import { sdk } from "./storefront";
 
-/** Matches both shared contracts, so components take the context value as-is. */
 interface WishlistContextValue extends SojaWishlistPanel {
   isLoading: boolean;
 }
@@ -52,7 +51,6 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   const items = data?.products ?? [];
 
-  // React Query retries, so guard against a toast per attempt.
   useEffect(() => {
     if (!error) {
       reportedQueryError.current = false;

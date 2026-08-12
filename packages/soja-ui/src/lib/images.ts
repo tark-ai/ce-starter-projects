@@ -7,23 +7,23 @@ import testimonialBg from "../assets/testimonial.avif";
 const seed = (name: string, w: number, h: number) =>
   `https://picsum.photos/seed/soja-${name}/${w}/${h}`;
 
+const assetUrl = (asset: string | { src: string }): string =>
+  typeof asset === "string" ? asset : asset.src;
+
 export const IMAGEKIT_ENDPOINT = "https://images.tarkai.com";
 
-/** Shipped assets, with Picsum seeds standing in until the rest of the shoot lands. */
 export const images = {
-  hero: heroImage,
-  footer: footerBg,
-  testimonial: testimonialBg,
+  hero: assetUrl(heroImage),
+  footer: assetUrl(footerBg),
+  testimonial: assetUrl(testimonialBg),
 
-  /** Brand-pillar column images (2:3 portrait). Pillar III is black & white. */
   pillarShipping: seed("pillar-shipping", 800, 1200),
   pillarPackaging: seed("pillar-packaging", 800, 1200),
   pillarCopenhagen: `${seed("pillar-copenhagen", 800, 1200)}?grayscale`,
   pillarSourcing: seed("pillar-sourcing", 800, 1200),
 
-  /** Homepage category tiles (2:3 portrait). */
-  shopSkincare,
-  shopHairBody,
+  shopSkincare: assetUrl(shopSkincare),
+  shopHairBody: assetUrl(shopHairBody),
 
   hair: seed("hair", 900, 1350),
   storyFounder: seed("story-founder", 1200, 900),

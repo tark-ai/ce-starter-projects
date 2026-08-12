@@ -1,21 +1,11 @@
 import { cn } from "@ce/soja-ui/lib/utils";
 import type * as React from "react";
 
-/**
- * Soja's signature structural device: a full-bleed photograph with sticky white
- * copy on it and an optional card overlapping a corner. The hero, the homepage
- * testimonial and the footer are all the same construction.
- *
- * `natural` sizes the band to the photograph's own aspect ratio so the whole
- * frame stays visible; the viewport-height modes fill the screen but crop with
- * `object-cover`.
- */
 export type PhotoBandHeight = "natural" | "screen" | "band" | "auto";
 export type PhotoBandAlign = "top-left" | "bottom-left" | "bottom-right" | "center";
 
 const HEIGHTS: Record<PhotoBandHeight, string> = {
   natural: "",
-  // dvh, not vh: it settles correctly as mobile browser chrome collapses.
   screen: "min-h-dvh",
   band: "min-h-[85svh]",
   auto: "",
@@ -29,23 +19,15 @@ const ALIGNMENTS: Record<PhotoBandAlign, string> = {
 };
 
 export interface PhotoBandProps {
-  /** Full-bleed background photograph. */
   image: string;
-  /** Decorative by default; pass a string when the photograph is content. */
   alt?: string;
   height?: PhotoBandHeight;
   align?: PhotoBandAlign;
-  /** Sticky copy block laid over the photograph. */
   children?: React.ReactNode;
-  /** Card or element overlapping the band's bottom-right corner. */
   overlay?: React.ReactNode;
-  /** `natural` mode only. Defaults to the photo's own 3:2, which crops nothing. */
   aspect?: string;
-  /** Which part of the photograph to keep when the band's ratio crops it. */
   focus?: "center" | "top" | "bottom";
-  /** Wipe the photograph into view on mount. */
   reveal?: boolean;
-  /** Darkens the photograph — only where copy needs the contrast. */
   scrim?: "none" | "soft" | "strong";
   className?: string;
   contentClassName?: string;
@@ -114,8 +96,6 @@ export function PhotoBand({
           <div
             className={cn(
               "soja-container w-full py-16 text-white tablet:py-24",
-              // Only bottom-anchored copy pins: sticky on top-anchored copy
-              // pushes it off the corner as soon as the band scrolls.
               isBottomAligned && !isNatural && "sticky bottom-12",
               contentClassName
             )}

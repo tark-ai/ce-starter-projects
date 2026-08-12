@@ -1,12 +1,5 @@
 @custom-variant dark (&:is(.dark *));
 
-/*
- * Soja design tokens, measured from the reference stylesheet.
- *
- * All colour comes from photography: the chrome is four neutrals and there is
- * deliberately no brand accent token. Four type sizes only (48/28/16/14),
- * display weight 300, radius 0.
- */
 @theme {
   --font-sans: "Average", ui-serif, Georgia, "Times New Roman", serif;
   --font-display: "Averia Serif Libre", ui-serif, Georgia, "Times New Roman", serif;
@@ -24,10 +17,7 @@
   --tracking-display: -0.05em;
 
   --container-soja: 1440px;
-  /* 810px, the reference's tablet tier. MUST be expressed in rem: Tailwind
-     sorts breakpoints by value to order the emitted media queries, and it
-     cannot compare a px custom breakpoint against the rem-based defaults — a
-     px value here sorts before `sm`, so `sm:*` would override `tablet:*`. */
+  /* Must stay in rem: Tailwind orders breakpoints by value and cannot compare px against its rem defaults. */
   --breakpoint-tablet: 50.625rem;
 
   --color-border: hsl(var(--border));
@@ -130,10 +120,8 @@
 }
 
 :root {
-  /* #f8f7f3 — the only surface colour on the site. */
-  --background: 40 27% 96%;
-  /* #333333 — headings and body; there is one text colour. */
-  --foreground: 0 0% 20%;
+  --background: 40 27% 96%; /* #f8f7f3 */
+  --foreground: 0 0% 20%; /* #333333 */
 
   --primary: 0 0% 20%;
   --primary-foreground: 0 0% 100%;
@@ -143,13 +131,12 @@
   --secondary-foreground: 0 0% 20%;
 
   --muted: 40 27% 96%;
-  --muted-foreground: 0 0% 67%;
+  --muted-foreground: 0 0% 67%; /* #ababab */
 
   --accent: 40 20% 92%;
   --accent-foreground: 0 0% 20%;
 
-  /* #dadada — hairlines only. */
-  --border: 0 0% 86%;
+  --border: 0 0% 86%; /* #dadada, hairlines only */
   --input: 0 0% 86%;
   --ring: 0 0% 20%;
 
@@ -159,7 +146,6 @@
   --popover: 40 27% 96%;
   --popover-foreground: 0 0% 20%;
 
-  /* #d93d4f — sale / sold-out only. */
   --destructive: 353 67% 55%;
   --destructive-foreground: 0 0% 100%;
 
@@ -204,8 +190,6 @@
 
   html,
   body {
-    /* clip, unlike hidden, does not create a scroll container, so the
-       sticky header keeps working. */
     overflow-x: clip;
     max-width: 100%;
   }
@@ -232,8 +216,6 @@
     color: hsl(var(--background));
   }
 
-  /* !important is required: this has to beat the per-element animation
-     utilities, which are more specific. */
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

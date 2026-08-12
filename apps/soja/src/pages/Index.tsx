@@ -7,9 +7,6 @@ import { SojaLink } from "@/lib/soja-routing";
 import { useWishlist } from "@/lib/wishlist";
 
 const Index = () => {
-  // One request covers both rows plus the testimonial's overlapping card. The
-  // limit spans the whole catalog so the pinned testimonial product is always in
-  // the result rather than depending on where it lands in the ordering.
   const { skus, isLoading } = useListSkus({ limit: 24 });
   const wishlist = useWishlist();
 

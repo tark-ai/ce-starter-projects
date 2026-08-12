@@ -27,9 +27,6 @@ const ProductDetail = () => {
   const { items: related } = useSimilarProducts(product?.id ?? "");
   const wishlist = useWishlist();
 
-  // A store may have no variants configured at all, so nothing below assumes
-  // `variants` or `variant_options` is present. Memoised so the derived
-  // selections below don't recompute on every render.
   const variants = useMemo(() => product?.variants ?? [], [product]);
   const optionKeys = useMemo(
     () => product?.variant_options?.map((option) => option.key) ?? [],
@@ -63,8 +60,6 @@ const ProductDetail = () => {
     return findVariantBySelection(variants, optionKeys, selectedOptions);
   }, [product, variants, optionKeys, selectedOptions, variantFromUrl]);
 
-  // The URL is the single source of truth for the selection, so a shared link
-  // reopens exactly the variant the sender was looking at.
   useEffect(() => {
     if (!product?.has_variant) return;
 
@@ -106,8 +101,6 @@ const ProductDetail = () => {
         changed = true;
       }
     } else if (nextParams.has("variant")) {
-      // The selection matches no variant — drop the stale slug rather than
-      // leaving the URL pointing at a combination that isn't shown.
       nextParams.delete("variant");
       changed = true;
     }
@@ -174,8 +167,6 @@ const ProductDetail = () => {
   return (
     <Layout>
       <section className="mx-auto w-full max-w-[var(--container-soja)] px-3 grid gap-12 pt-12 pb-20 tablet:grid-cols-2 tablet:gap-20 tablet:pt-20">
-        {/* Gallery holds while the info column scrolls past it. min-w-0 lets the
-            thumbnail strip inside scroll rather than widening this grid cell. */}
         <div className="min-w-0 tablet:sticky tablet:top-28 tablet:self-start">
           <ProductImageGallery
             key={selectedVariant?.id ?? "base"}

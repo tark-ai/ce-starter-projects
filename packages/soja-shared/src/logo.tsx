@@ -1,6 +1,5 @@
 import { cn } from "@ce/soja-ui/lib/utils";
 
-/** Driven by `currentColor`, so the header's two-state switch is a text-colour change. */
 export function SojaWordmark({ className }: { className?: string }) {
   return (
     <svg

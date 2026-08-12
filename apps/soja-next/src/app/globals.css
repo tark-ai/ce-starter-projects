@@ -1,0 +1,6 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@ce/soja-ui/theme.css";
+
+@source "../../../../packages/soja-ui/src";
+@source "../../../../packages/soja-shared/src";

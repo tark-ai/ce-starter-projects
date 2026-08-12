@@ -1,6 +1,5 @@
 import type { FaqItem } from "@ce/soja-shared/faq";
 
-/** Editorial copy only — product data comes from Commerce Engine. */
 export const SITE_NAME = "Soja";
 export const SITE_URL = "https://soja.demo.commercengine.io";
 
@@ -20,12 +19,10 @@ export const HOME_COPY = {
     quote:
       "I've tried a lot of facial serums over the years, but matcha tea serum was by far the gentlest on my skin with a calming and restorative effect. I'm obsessed.",
     author: "Theresa Young · 42",
-    /** Pinned by slug so the quote and the product beside it stay paired. */
     productSlug: "organic-kelp-anti-ageing-serum",
   },
 } as const;
 
-/** Display order for the shop categories; slugs are matched against the CE catalog. */
 export const SHOP_CATEGORIES = [
   { label: "Skin care", slug: "skin-care" },
   { label: "Hand and body", slug: "hand-and-body" },

@@ -5,11 +5,6 @@ import type { SojaLinkComponent } from "./lib/routing";
 import { StorefrontImage } from "./lib/storefront-image";
 import type { SojaWishlistPanel } from "./lib/wishlist";
 
-/**
- * `overlay` sits on a product photograph, where Soja's convention is white with
- * a shadow for legibility; `control` is the square hairline button that stands
- * beside Add to Cart.
- */
 const WISHLIST_VARIANTS = {
   overlay: "p-1.5 text-white drop-shadow-[0_1px_3px_rgb(0_0_0/0.45)]",
   control:
@@ -53,7 +48,6 @@ export interface WishlistPanelProps {
   onClose: () => void;
 }
 
-/** Right-hand drawer listing saved products, opened from the header. */
 export function WishlistPanel({ wishlist, LinkComponent, open, onClose }: WishlistPanelProps) {
   if (!open) return null;
 

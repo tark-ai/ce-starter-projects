@@ -1,10 +1,7 @@
 import type { Product, ProductAttribute } from "@commercengine/storefront";
 
-/**
- * `catalog.getProductDetail` returns `Product & AdditionalProductDetails`, and
- * the long-form copy lives on the latter, so widen instead of narrowing to
- * `Product` and silently losing `description`.
- */
+// getProductDetail returns `Product & AdditionalProductDetails`; the long-form
+// `description` lives on the latter.
 export type SojaProductDetail = Product & { description?: string | null };
 
 export interface AttributeSwatch {
@@ -12,7 +9,6 @@ export interface AttributeSwatch {
   hexcode: string;
 }
 
-/** One attribute rendered as a spec row. */
 export interface AttributeSpec {
   key: string;
   name: string;
@@ -26,11 +22,6 @@ const dateFormatter = new Intl.DateTimeFormat("en-GB", {
   year: "numeric",
 });
 
-/**
- * `ProductAttribute` is a union discriminated on `type`, and only two of its
- * seven members hold a plain string — stringifying blind yields
- * `[object Object]` for colours and `true`/`false` for booleans.
- */
 export function formatAttributeValue(attribute: ProductAttribute): string {
   switch (attribute.type) {
     case "color":
@@ -50,10 +41,6 @@ export function formatAttributeValue(attribute: ProductAttribute): string {
   }
 }
 
-/**
- * Attributes and tags are optional store configuration: a store that defines
- * neither omits the fields entirely, so every read tolerates their absence.
- */
 export function getAttributes(
   attributes: ProductAttribute[] | null | undefined
 ): ProductAttribute[] {
@@ -78,7 +65,6 @@ export function readAttributeText(
   return (attribute && formatAttributeValue(attribute)) || null;
 }
 
-/** Display rows for every attribute except the keys rendered elsewhere. */
 export function toAttributeSpecs(
   attributes: ProductAttribute[] | null | undefined,
   excludeKeys: string[] = []
@@ -96,7 +82,6 @@ export function toAttributeSpecs(
     .filter((spec) => spec.value.length > 0);
 }
 
-/** Freeform tags, trimmed and deduped. `null` when a store assigns none. */
 export function getProductTags(tags: string[] | null | undefined, limit?: number): string[] {
   const unique = new Set<string>();
   for (const tag of tags ?? []) {
@@ -108,11 +93,6 @@ export function getProductTags(tags: string[] | null | undefined, limit?: number
   return typeof limit === "number" ? tagList.slice(0, limit) : tagList;
 }
 
-/**
- * Split long-form copy into a lede and the remainder. Stores populate either
- * `short_description` or `description`, rarely both, so the PDP has to read
- * well in either case without repeating itself.
- */
 export function splitDescription(description?: string | null): { lede: string; rest: string } {
   const text = (description ?? "").trim();
   if (!text) return { lede: "", rest: "" };

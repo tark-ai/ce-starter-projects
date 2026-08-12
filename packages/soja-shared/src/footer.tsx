@@ -22,7 +22,6 @@ const SOCIAL_LINKS = [
 export interface FooterProps {
   LinkComponent: SojaLinkComponent;
   onNewsletterSubmit?: (email: string) => void;
-  /** Shown above the copyright, e.g. "Denmark / DKK". */
   locale?: string;
 }
 

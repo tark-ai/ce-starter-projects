@@ -56,12 +56,10 @@ const App = () => {
                   <Route path="/search" element={<Search />} />
                   <Route path="/product/:slug" element={<ProductDetail />} />
                   <Route path="/about" element={<About />} />
-                  {/* Reference path, kept as an alias of the canonical route. */}
                   <Route path="/our-story" element={<About />} />
                   <Route path="/faq" element={<Faq />} />
                   <Route path="/privacy-policy" element={<PrivacyPolicy />} />
                   <Route path="/terms-of-service" element={<TermsOfService />} />
-                  {/* Aliases matching the shared footer's legal links */}
                   <Route path="/legal/privacy" element={<PrivacyPolicy />} />
                   <Route path="/legal/terms" element={<TermsOfService />} />
                   <Route path="*" element={<NotFound />} />

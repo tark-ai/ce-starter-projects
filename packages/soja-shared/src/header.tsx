@@ -18,11 +18,6 @@ export interface NavigationProps {
   openCart: () => void;
   onSearchSubmit: (query: string) => void;
   wishlist?: SojaWishlistPanel;
-  /**
-   * True on pages whose first section is a full-bleed photograph (the home
-   * hero). The header then floats transparently over it in white and only takes
-   * its bone background once the user scrolls past.
-   */
   overHero?: boolean;
 }
 
@@ -31,7 +26,6 @@ const NAV_LINKS: Array<{ label: string; route: SojaRoute }> = [
   { label: "Our story", route: { path: "/about" } },
 ];
 
-/** Header switches from transparent-over-photo to solid bone at this offset. */
 const SCROLL_THRESHOLD = 80;
 
 export function Navigation({
@@ -57,11 +51,9 @@ export function Navigation({
     return () => window.removeEventListener("scroll", onScroll);
   }, [overHero]);
 
-  // Saving from anywhere on the page opens the panel, so the item is seen to land.
   const registerOnAdd = wishlist?.registerOnAdd;
   React.useEffect(() => registerOnAdd?.(() => setFavouritesOpen(true)), [registerOnAdd]);
 
-  // Lock the page behind the mobile drawer and the favourites panel.
   const locked = menuOpen || favouritesOpen;
   React.useEffect(() => {
     if (!locked) return;
@@ -72,7 +64,6 @@ export function Navigation({
     };
   }, [locked]);
 
-  /** White chrome only while genuinely floating over the photograph. */
   const onPhoto = overHero && !scrolled && !menuOpen;
 
   const submitSearch = (event: React.FormEvent) => {
@@ -157,8 +148,6 @@ export function Navigation({
         </div>
       </div>
 
-      {/* A hairline drawer rather than a permanent field, so the two-link nav
-          stays as sparse as the reference. */}
       {searchOpen && (
         <div className="hidden border-t border-border bg-background text-foreground tablet:block">
           <form onSubmit={submitSearch} className="soja-container py-5">
@@ -260,7 +249,6 @@ function FavouritesButton({ count, onClick }: { count: number; onClick: () => vo
   );
 }
 
-/** The reference renders the cart as a bare count inside a thin circle. */
 function CartButton({ count, onClick }: { count: number; onClick: () => void }) {
   return (
     <button

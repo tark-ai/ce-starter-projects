@@ -16,7 +16,6 @@ const buttonVariants = cva(
         secondary: "border border-border bg-transparent hover:border-foreground",
         ghost: "hover:bg-accent",
         link: "underline-offset-4 hover:underline",
-        /** For use on full-bleed photographic bands, where text is white. */
         onPhoto: "bg-white text-foreground hover:bg-white/85",
         onPhotoOutline: "border border-white/70 text-white hover:bg-white hover:text-foreground",
       },

@@ -4,14 +4,11 @@ import { ProductCard, ProductCardSkeleton, Reveal } from "./content";
 import type { SojaLinkComponent, SojaRoute } from "./lib/routing";
 import type { SojaWishlistControls } from "./lib/wishlist";
 
-/* -------------------------------------------------------------------------- */
-/* PLPHero                                                                     */
-/* -------------------------------------------------------------------------- */
+// --- PLPHero ---
 
 export interface PLPHeroProps {
   title: string;
   subtitle?: string;
-  /** Renders "Results for '…'" framing on the search page. */
   query?: string;
 }
 
@@ -34,14 +31,11 @@ export function PLPHero({ title, subtitle, query }: PLPHeroProps) {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* CategoryFilterRow — plain text links, as in the reference                    */
-/* -------------------------------------------------------------------------- */
+// --- CategoryFilterRow — plain text links, as in the reference ---
 
 export interface CategoryFilterItem {
   label: string;
   route: SojaRoute;
-  /** Marks the currently viewed category. */
   active?: boolean;
 }
 
@@ -72,15 +66,16 @@ export function CategoryFilterRow({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* SortSelect                                                                  */
-/* -------------------------------------------------------------------------- */
+// --- SortSelect ---
 
+// Sortable attributes are fixed by the search index: attribute, categories, id,
+// pricing, product_id, product_name, product_type, rating, variant_id,
+// variant_name. Anything else is a 400 invalid_search_sort.
 export const SORT_OPTIONS = [
   { value: "", label: "Featured" },
-  { value: "selling_price:asc", label: "Price, low to high" },
-  { value: "selling_price:desc", label: "Price, high to low" },
-  { value: "created_at:desc", label: "Newest" },
+  { value: "pricing.selling_price:asc", label: "Price, low to high" },
+  { value: "pricing.selling_price:desc", label: "Price, high to low" },
+  { value: "product_name:asc", label: "Name, A–Z" },
 ] as const;
 
 export function SortSelect({
@@ -115,9 +110,7 @@ export function SortSelect({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* ProductGrid                                                                 */
-/* -------------------------------------------------------------------------- */
+// --- ProductGrid ---
 
 export interface ProductGridProps {
   skus: Item[];
@@ -126,7 +119,6 @@ export interface ProductGridProps {
   pagination?: PaginationType;
   onPageChange?: (page: number) => void;
   wishlist?: SojaWishlistControls;
-  /** Shown when a filter or query returns nothing. */
   emptyMessage?: string;
 }
 
@@ -176,9 +168,7 @@ export function ProductGrid({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Pagination                                                                  */
-/* -------------------------------------------------------------------------- */
+// --- Pagination ---
 
 export function Pagination({
   pagination,
@@ -187,8 +177,6 @@ export function Pagination({
   pagination: PaginationType;
   onPageChange: (page: number) => void;
 }) {
-  // The API reports neighbours, not the current page: when there is a next page
-  // the current one is the page before it, otherwise we are on the last page.
   const total = pagination.total_pages ?? 1;
   const current = pagination.next_page ? pagination.next_page - 1 : total;
 

@@ -44,7 +44,7 @@ export function useProducts(options: UseProductsOptions = {}): UseProductsResult
   };
 }
 
-// --- List SKUs (category pages, flat grid without facets) ---
+// --- List SKUs (flat listing, e.g. the home rows) ---
 
 interface UseListSkusOptions {
   page?: number;
@@ -79,49 +79,30 @@ export function useListSkus(options: UseListSkusOptions = {}): UseListSkusResult
   };
 }
 
-// --- Search Products (faceted filtering) ---
+// --- Search Products (query, category filter, sort) ---
 
 interface UseSearchProductsOptions {
   query?: string;
   page?: number;
   limit?: number;
-  facets?: string[];
   filter?: SearchProductsBody["filter"];
   sort?: SearchProductsBody["sort"];
   enabled?: boolean;
 }
 
-interface FacetDistribution {
-  [key: string]: { [value: string]: number };
-}
-
-interface FacetStats {
-  [key: string]: { min: number; max: number };
-}
-
 interface UseSearchProductsResult {
   skus: Item[];
-  facetDistribution: FacetDistribution;
-  facetStats: FacetStats;
   pagination: Pagination | undefined;
   isLoading: boolean;
 }
 
 export function useSearchProducts(options: UseSearchProductsOptions = {}): UseSearchProductsResult {
-  const {
-    query: searchQuery = "",
-    page = 1,
-    limit = 20,
-    facets = ["*"],
-    filter,
-    sort,
-    enabled = true,
-  } = options;
+  const { query: searchQuery = "", page = 1, limit = 20, filter, sort, enabled = true } = options;
 
   const rqQuery = useQuery({
-    queryKey: ["searchProducts", { searchQuery, page, limit, facets, filter, sort }],
+    queryKey: ["searchProducts", { searchQuery, page, limit, filter, sort }],
     queryFn: async () => {
-      const body: SearchProductsBody = { query: searchQuery, page, limit, facets };
+      const body: SearchProductsBody = { query: searchQuery, page, limit };
       if (filter) body.filter = filter;
       if (sort) body.sort = sort;
 
@@ -134,8 +115,6 @@ export function useSearchProducts(options: UseSearchProductsOptions = {}): UseSe
 
   return {
     skus: rqQuery.data?.skus ?? [],
-    facetDistribution: (rqQuery.data?.facet_distribution as FacetDistribution) ?? {},
-    facetStats: (rqQuery.data?.facet_stats as FacetStats) ?? {},
     pagination: rqQuery.data?.pagination,
     isLoading: rqQuery.isLoading,
   };
@@ -170,8 +149,7 @@ export function useSimilarProducts(productId: string): UseSimilarProductsResult 
 // --- Product Detail (by slug or ID) ---
 
 interface UseProductDetailResult {
-  // Not plain `Product`: getProductDetail returns `Product & AdditionalProductDetails`,
-  // and narrowing to `Product` here silently drops the long-form `description`.
+  // Wider than `Product`: getProductDetail also returns the long-form `description`.
   product: SojaProductDetail | undefined;
   isLoading: boolean;
 }

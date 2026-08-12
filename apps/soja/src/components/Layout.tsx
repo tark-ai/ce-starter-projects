@@ -9,10 +9,6 @@ import { useWishlist } from "@/lib/wishlist";
 
 interface LayoutProps {
   children: ReactNode;
-  /**
-   * Set on pages whose first section is a full-bleed photograph, so the header
-   * floats over it in white until the user scrolls past.
-   */
   overHero?: boolean;
 }
 
@@ -33,7 +29,6 @@ export function Layout({ children, overHero = false }: LayoutProps) {
         wishlist={wishlist}
         overHero={overHero}
       />
-      {/* Pull the page up under the transparent header on photo-led pages. */}
       <main className={overHero ? "-mt-20 flex-1" : "flex-1"}>{children}</main>
       <Footer LinkComponent={SojaLink} />
     </div>

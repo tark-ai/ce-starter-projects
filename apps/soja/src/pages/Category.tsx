@@ -23,8 +23,6 @@ const Category = () => {
     [categories, categorySlug]
   );
 
-  // Reference categories first (so the row is stable before the catalog loads),
-  // then anything else the store defines that isn't already listed.
   const filterItems = useMemo(() => {
     const referenceSlugs = new Set<string>(SHOP_CATEGORIES.map((entry) => entry.slug));
     const extras = categories
@@ -42,7 +40,6 @@ const Category = () => {
     }));
   }, [categories, categorySlug]);
 
-  // Search filters are Meilisearch expressions keyed on the category *name*.
   const filter = useMemo(() => buildFilter({}, activeCategory?.name), [activeCategory?.name]);
 
   const { skus, pagination, isLoading } = useSearchProducts({
@@ -50,8 +47,6 @@ const Category = () => {
     limit: PAGE_SIZE,
     sort: sort ? [sort] : undefined,
     filter: filter.length > 0 ? filter : undefined,
-    // Wait for the category lookup before querying a filtered listing, so we
-    // never briefly render the full catalog on a category URL.
     enabled: !categorySlug || Boolean(activeCategory),
   });
 

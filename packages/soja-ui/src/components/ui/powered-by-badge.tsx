@@ -30,11 +30,6 @@ export function PoweredByBadge() {
       href="https://www.commercengine.io"
       target="_blank"
       rel="noopener noreferrer"
-      /* Platform chrome, not brand chrome: this badge is meant to look identical
-         on every Commerce Engine storefront. Colours are pinned to the values
-         Linea and Little Things render (white / neutral-500 / neutral-200)
-         rather than read from Soja's tokens, whose bone `card` and much lighter
-         `muted-foreground` (0 0% 67% vs Linea's 0 0% 45%) would wash it out. */
       className="fixed bottom-4 right-4 z-50 flex items-center gap-2 rounded-full bg-white px-3.5 py-2 shadow-md ring-1 ring-neutral-200 transition-shadow hover:shadow-lg"
     >
       <CEGlyph className="h-4 w-4 shrink-0" />

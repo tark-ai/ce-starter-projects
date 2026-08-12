@@ -1,11 +1,6 @@
 import { ContentSection, PageHeader } from "@ce/soja-shared/about";
 import { Layout } from "@/components/Layout";
 
-/**
- * The SOJA reference has no Terms page — this is brand-voiced boilerplate,
- * written for parity with the other two storefronts in the monorepo, which both
- * link to a Terms route from the shared footer.
- */
 const TermsOfService = () => (
   <Layout>
     <PageHeader

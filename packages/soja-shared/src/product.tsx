@@ -25,9 +25,7 @@ import { getOptionSelectionValue, getVariantOption } from "./lib/variants";
 import type { SojaWishlistControls } from "./lib/wishlist";
 import { WishlistButton } from "./wishlist";
 
-/* -------------------------------------------------------------------------- */
-/* Gallery — sticky main image with a vertical thumbnail rail                   */
-/* -------------------------------------------------------------------------- */
+// --- Gallery — sticky main image with a vertical thumbnail rail ---
 
 export interface ProductImageGalleryProps {
   images: Product["images"];
@@ -49,8 +47,6 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
 
   const current = gallery[Math.min(active, gallery.length - 1)];
 
-  // min-w-0 throughout: flex and grid items default to `min-width: auto`, so
-  // without it the thumbnail strip widens its ancestors instead of scrolling.
   return (
     <div className="flex min-w-0 flex-col gap-3 tablet:flex-row">
       <div className="min-w-0 flex-1 overflow-hidden bg-accent">
@@ -100,9 +96,7 @@ export function ProductImageGallery({ images, productName }: ProductImageGallery
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* QuantityStepper                                                             */
-/* -------------------------------------------------------------------------- */
+// --- QuantityStepper ---
 
 function QuantityStepper({
   value,
@@ -140,9 +134,7 @@ function QuantityStepper({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* ProductInfo                                                                 */
-/* -------------------------------------------------------------------------- */
+// --- ProductInfo ---
 
 type OptionValue = {
   selectionValue: string;
@@ -153,7 +145,6 @@ type OptionValue = {
 
 type OptionGroup = { option: VariantOption; values: OptionValue[] };
 
-/** Backorder counts as purchasable: it sells now and ships when restocked. */
 const isPurchasableStock = (entity: { stock_available: boolean; backorder?: boolean }): boolean =>
   entity.stock_available || Boolean(entity.backorder);
 
@@ -200,7 +191,6 @@ export interface ProductInfoProps {
   allOptionsSelected: boolean;
   onOptionChange: (optionKey: string, optionValue: string) => void;
   wishlist?: SojaWishlistControls;
-  /** How many tags to surface before the row starts to crowd the column. */
   tagLimit?: number;
 }
 
@@ -258,8 +248,6 @@ export function ProductInfo({
   const compareAt = selectedVariant?.pricing?.listing_price ?? product.pricing.listing_price;
   const onSale = typeof compareAt === "number" && compareAt > price;
 
-  // A variant product with no selection yet has no stock state to report — the
-  // CTA asks for the choice instead of claiming the product is unavailable.
   const stockSource = product.has_variant ? selectedVariant : product;
   const hasCompleteSelection =
     !product.has_variant || (allOptionsSelected && Boolean(selectedVariant));
@@ -267,8 +255,6 @@ export function ProductInfo({
   const isBackorder = Boolean(stockSource && !stockSource.stock_available && stockSource.backorder);
   const canAddToCart = hasCompleteSelection && inStock && !adding;
 
-  // The variant's own copy wins when it has any, then the product's, then the
-  // opening paragraph of the long-form description (the rest goes in Details).
   const tagline =
     selectedVariant?.short_description ||
     product.short_description ||
@@ -405,9 +391,7 @@ export function ProductInfo({
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* DetailAccordions — Details / Specifications / Ingredients / Shipping         */
-/* -------------------------------------------------------------------------- */
+// --- DetailAccordions — Details / Specifications / Ingredients / Shipping ---
 
 const INGREDIENT_KEYS = ["ingredients", "ingredient"];
 
@@ -416,7 +400,6 @@ const DEFAULT_SHIPPING_COPY =
 
 export interface DetailAccordionsProps {
   product: SojaProductDetail;
-  /** Falls back to brand-standard copy when the catalog has none. */
   shippingCopy?: string;
 }
 
@@ -424,9 +407,6 @@ export function DetailAccordions({ product, shippingCopy }: DetailAccordionsProp
   const ingredients = readAttributeText(product.attributes, INGREDIENT_KEYS);
   const specs = toAttributeSpecs(product.attributes, INGREDIENT_KEYS);
 
-  // ProductInfo already shows short_description — or, failing that, the first
-  // paragraph of the long copy — as the tagline. Show whatever is left here so
-  // the description is never dropped and never repeated.
   const { rest } = splitDescription(product.description);
   const detailBody = product.short_description ? (product.description ?? "").trim() : rest;
 
@@ -465,7 +445,6 @@ export function DetailAccordions({ product, shippingCopy }: DetailAccordionsProp
   );
 }
 
-/** Colour attributes carry hexcodes, so they render as swatches, not words. */
 export function AttributeSpecList({ specs }: { specs: AttributeSpec[] }) {
   if (specs.length === 0) return null;
 
@@ -492,9 +471,7 @@ export function AttributeSpecList({ specs }: { specs: AttributeSpec[] }) {
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* HowToUse — the lettered ritual block                                        */
-/* -------------------------------------------------------------------------- */
+// --- HowToUse — the lettered ritual block ---
 
 export interface HowToUseStep {
   letter: string;
@@ -544,9 +521,7 @@ export function HowToUse({ steps = DEFAULT_HOW_TO_USE }: { steps?: HowToUseStep[
   );
 }
 
-/* -------------------------------------------------------------------------- */
-/* RelatedProducts                                                             */
-/* -------------------------------------------------------------------------- */
+// --- RelatedProducts ---
 
 export interface RelatedProductsProps {
   items: Item[];

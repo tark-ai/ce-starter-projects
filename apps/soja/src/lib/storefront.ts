@@ -4,7 +4,6 @@ import { BrowserTokenStorage, createStorefront, Environment } from "@commercengi
 
 const tokenStorage = new BrowserTokenStorage("soja_");
 
-/** Use staging when VITE_CE_ENV=staging (e.g. Vercel Preview) or when unset. */
 const useStaging = import.meta.env.VITE_CE_ENV === "staging" || !import.meta.env.VITE_CE_ENV;
 
 const storefront = createStorefront({
@@ -14,7 +13,6 @@ const storefront = createStorefront({
   session: {
     tokenStorage,
     onTokensUpdated: (accessToken, refreshToken) => {
-      // SDK -> checkout: keep checkout in sync when SDK tokens change
       getCheckout().updateTokens(accessToken, refreshToken);
     },
   },
@@ -23,11 +21,9 @@ const storefront = createStorefront({
 export const sdk = storefront.session();
 
 export async function initStorefront() {
-  // 1. Ensure an anonymous/session token exists — SDK is the token owner
   const accessToken = await sdk.ensureAccessToken();
   const refreshToken = await tokenStorage.getRefreshToken();
 
-  // 2. Init hosted checkout with authMode: "provided" + two-way sync
   initCheckout({
     storeId: import.meta.env.VITE_STORE_ID,
     apiKey: import.meta.env.VITE_API_KEY,
@@ -36,7 +32,6 @@ export async function initStorefront() {
     accessToken: accessToken ?? undefined,
     refreshToken: refreshToken ?? undefined,
     onTokensUpdated: ({ accessToken, refreshToken }) => {
-      // checkout -> SDK: keep SDK in sync when checkout tokens change
       void sdk.setTokens(accessToken, refreshToken);
     },
   });
