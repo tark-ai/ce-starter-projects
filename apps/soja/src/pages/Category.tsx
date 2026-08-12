@@ -1,6 +1,6 @@
 import { CategoryFilterRow, PLPHero, ProductGrid, SortSelect } from "@ce/soja-shared/category";
 import { BrandPillars } from "@ce/soja-shared/content";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { buildFilter } from "@/lib/build-filter";
@@ -17,6 +17,15 @@ const Category = () => {
   const wishlist = useWishlist();
   const [page, setPage] = useState(1);
   const [sort, setSort] = useState("");
+
+  // The route component is reused across categories, so page survived the change.
+  const previousSlug = useRef(categorySlug);
+  useEffect(() => {
+    if (previousSlug.current !== categorySlug) {
+      previousSlug.current = categorySlug;
+      setPage(1);
+    }
+  }, [categorySlug]);
 
   const activeCategory = useMemo(
     () => categories.find((entry) => entry.slug === categorySlug),

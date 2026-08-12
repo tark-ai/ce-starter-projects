@@ -21,6 +21,18 @@ const WishlistContext = createContext<WishlistContextValue | null>(null);
 
 const WISHLIST_KEY = ["wishlist"];
 
+/**
+ * Each mutation returns the whole list, so overlapping requests could commit out of
+ * order. Chaining them keeps the server as the single writer of that ordering.
+ */
+let mutationQueue: Promise<unknown> = Promise.resolve();
+
+function enqueue<T>(operation: () => Promise<T>): Promise<T> {
+  const result = mutationQueue.then(operation, operation);
+  mutationQueue = result.catch(() => undefined);
+  return result;
+}
+
 interface WishlistTarget {
   productId: string;
   variantId?: string | null;
@@ -62,14 +74,15 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   }, [error]);
 
   const addMutation = useMutation({
-    mutationFn: async ({ productId, variantId }: WishlistTarget) => {
-      const { data, error } = await sdk.cart.addToWishlist({
-        product_id: productId,
-        variant_id: variantId ?? null,
-      });
-      if (error) throw new Error(error.message);
-      return data;
-    },
+    mutationFn: ({ productId, variantId }: WishlistTarget) =>
+      enqueue(async () => {
+        const { data, error } = await sdk.cart.addToWishlist({
+          product_id: productId,
+          variant_id: variantId ?? null,
+        });
+        if (error) throw new Error(error.message);
+        return data;
+      }),
     onSuccess: (data) => {
       queryClient.setQueryData(WISHLIST_KEY, data);
       for (const listener of addListeners.current) listener();
@@ -80,14 +93,15 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   });
 
   const removeMutation = useMutation({
-    mutationFn: async ({ productId, variantId }: WishlistTarget) => {
-      const { data, error } = await sdk.cart.removeFromWishlist({
-        product_id: productId,
-        variant_id: variantId ?? null,
-      });
-      if (error) throw new Error(error.message);
-      return data;
-    },
+    mutationFn: ({ productId, variantId }: WishlistTarget) =>
+      enqueue(async () => {
+        const { data, error } = await sdk.cart.removeFromWishlist({
+          product_id: productId,
+          variant_id: variantId ?? null,
+        });
+        if (error) throw new Error(error.message);
+        return data;
+      }),
     onSuccess: (data) => {
       queryClient.setQueryData(WISHLIST_KEY, data);
     },

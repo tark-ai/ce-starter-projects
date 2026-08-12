@@ -100,6 +100,24 @@ const ProductDetail = () => {
         nextParams.set("variant", selectedVariant.slug);
         changed = true;
       }
+    } else if (variantFromUrl) {
+      // A valid slug with only some options set: complete the selection from it
+      // rather than discarding the variant the link pointed at.
+      const selection = getVariantOptionSelection(variantFromUrl, optionKeys);
+      let filled = false;
+      for (const optionKey of optionKeys) {
+        const queryKey = optionQueryParamKey(optionKey);
+        if (nextParams.has(queryKey)) continue;
+        const value = selection[optionKey];
+        if (!value) continue;
+        nextParams.set(queryKey, value);
+        changed = true;
+        filled = true;
+      }
+      if (!filled && nextParams.has("variant")) {
+        nextParams.delete("variant");
+        changed = true;
+      }
     } else if (nextParams.has("variant")) {
       nextParams.delete("variant");
       changed = true;
