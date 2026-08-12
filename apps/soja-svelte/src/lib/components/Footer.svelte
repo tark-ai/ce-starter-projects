@@ -79,22 +79,32 @@ const year = new Date().getFullYear();
 						Newsletter signup isn't connected on this storefront yet.
 					</p>
 				{:else}
-					<form onsubmit={subscribe} class="flex max-w-[320px]">
-						<input
-							type="email"
-							required
-							bind:value={email}
-							placeholder="Your email"
-							aria-label="Email address"
-							class="h-11 min-w-0 flex-1 bg-white px-3 text-meta text-foreground outline-none placeholder:text-muted-foreground"
-						/>
-						<button
-							type="submit"
-							class="h-11 shrink-0 bg-neutral-900 px-5 text-meta text-white transition-opacity duration-300 ease-soja hover:opacity-80"
-						>
-							Join
-						</button>
-					</form>
+					<div class="flex flex-col gap-2">
+						<form onsubmit={subscribe} class="flex max-w-[320px]">
+							<input
+								type="email"
+								required
+								bind:value={email}
+								disabled={status === "submitting"}
+								placeholder="Your email"
+								aria-label="Email address"
+								class="h-11 min-w-0 flex-1 bg-white px-3 text-meta text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-60"
+							/>
+							<button
+								type="submit"
+								disabled={status === "submitting"}
+								class="h-11 shrink-0 bg-neutral-900 px-5 text-meta text-white transition-opacity duration-300 ease-soja hover:opacity-80 disabled:opacity-60"
+							>
+								{status === "submitting" ? "Joining…" : "Join"}
+							</button>
+						</form>
+
+						{#if status === "error"}
+							<p role="alert" class="text-meta text-white/70">
+								That didn't go through. Please try again.
+							</p>
+						{/if}
+					</div>
 				{/if}
 			</div>
 		</div>

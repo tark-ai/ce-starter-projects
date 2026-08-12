@@ -151,7 +151,9 @@ function onoptionchange(optionKey: string, optionValue: string) {
   applySearch(next);
 }
 
-const title = $derived(product ? `${product.name} | ${SITE_NAME}` : `Product not found | ${SITE_NAME}`);
+const title = $derived(
+  product ? `${product.name} | ${SITE_NAME}` : `Product unavailable | ${SITE_NAME}`
+);
 const description = $derived(
   product?.short_description ??
     (product
@@ -227,6 +229,10 @@ const jsonLd = $derived(
 	<title>{title}</title>
 	<meta name="description" content={description} />
 	<link rel="canonical" href={productUrl} />
+	{#if !product}
+		<!-- A build-time catalog failure baked a placeholder; keep it out of the index. -->
+		<meta name="robots" content="noindex" />
+	{/if}
 	<meta property="og:title" content={title} />
 	<meta property="og:description" content={description} />
 	<meta property="og:type" content="product" />
@@ -240,33 +246,42 @@ const jsonLd = $derived(
 </svelte:head>
 
 <main>
-	<section
-		class="mx-auto w-full max-w-[var(--container-soja)] px-3 grid gap-12 pt-12 pb-20 tablet:grid-cols-2 tablet:gap-20 tablet:pt-20"
-	>
-		<!-- min-w-0 lets the thumbnail strip scroll rather than widening this cell. -->
-		<div class="min-w-0 tablet:sticky tablet:top-28 tablet:self-start">
-			{#key selectedVariant?.id ?? "base"}
-				<ProductImageGallery images={displayImages} productName={product.name} />
-			{/key}
-		</div>
+	{#if product}
+		<section
+			class="mx-auto w-full max-w-[var(--container-soja)] px-3 grid gap-12 pt-12 pb-20 tablet:grid-cols-2 tablet:gap-20 tablet:pt-20"
+		>
+			<!-- min-w-0 lets the thumbnail strip scroll rather than widening this cell. -->
+			<div class="min-w-0 tablet:sticky tablet:top-28 tablet:self-start">
+				{#key selectedVariant?.id ?? "base"}
+					<ProductImageGallery images={displayImages} productName={product.name} />
+				{/key}
+			</div>
 
-		<div class="flex flex-col gap-14">
-			<Reveal>
-				<ProductInfo
-					{product}
-					selectedVariantId={selectedVariant?.id ?? null}
-					{selectedOptions}
-					{allOptionsSelected}
-					{onoptionchange}
-				/>
-			</Reveal>
-			<Reveal delay={90}>
-				<DetailAccordions {product} />
-			</Reveal>
-		</div>
-	</section>
+			<div class="flex flex-col gap-14">
+				<Reveal>
+					<ProductInfo
+						{product}
+						selectedVariantId={selectedVariant?.id ?? null}
+						{selectedOptions}
+						{allOptionsSelected}
+						{onoptionchange}
+					/>
+				</Reveal>
+				<Reveal delay={90}>
+					<DetailAccordions {product} />
+				</Reveal>
+			</div>
+		</section>
 
-	<HowToUse />
+		<HowToUse />
 
-	<RelatedProducts items={data.similarItems} />
+		<RelatedProducts items={data.similarItems} />
+	{:else}
+		<section class="mx-auto w-full max-w-[var(--container-soja)] px-3 py-32">
+			<h1 class="font-display text-[2rem] tracking-display">We couldn't load this formulation</h1>
+			<p class="mt-6 max-w-[420px] text-meta leading-relaxed text-muted-foreground">
+				The catalog didn't respond when this page was built. Please try again in a moment.
+			</p>
+		</section>
+	{/if}
 </main>

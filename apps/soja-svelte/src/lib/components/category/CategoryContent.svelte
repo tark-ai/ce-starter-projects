@@ -89,6 +89,14 @@ async function fetchPage() {
   }
 }
 
+// The React ports get this from a query that runs whenever initial data is
+// unavailable; here the request has to be started explicitly, or a failed loader
+// read would leave the grid permanently empty with no way to recover.
+$effect(() => {
+  if (usingInitialData || fetched !== null || isLoading) return;
+  void fetchPage();
+});
+
 function changeSort(next: string) {
   sort = next;
   page = 1;

@@ -37,6 +37,7 @@ onMount(() => {
           return;
         }
         await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** attempt));
+        if (cancelled) return;
       }
     }
   })();

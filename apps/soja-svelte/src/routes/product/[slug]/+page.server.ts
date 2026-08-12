@@ -41,27 +41,30 @@ export const load: PageServerLoad = async ({ params }) => {
     sdk.catalog.listSimilarProducts({ product_id: [params.slug] }),
   ]);
 
+  const similarItems = similar.status === "fulfilled" ? (similar.value.data?.products ?? []) : [];
+
+  // This runs during the static build, so there is no request to retry: a thrown
+  // status would abort the whole deploy over one catalog hiccup. Only a confirmed
+  // absence becomes a 404; a transport or server failure keeps a 200 and lets the
+  // page render its fallback.
   if (detail.status === "rejected") {
-    // A transport failure is not a missing product; 503 keeps it retryable.
-    error(503, "The catalog is unavailable right now.");
+    // biome-ignore lint/suspicious/noConsole: surface catalog failures during prerender
+    console.error("[soja] product detail request failed:", detail.reason);
+    return { product: null, similarItems, slug: params.slug };
   }
 
   const { data, error: detailError, response } = detail.value;
-  if (detailError && response.status === 404) {
-    error(404, "Product not found");
-  }
-  if (detailError) {
-    error(503, "The catalog is unavailable right now.");
+  if (detailError && response.status !== 404) {
+    // biome-ignore lint/suspicious/noConsole: surface catalog failures during prerender
+    console.warn("[soja] product detail request failed:", detailError);
+    return { product: null, similarItems, slug: params.slug };
   }
 
   const product: SojaProductDetail | null = data?.product ?? null;
+  // The request succeeded and there is genuinely no such product.
   if (!product) {
     error(404, "Product not found");
   }
 
-  return {
-    product,
-    similarItems: similar.status === "fulfilled" ? (similar.value.data?.products ?? []) : [],
-    slug: params.slug,
-  };
+  return { product, similarItems, slug: params.slug };
 };
