@@ -54,6 +54,19 @@ export function Navigation({
   const registerOnAdd = wishlist?.registerOnAdd;
   React.useEffect(() => registerOnAdd?.(() => setFavouritesOpen(true)), [registerOnAdd]);
 
+  // The drawer and its toggle are hidden from `tablet` up, so growing past the
+  // breakpoint would otherwise leave the scroll lock on with no way to clear it.
+  React.useEffect(() => {
+    if (!menuOpen) return;
+    const query = window.matchMedia("(min-width: 50.625rem)");
+    const closeIfWide = () => {
+      if (query.matches) setMenuOpen(false);
+    };
+    closeIfWide();
+    query.addEventListener("change", closeIfWide);
+    return () => query.removeEventListener("change", closeIfWide);
+  }, [menuOpen]);
+
   const locked = menuOpen || favouritesOpen;
   React.useEffect(() => {
     if (!locked) return;

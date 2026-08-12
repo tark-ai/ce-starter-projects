@@ -19,9 +19,12 @@ const SOCIAL_LINKS = [
   { label: "TikTok", href: "https://tiktok.com" },
 ];
 
+/** Resolve to confirm the signup; reject to surface the error state. */
+export type NewsletterSubmit = (email: string) => void | Promise<void>;
+
 export interface FooterProps {
   LinkComponent: SojaLinkComponent;
-  onNewsletterSubmit?: (email: string) => void;
+  onNewsletterSubmit?: NewsletterSubmit;
   locale?: string;
 }
 
@@ -82,25 +85,43 @@ export function Footer({
   );
 }
 
-function NewsletterForm({ onSubmit }: { onSubmit?: (email: string) => void }) {
-  const [email, setEmail] = React.useState("");
-  const [done, setDone] = React.useState(false);
+type NewsletterState = "idle" | "submitting" | "done" | "error" | "unavailable";
 
-  const handleSubmit = (event: React.FormEvent) => {
+function NewsletterForm({ onSubmit }: { onSubmit?: NewsletterSubmit }) {
+  const [email, setEmail] = React.useState("");
+  const [state, setState] = React.useState<NewsletterState>("idle");
+
+  const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
     const trimmed = email.trim();
-    if (!trimmed) return;
-    onSubmit?.(trimmed);
-    setDone(true);
-    setEmail("");
+    if (!trimmed || state === "submitting") return;
+
+    // No handler means nothing is stored, so don't promise an email that won't arrive.
+    if (!onSubmit) {
+      setState("unavailable");
+      return;
+    }
+
+    setState("submitting");
+    try {
+      await onSubmit(trimmed);
+      setState("done");
+      setEmail("");
+    } catch {
+      setState("error");
+    }
   };
 
   return (
     <div className="flex flex-col gap-4">
       <p className="max-w-[300px] text-meta">Join our club and get 10% off your first purchase</p>
 
-      {done ? (
+      {state === "done" ? (
         <p className="text-meta text-white/70">Thank you — check your inbox.</p>
+      ) : state === "unavailable" ? (
+        <p className="text-meta text-white/70">
+          Newsletter signup isn't connected on this storefront yet.
+        </p>
       ) : (
         <form onSubmit={handleSubmit} className="flex max-w-[320px]">
           <input

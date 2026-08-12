@@ -20,6 +20,9 @@ const dateFormatter = new Intl.DateTimeFormat("en-GB", {
   day: "numeric",
   month: "long",
   year: "numeric",
+  // Date-only values parse as UTC; formatting in local time would shift the day
+  // west of UTC and diverge between SSR and hydration.
+  timeZone: "UTC",
 });
 
 export function formatAttributeValue(attribute: ProductAttribute): string {
