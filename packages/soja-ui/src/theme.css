@@ -17,7 +17,8 @@
   --tracking-display: -0.05em;
 
   --container-soja: 1440px;
-  /* Must stay in rem: Tailwind orders breakpoints by value and cannot compare px against its rem defaults. */
+  /* Must stay in rem: Tailwind orders breakpoints by value and cannot compare px
+     against its rem defaults. Mirrored by TABLET_BREAKPOINT in lib/breakpoints.ts. */
   --breakpoint-tablet: 50.625rem;
 
   --color-border: hsl(var(--border));

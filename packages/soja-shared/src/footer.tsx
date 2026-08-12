@@ -123,23 +123,33 @@ function NewsletterForm({ onSubmit }: { onSubmit?: NewsletterSubmit }) {
           Newsletter signup isn't connected on this storefront yet.
         </p>
       ) : (
-        <form onSubmit={handleSubmit} className="flex max-w-[320px]">
-          <input
-            type="email"
-            required
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            placeholder="Your email"
-            aria-label="Email address"
-            className="h-11 min-w-0 flex-1 bg-white px-3 text-meta text-foreground outline-none placeholder:text-muted-foreground"
-          />
-          <button
-            type="submit"
-            className="h-11 shrink-0 bg-neutral-900 px-5 text-meta text-white transition-opacity duration-300 ease-soja hover:opacity-80"
-          >
-            Join
-          </button>
-        </form>
+        <div className="flex flex-col gap-2">
+          <form onSubmit={handleSubmit} className="flex max-w-[320px]">
+            <input
+              type="email"
+              required
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              disabled={state === "submitting"}
+              placeholder="Your email"
+              aria-label="Email address"
+              className="h-11 min-w-0 flex-1 bg-white px-3 text-meta text-foreground outline-none placeholder:text-muted-foreground disabled:opacity-60"
+            />
+            <button
+              type="submit"
+              disabled={state === "submitting"}
+              className="h-11 shrink-0 bg-neutral-900 px-5 text-meta text-white transition-opacity duration-300 ease-soja hover:opacity-80 disabled:opacity-60"
+            >
+              {state === "submitting" ? "Joining…" : "Join"}
+            </button>
+          </form>
+
+          {state === "error" && (
+            <p role="alert" className="text-meta text-white/70">
+              That didn't go through. Please try again.
+            </p>
+          )}
+        </div>
       )}
     </div>
   );

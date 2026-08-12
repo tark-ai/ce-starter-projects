@@ -1,3 +1,4 @@
+import { TABLET_MEDIA_QUERY } from "@ce/soja-ui/lib/breakpoints";
 import { cn } from "@ce/soja-ui/lib/utils";
 import { Heart, Menu, Search, X } from "lucide-react";
 import * as React from "react";
@@ -58,7 +59,7 @@ export function Navigation({
   // breakpoint would otherwise leave the scroll lock on with no way to clear it.
   React.useEffect(() => {
     if (!menuOpen) return;
-    const query = window.matchMedia("(min-width: 50.625rem)");
+    const query = window.matchMedia(TABLET_MEDIA_QUERY);
     const closeIfWide = () => {
       if (query.matches) setMenuOpen(false);
     };
