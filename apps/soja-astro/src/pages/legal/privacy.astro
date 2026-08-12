@@ -1,0 +1,13 @@
+---
+import PrivacyContent from "../../components/views/PrivacyContent";
+import Layout from "../../layouts/Layout.astro";
+import { SITE_NAME, SITE_URL } from "../../lib/constants";
+---
+
+<Layout
+  title={`Privacy Policy | ${SITE_NAME}`}
+  description={`How ${SITE_NAME} collects, uses, discloses and safeguards your personal information.`}
+  canonicalUrl={`${SITE_URL}/privacy-policy`}
+>
+  <PrivacyContent client:load />
+</Layout>

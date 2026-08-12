@@ -1,0 +1,60 @@
+---
+import type { Item } from "@commercengine/storefront";
+import HomeContent from "../components/views/HomeContent";
+import Layout from "../layouts/Layout.astro";
+import { SITE_NAME, SITE_URL } from "../lib/constants";
+import { safeJsonLd } from "../lib/json-ld";
+import { publicSdk } from "../lib/storefront";
+
+const FRAMEWORK = "Astro";
+
+// One request covers both product rows plus the testimonial's overlapping card.
+let skus: Item[] = [];
+try {
+  const { data } = await publicSdk.catalog.listSkus({ page: 1, limit: 24 });
+  skus = data?.skus ?? [];
+} catch (error) {
+  console.warn("[soja] Home page shipped without products.", error);
+}
+
+const siteUrl = import.meta.env.SITE || SITE_URL;
+const description = `${SITE_NAME} is a production-ready e-commerce starter template built with Commerce Engine and ${FRAMEWORK}. A reference implementation for a quiet-luxury Scandinavian skincare storefront with full catalog, cart, checkout, and search.`;
+
+const websiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: SITE_NAME,
+  url: siteUrl,
+  potentialAction: {
+    "@type": "SearchAction",
+    target: {
+      "@type": "EntryPoint",
+      urlTemplate: `${siteUrl}/search?q={search_term_string}`,
+    },
+    "query-input": "required name=search_term_string",
+  },
+};
+
+const organizationSchema = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: "Commerce Engine",
+  url: "https://www.commercengine.io",
+  logo: `${siteUrl}/icon.png`,
+  description: `Commerce Engine is a headless e-commerce platform. ${SITE_NAME} is an open-source reference storefront built with ${FRAMEWORK}.`,
+};
+---
+
+<Layout
+  title={`${SITE_NAME} — Commerce Engine + ${FRAMEWORK} Starter Template`}
+  description={description}
+>
+  <script is:inline slot="head" type="application/ld+json" set:html={safeJsonLd(websiteSchema)} />
+  <script
+    is:inline
+    slot="head"
+    type="application/ld+json"
+    set:html={safeJsonLd(organizationSchema)}
+  />
+  <HomeContent client:load initialSkus={skus} />
+</Layout>

@@ -58,6 +58,9 @@ export function Reveal({
   return (
     <Tag
       ref={ref}
+      // Hook for a no-JS override: the entrance starts at opacity-0, so a stack
+      // that renders this without hydrating needs a way to force it visible.
+      data-reveal=""
       className={cn(
         "transition-[opacity,transform] duration-[1100ms] ease-soja motion-reduce:transition-none",
         shown ? "translate-y-0 opacity-100" : "translate-y-7 opacity-0",

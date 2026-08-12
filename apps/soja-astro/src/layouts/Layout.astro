@@ -1,0 +1,110 @@
+---
+import { ClientRouter } from "astro:transitions";
+import "@fontsource/averia-serif-libre/300.css";
+import "@fontsource/averia-serif-libre/400.css";
+import "@fontsource/average/400.css";
+import "../styles/globals.css";
+import { PoweredByBadge } from "@ce/soja-ui/components/ui/powered-by-badge";
+import type { Category } from "@commercengine/storefront";
+import Footer from "../components/footer/Footer";
+import Navigation from "../components/header/Navigation";
+import Toasts from "../components/Toasts";
+import { OG_IMAGE, SITE_NAME, SITE_URL } from "../lib/constants";
+import { publicSdk } from "../lib/storefront";
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  canonicalUrl?: string;
+  ogType?: string;
+  noindex?: boolean;
+}
+
+const {
+  title = `${SITE_NAME} — Rituals of natural skincare`,
+  description = `${SITE_NAME} is a quiet-luxury Scandinavian skincare storefront. Hand-crafted bioformulations balanced with ethically-sourced ingredients from our laboratory in Copenhagen.`,
+  image = OG_IMAGE,
+  canonicalUrl,
+  ogType = "website",
+  noindex = false,
+} = Astro.props;
+
+const siteUrl = import.meta.env.SITE || SITE_URL;
+const imageUrl = image.startsWith("http") ? image : `${siteUrl}${image}`;
+const canonical = canonicalUrl || new URL(Astro.url.pathname, siteUrl).href;
+const pathname = Astro.url.pathname;
+
+let categories: Category[] = [];
+try {
+  const { data } = await publicSdk.catalog.listCategories();
+  categories = data?.categories ?? [];
+} catch {
+  categories = [];
+}
+---
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+    <meta property="og:type" content={ogType} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:site_name" content={SITE_NAME} />
+    <meta property="og:image" content={imageUrl} />
+    <meta property="og:image:alt" content={`${SITE_NAME} — rituals of natural skincare`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@commerceengine" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={imageUrl} />
+    <slot name="head" />
+    <noscript>
+      <!-- Page bodies are islands whose entrance animation starts at opacity 0. -->
+      <style>
+        [data-reveal] {
+          opacity: 1 !important;
+          transform: none !important;
+        }
+      </style>
+    </noscript>
+    <ClientRouter />
+  </head>
+  <body>
+    <a
+      href="#main-content"
+      class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-[60] focus:bg-primary focus:px-5 focus:py-3 focus:text-meta focus:text-primary-foreground"
+    >
+      Skip to content
+    </a>
+
+    <div class="flex min-h-svh flex-col bg-background">
+      <Navigation
+        client:load
+        serverCategories={categories}
+        initialPathname={pathname}
+        transition:persist
+      />
+      <div id="main-content" data-page-content class="flex flex-1 flex-col" tabindex="-1">
+        <slot />
+      </div>
+      <Footer client:load transition:persist />
+      <PoweredByBadge client:load transition:persist />
+      <Toasts client:idle transition:persist />
+    </div>
+
+    <script>
+      import { installSojaClientRuntime } from "@/lib/client-runtime";
+
+      installSojaClientRuntime();
+    </script>
+  </body>
+</html>

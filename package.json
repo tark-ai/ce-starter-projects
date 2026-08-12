@@ -29,7 +29,7 @@
     "build:little-things-tanstack": "turbo run build --filter=@ce/little-things-tanstack",
     "build:little-things-astro": "turbo run build --filter=@ce/little-things-astro",
     "build:little-things-svelte": "turbo run build --filter=@ce/little-things-svelte",
-    "build:all": "turbo run build --filter=@ce/linea --filter=@ce/linea-tanstack --filter=@ce/linea-next --filter=@ce/linea-astro --filter=@ce/linea-svelte --filter=@ce/little-things --filter=@ce/little-things-next --filter=@ce/little-things-tanstack --filter=@ce/little-things-astro --filter=@ce/little-things-svelte --filter=@ce/soja --filter=@ce/soja-next --filter=@ce/soja-tanstack",
+    "build:all": "turbo run build --filter=@ce/linea --filter=@ce/linea-tanstack --filter=@ce/linea-next --filter=@ce/linea-astro --filter=@ce/linea-svelte --filter=@ce/little-things --filter=@ce/little-things-next --filter=@ce/little-things-tanstack --filter=@ce/little-things-astro --filter=@ce/little-things-svelte --filter=@ce/soja --filter=@ce/soja-next --filter=@ce/soja-tanstack --filter=@ce/soja-astro",
     "preview:linea": "turbo run preview --filter=@ce/linea",
     "preview:linea-tanstack": "turbo run preview --filter=@ce/linea-tanstack",
     "preview:linea-next": "turbo run preview --filter=@ce/linea-next",
@@ -49,7 +49,9 @@
     "build:soja-next": "turbo run build --filter=@ce/soja-next",
     "preview:soja": "turbo run preview --filter=@ce/soja",
     "dev:soja-tanstack": "turbo run dev --filter=@ce/soja-tanstack",
-    "build:soja-tanstack": "turbo run build --filter=@ce/soja-tanstack"
+    "build:soja-tanstack": "turbo run build --filter=@ce/soja-tanstack",
+    "dev:soja-astro": "turbo run dev --filter=@ce/soja-astro",
+    "build:soja-astro": "turbo run build --filter=@ce/soja-astro"
   },
   "lint-staged": {
     "*.{js,ts,jsx,tsx,svelte,json,css,md}": [

@@ -1,0 +1,12 @@
+---
+import TermsContent from "../components/views/TermsContent";
+import Layout from "../layouts/Layout.astro";
+import { SITE_NAME } from "../lib/constants";
+---
+
+<Layout
+  title={`Terms of Service | ${SITE_NAME}`}
+  description={`The terms that govern your use of the ${SITE_NAME} website and the purchase of our products.`}
+>
+  <TermsContent client:load />
+</Layout>

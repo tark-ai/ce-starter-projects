@@ -1,0 +1,36 @@
+---
+import type { Category, Item, Pagination } from "@commercengine/storefront";
+import CategoryContent from "../components/views/CategoryContent";
+import Layout from "../layouts/Layout.astro";
+import { SITE_NAME } from "../lib/constants";
+import { PLP_COPY } from "../lib/site-content";
+import { publicSdk } from "../lib/storefront";
+
+let skus: Item[] = [];
+let pagination: Pagination | undefined;
+let categories: Category[] = [];
+
+try {
+  const [skuResult, categoryResult] = await Promise.all([
+    publicSdk.catalog.searchProducts({ query: "", page: 1, limit: 12 }),
+    publicSdk.catalog.listCategories(),
+  ]);
+  skus = skuResult.data?.skus ?? [];
+  pagination = skuResult.data?.pagination;
+  categories = categoryResult.data?.categories ?? [];
+} catch (error) {
+  console.warn("[soja] All-products page shipped without a catalog.", error);
+}
+---
+
+<Layout
+  title={`${PLP_COPY.title} | ${SITE_NAME}`}
+  description={`Browse every formulation from ${SITE_NAME} in one place. ${PLP_COPY.subtitle}`}
+>
+  <CategoryContent
+    client:load
+    categories={categories}
+    initialSkus={skus}
+    initialPagination={pagination}
+  />
+</Layout>
