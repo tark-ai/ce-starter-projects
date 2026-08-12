@@ -36,6 +36,9 @@ export function ProductContent({ serverProduct }: ProductContentProps) {
   const clientDetail = useProductDetail(slug || "", { enabled: !serverProduct });
   const product = serverProduct ?? clientDetail.product;
   const isLoading = serverProduct ? false : clientDetail.isLoading;
+  // The server only reaches here for non-404 failures, so a failed retry is an
+  // outage rather than a missing product.
+  const loadFailed = !serverProduct && !clientDetail.product && clientDetail.isError;
 
   const { items: related } = useSimilarProducts(product?.id ?? "");
 
@@ -114,6 +117,24 @@ export function ProductContent({ serverProduct }: ProductContentProps) {
         nextParams.set("variant", selectedVariant.slug);
         changed = true;
       }
+    } else if (variantFromUrl) {
+      // A valid slug with only some options set: complete the selection from it
+      // rather than discarding the variant the link pointed at.
+      const selection = getVariantOptionSelection(variantFromUrl, optionKeys);
+      let filled = false;
+      for (const optionKey of optionKeys) {
+        const queryKey = optionQueryParamKey(optionKey);
+        if (nextParams.has(queryKey)) continue;
+        const value = selection[optionKey];
+        if (!value) continue;
+        nextParams.set(queryKey, value);
+        changed = true;
+        filled = true;
+      }
+      if (!filled && nextParams.has("variant")) {
+        nextParams.delete("variant");
+        changed = true;
+      }
     } else if (nextParams.has("variant")) {
       nextParams.delete("variant");
       changed = true;
@@ -159,6 +180,26 @@ export function ProductContent({ serverProduct }: ProductContentProps) {
           <div className="h-4 w-2/3 animate-pulse bg-accent" />
           <div className="mt-6 h-8 w-24 animate-pulse bg-accent" />
         </div>
+      </main>
+    );
+  }
+
+  if (loadFailed) {
+    return (
+      <main className="mx-auto w-full max-w-[var(--container-soja)] px-3 py-32">
+        <h1 className="font-display text-[2rem] tracking-display">
+          We couldn't load this formulation
+        </h1>
+        <p className="mt-6 max-w-[420px] text-meta leading-relaxed text-muted-foreground">
+          The catalog didn't respond. Please try again in a moment.
+        </p>
+        <button
+          type="button"
+          onClick={() => clientDetail.refetch()}
+          className="mt-10 h-12 bg-primary px-8 text-meta text-primary-foreground transition-colors duration-300 ease-soja hover:bg-primary-hover"
+        >
+          Try again
+        </button>
       </main>
     );
   }

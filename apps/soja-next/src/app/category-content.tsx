@@ -2,6 +2,7 @@
 
 import { CategoryFilterRow, PLPHero, ProductGrid, SortSelect } from "@ce/soja-shared/category";
 import { BrandPillars } from "@ce/soja-shared/content";
+import { categoryTitleFromSlug, matchCategory } from "@ce/soja-shared/lib/category-slug";
 import type { SojaRoute } from "@ce/soja-shared/lib/routing";
 import type { Category, Item, Pagination } from "@commercengine/storefront";
 import { useMemo, useState } from "react";
@@ -38,8 +39,7 @@ export function CategoryContent({
   const clientCategories = useCategories({ enabled: needsClientCategories });
   const categories = serverCategories?.length ? serverCategories : clientCategories.categories;
 
-  const categoryName =
-    serverCategoryName ?? categories.find((entry) => entry.slug === categorySlug)?.name;
+  const categoryName = serverCategoryName ?? matchCategory(categories, categorySlug)?.name;
 
   const categoryPending = Boolean(categorySlug) && !categoryName;
 
@@ -64,7 +64,10 @@ export function CategoryContent({
 
   const filter = useMemo(() => buildFilter({}, categoryName), [categoryName]);
 
-  const usingInitialData = page === 1 && sort === "";
+  // An empty initial set is indistinguishable from a failed server read, so treat
+  // it as missing and let the client query recover instead of stranding the page
+  // on the empty state.
+  const usingInitialData = initialSkus.length > 0 && page === 1 && sort === "";
 
   const searchResult = useSearchProducts({
     page,
@@ -78,12 +81,7 @@ export function CategoryContent({
   const pagination = usingInitialData ? initialPagination : searchResult.pagination;
   const isLoading = usingInitialData ? false : searchResult.isLoading;
 
-  const slugDisplayName = categorySlug
-    ? (() => {
-        const decoded = decodeURIComponent(categorySlug).replace(/-/g, " ");
-        return decoded.charAt(0).toUpperCase() + decoded.slice(1);
-      })()
-    : undefined;
+  const slugDisplayName = categorySlug ? categoryTitleFromSlug(categorySlug) : undefined;
 
   const title = categoryName ?? slugDisplayName ?? PLP_COPY.title;
   const subtitle = categoryDescription || PLP_COPY.subtitle;

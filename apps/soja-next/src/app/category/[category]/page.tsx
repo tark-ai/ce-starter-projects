@@ -1,5 +1,6 @@
 /** biome-ignore-all lint/security/noDangerouslySetInnerHtml: JSON-LD at build time */
 /** biome-ignore-all lint/style/useComponentExportOnlyModules: Next.js page conventions */
+import { categoryTitleFromSlug, matchCategory } from "@ce/soja-shared/lib/category-slug";
 import type { Category, Item, Pagination } from "@commercengine/storefront";
 import type { Metadata } from "next";
 import { buildFilter } from "@/lib/build-filter";
@@ -10,20 +11,6 @@ import { storefront } from "@/lib/storefront";
 import { CategoryContent } from "../../category-content";
 
 export const revalidate = 3600;
-
-function matchCategory(categories: Category[], slug: string): Category | undefined {
-  return categories.find(
-    (entry) =>
-      entry.slug === slug ||
-      entry.name.toLowerCase().replace(/\s+/g, "-") === slug ||
-      entry.id === slug
-  );
-}
-
-function titleCase(slug: string): string {
-  const decoded = decodeURIComponent(slug).replace(/-/g, " ");
-  return decoded.charAt(0).toUpperCase() + decoded.slice(1);
-}
 
 export async function generateStaticParams() {
   try {
@@ -44,7 +31,7 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category } = await params;
 
-  let displayName = titleCase(category);
+  let displayName = categoryTitleFromSlug(category);
   let description: string = PLP_COPY.subtitle;
 
   try {
@@ -114,7 +101,7 @@ export default async function CategoryPage({ params }: { params: Promise<{ categ
     skus = [];
   }
 
-  const displayName = categoryName ?? titleCase(category);
+  const displayName = categoryName ?? categoryTitleFromSlug(category);
   const categoryUrl = `${SITE_URL}/category/${category}`;
 
   const jsonLd = [

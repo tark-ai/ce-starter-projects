@@ -25,19 +25,19 @@ export default async function AllProductsPage() {
   let pagination: Pagination | undefined;
   let categories: Category[] = [];
 
-  try {
-    const sdk = storefront.publicStorefront();
+  // Settled, not all: a categories outage must not discard a successful product read.
+  const sdk = storefront.publicStorefront();
+  const [skuResult, categoryResult] = await Promise.allSettled([
+    sdk.catalog.searchProducts({ query: "", page: 1, limit: 12 }),
+    sdk.catalog.listCategories(),
+  ]);
 
-    const [skuResult, categoryResult] = await Promise.all([
-      sdk.catalog.searchProducts({ query: "", page: 1, limit: 12 }),
-      sdk.catalog.listCategories(),
-    ]);
-
-    skus = skuResult.data?.skus ?? [];
-    pagination = skuResult.data?.pagination;
-    categories = categoryResult.data?.categories ?? [];
-  } catch {
-    skus = [];
+  if (skuResult.status === "fulfilled") {
+    skus = skuResult.value.data?.skus ?? [];
+    pagination = skuResult.value.data?.pagination;
+  }
+  if (categoryResult.status === "fulfilled") {
+    categories = categoryResult.value.data?.categories ?? [];
   }
 
   return (
