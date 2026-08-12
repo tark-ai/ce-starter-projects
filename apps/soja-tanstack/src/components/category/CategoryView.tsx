@@ -3,7 +3,7 @@ import { BrandPillars } from "@ce/soja-shared/content";
 import { categoryTitleFromSlug, matchCategory } from "@ce/soja-shared/lib/category-slug";
 import type { SojaRoute } from "@ce/soja-shared/lib/routing";
 import type { Category, Item, Pagination } from "@commercengine/storefront";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { buildFilter } from "@/lib/build-filter";
 import { useCategories, useSearchProducts } from "@/lib/hooks";
 import { PLP_COPY, SHOP_CATEGORIES } from "@/lib/site-content";
@@ -29,18 +29,16 @@ export function CategoryView({
   initialSkus,
   initialPagination,
 }: CategoryViewProps) {
-  const [page, setPage] = useState(1);
-  const [sort, setSort] = useState("");
   const wishlist = useWishlist();
 
-  // The component is reused across category routes, so page survived the change.
-  const previousSlug = useRef(categorySlug);
-  useEffect(() => {
-    if (previousSlug.current !== categorySlug) {
-      previousSlug.current = categorySlug;
-      setPage(1);
-    }
-  }, [categorySlug]);
+  // The component is reused across category routes, so the listing state is keyed
+  // by slug and reset while deriving it. Resetting in an effect instead would leave
+  // one render pairing the new category with the old page, firing a wasted request.
+  const [listing, setListing] = useState({ slug: categorySlug, page: 1, sort: "" });
+  const { page, sort } = listing.slug === categorySlug ? listing : { page: 1, sort: "" };
+
+  const setPage = (next: number) => setListing({ slug: categorySlug, page: next, sort });
+  const setSort = (next: string) => setListing({ slug: categorySlug, page: 1, sort: next });
 
   const clientCategories = useCategories({ enabled: !loaderCategories?.length });
   const categories = loaderCategories?.length ? loaderCategories : clientCategories.categories;
@@ -100,14 +98,7 @@ export function CategoryView({
         subtitle={categoryDescription || PLP_COPY.subtitle}
       />
       <CategoryFilterRow items={filterItems} LinkComponent={SojaLink} />
-      <SortSelect
-        value={sort}
-        onChange={(next) => {
-          setSort(next);
-          setPage(1);
-        }}
-        count={pagination?.total_records}
-      />
+      <SortSelect value={sort} onChange={setSort} count={pagination?.total_records} />
       <ProductGrid
         skus={skus}
         isLoading={isLoading}

@@ -1,3 +1,4 @@
+import { createSerialQueue } from "@ce/soja-shared/lib/async-queue";
 import type { SojaWishlistPanel } from "@ce/soja-shared/lib/wishlist";
 import { toast } from "@ce/soja-ui/components/ui/sonner";
 import type { Item } from "@commercengine/storefront";
@@ -26,6 +27,8 @@ const WishlistContext = createContext<WishlistContextValue | null>(null);
 
 const WISHLIST_KEY = ["wishlist"];
 
+const enqueue = createSerialQueue();
+
 interface WishlistTarget {
   productId: string;
   variantId?: string | null;
@@ -47,10 +50,13 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   const { data, error, isLoading } = useQuery({
     queryKey: WISHLIST_KEY,
-    queryFn: async () => {
-      await ensureClientSessionBootstrapped();
-      return fetchWishlist();
-    },
+    // Through the queue as well: a mutation's fresh list would otherwise be
+    // overwritten by an initial read that started earlier and landed later.
+    queryFn: () =>
+      enqueue(async () => {
+        await ensureClientSessionBootstrapped();
+        return fetchWishlist();
+      }),
     // The session cookie only exists in the browser.
     enabled: typeof window !== "undefined",
   });
@@ -68,10 +74,11 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   }, [error]);
 
   const addMutation = useMutation({
-    mutationFn: async ({ productId, variantId }: WishlistTarget) => {
-      await ensureClientSessionBootstrapped();
-      return addToWishlist({ data: { productId, variantId } });
-    },
+    mutationFn: ({ productId, variantId }: WishlistTarget) =>
+      enqueue(async () => {
+        await ensureClientSessionBootstrapped();
+        return addToWishlist({ data: { productId, variantId } });
+      }),
     onSuccess: (result) => {
       queryClient.setQueryData(WISHLIST_KEY, result);
       for (const listener of addListeners.current) listener();
@@ -82,10 +89,11 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   });
 
   const removeMutation = useMutation({
-    mutationFn: async ({ productId, variantId }: WishlistTarget) => {
-      await ensureClientSessionBootstrapped();
-      return removeWishlistItem({ data: { productId, variantId } });
-    },
+    mutationFn: ({ productId, variantId }: WishlistTarget) =>
+      enqueue(async () => {
+        await ensureClientSessionBootstrapped();
+        return removeWishlistItem({ data: { productId, variantId } });
+      }),
     onSuccess: (result) => {
       queryClient.setQueryData(WISHLIST_KEY, result);
     },
