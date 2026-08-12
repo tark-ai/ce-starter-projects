@@ -15,7 +15,7 @@ const HEIGHTS: Record<Height, string> = {
 
 const ALIGNMENTS: Record<Align, string> = {
   "top-left": "items-start justify-start text-left",
-  "bottom-left": "items-end justify-start text-left",
+  "bottom-left": "items-start justify-end text-left",
   "bottom-right": "items-end justify-end text-left",
   center: "items-center justify-center text-center",
 };

@@ -130,13 +130,17 @@ const ctaLabel = $derived(
         : "Add to Cart"
 );
 
-async function addToCart() {
+function addToCart() {
   if (!canAddToCart) return;
   adding = true;
   try {
-    await checkout.addToCart(product.id, selectedVariantId, quantity);
+    checkout.addToCart(product.id, selectedVariantId, quantity);
   } finally {
-    adding = false;
+    // The checkout bridge is fire-and-forget, so release on the next tick: long
+    // enough to swallow a double click, without pretending to track completion.
+    setTimeout(() => {
+      adding = false;
+    }, 600);
   }
 }
 </script>

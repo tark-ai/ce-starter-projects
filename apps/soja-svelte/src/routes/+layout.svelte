@@ -13,16 +13,37 @@ import type { LayoutData } from "./$types";
 
 let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
+const BOOTSTRAP_ATTEMPTS = 3;
+
 onMount(() => {
-  initStorefront()
-    .then(() => {
-      wishlist.load();
-      checkout.init();
-    })
-    .catch((error) => {
-      // biome-ignore lint/suspicious/noConsole: surface bootstrap failures
-      console.error("Storefront bootstrap failed:", error);
-    });
+  let cancelled = false;
+
+  // Pages are prerendered, so a failed bootstrap only costs cart and wishlist.
+  // initStorefront clears its cached promise on failure, so retrying recovers
+  // them without making the reader reload.
+  void (async () => {
+    for (let attempt = 0; attempt < BOOTSTRAP_ATTEMPTS; attempt += 1) {
+      try {
+        await initStorefront();
+        if (cancelled) return;
+        wishlist.load();
+        checkout.init();
+        return;
+      } catch (error) {
+        if (cancelled) return;
+        if (attempt === BOOTSTRAP_ATTEMPTS - 1) {
+          // biome-ignore lint/suspicious/noConsole: surface bootstrap failures
+          console.error("Storefront bootstrap failed:", error);
+          return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** attempt));
+      }
+    }
+  })();
+
+  return () => {
+    cancelled = true;
+  };
 });
 </script>
 

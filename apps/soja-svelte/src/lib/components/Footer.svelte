@@ -18,16 +18,38 @@ const SOCIAL_LINKS = [
   { label: "TikTok", href: "https://tiktok.com" },
 ];
 
-let { locale = "Denmark / DKK" }: { locale?: string } = $props();
+interface Props {
+  locale?: string;
+  /** Resolve to confirm the signup; reject to surface the error state. */
+  onsubscribe?: (email: string) => void | Promise<void>;
+}
+
+type SubscribeStatus = "idle" | "submitting" | "done" | "error" | "unavailable";
+
+let { locale = "Denmark / DKK", onsubscribe }: Props = $props();
 
 let email = $state("");
-let done = $state(false);
+let status = $state<SubscribeStatus>("idle");
 
-function subscribe(event: SubmitEvent) {
+async function subscribe(event: SubmitEvent) {
   event.preventDefault();
-  if (!email.trim()) return;
-  email = "";
-  done = true;
+  const trimmed = email.trim();
+  if (!trimmed || status === "submitting") return;
+
+  // No handler means nothing is stored, so don't promise an email that won't arrive.
+  if (!onsubscribe) {
+    status = "unavailable";
+    return;
+  }
+
+  status = "submitting";
+  try {
+    await onsubscribe(trimmed);
+    status = "done";
+    email = "";
+  } catch {
+    status = "error";
+  }
 }
 
 const year = new Date().getFullYear();
@@ -50,8 +72,12 @@ const year = new Date().getFullYear();
 			<div class="flex flex-col gap-4">
 				<p class="max-w-[300px] text-meta">Join our club and get 10% off your first purchase</p>
 
-				{#if done}
+				{#if status === "done"}
 					<p class="text-meta text-white/70">Thank you — check your inbox.</p>
+				{:else if status === "unavailable"}
+					<p class="text-meta text-white/70">
+						Newsletter signup isn't connected on this storefront yet.
+					</p>
 				{:else}
 					<form onsubmit={subscribe} class="flex max-w-[320px]">
 						<input

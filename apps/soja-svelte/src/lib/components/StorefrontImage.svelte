@@ -92,5 +92,5 @@ const srcset = $derived(src ? buildSrcSet(image, variant, src) : undefined);
 </script>
 
 {#if src}
-	<img {src} {srcset} {alt} {loading} decoding="async" class={className} {...rest} />
+	<img {...rest} {src} {srcset} {alt} {loading} decoding="async" class={className} />
 {/if}

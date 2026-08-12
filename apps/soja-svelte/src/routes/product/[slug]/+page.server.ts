@@ -1,4 +1,4 @@
-import type { Item } from "@commercengine/storefront";
+import { error } from "@sveltejs/kit";
 import type { SojaProductDetail } from "$lib/product-meta";
 import { serverStorefront } from "$lib/server/storefront";
 import type { EntryGenerator, PageServerLoad } from "./$types";
@@ -35,22 +35,33 @@ export const entries: EntryGenerator = async () => {
 };
 
 export const load: PageServerLoad = async ({ params }) => {
-  let product: SojaProductDetail | null = null;
-  let similarItems: Item[] = [];
+  const sdk = serverStorefront.publicStorefront();
+  const [detail, similar] = await Promise.allSettled([
+    sdk.catalog.getProductDetail({ product_id: params.slug }),
+    sdk.catalog.listSimilarProducts({ product_id: [params.slug] }),
+  ]);
 
-  try {
-    const sdk = serverStorefront.publicStorefront();
-    const [detail, similar] = await Promise.all([
-      sdk.catalog.getProductDetail({ product_id: params.slug }),
-      sdk.catalog.listSimilarProducts({ product_id: [params.slug] }).catch(() => null),
-    ]);
-
-    product = detail.data?.product ?? null;
-    similarItems = similar?.data?.products ?? [];
-  } catch (error) {
-    // biome-ignore lint/suspicious/noConsole: surface catalog failures during prerender
-    console.error(`Failed to load product "${params.slug}":`, error);
+  if (detail.status === "rejected") {
+    // A transport failure is not a missing product; 503 keeps it retryable.
+    error(503, "The catalog is unavailable right now.");
   }
 
-  return { product, similarItems, slug: params.slug };
+  const { data, error: detailError, response } = detail.value;
+  if (detailError && response.status === 404) {
+    error(404, "Product not found");
+  }
+  if (detailError) {
+    error(503, "The catalog is unavailable right now.");
+  }
+
+  const product: SojaProductDetail | null = data?.product ?? null;
+  if (!product) {
+    error(404, "Product not found");
+  }
+
+  return {
+    product,
+    similarItems: similar.status === "fulfilled" ? (similar.value.data?.products ?? []) : [],
+    slug: params.slug,
+  };
 };

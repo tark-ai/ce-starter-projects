@@ -1,34 +1,46 @@
 import type { Item } from "@commercengine/storefront";
 import { getSdk } from "./storefront";
 
+/**
+ * Every read and write goes through one promise chain. Ordering them removes the
+ * three races that come from running them concurrently: a slow initial GET
+ * overwriting a completed mutation, a toggle deciding add-vs-remove from an
+ * unloaded list, and an older full-list response clobbering a newer one.
+ */
 class WishlistStore {
   items = $state<Item[]>([]);
   count = $derived(this.items.length);
   isLoading = $state(true);
 
   #addListeners = new Set<() => void>();
-  #initialized = false;
-  // Monotonic id stamped when a mutation STARTS.
-  #opSeq = 0;
-  // Seq of the newest mutation whose SUCCESS was applied. Only a success with a
-  // seq >= this may commit, so a later failure can't discard an earlier success.
-  #appliedSeq = 0;
+  #loaded = false;
+  #queue: Promise<unknown> = Promise.resolve();
+
+  /** Serializes an operation onto the queue, isolating callers from each other's failures. */
+  #enqueue<T>(operation: () => Promise<T>): Promise<T> {
+    const result = this.#queue.then(operation, operation);
+    this.#queue = result.catch(() => undefined);
+    return result;
+  }
 
   async load() {
-    if (this.#initialized) return;
-    this.isLoading = true;
-    try {
-      const { data, error } = await getSdk().cart.getWishlist();
-      if (error) throw new Error(error.message);
-      this.items = data?.products ?? [];
-      // Only on success, so a transient failure doesn't block retries forever.
-      this.#initialized = true;
-    } catch (error) {
-      // biome-ignore lint/suspicious/noConsole: surface wishlist API errors
-      console.error("Failed to load favourites:", error);
-    } finally {
-      this.isLoading = false;
-    }
+    if (this.#loaded) return;
+
+    await this.#enqueue(async () => {
+      if (this.#loaded) return;
+      try {
+        const { data, error } = await getSdk().cart.getWishlist();
+        if (error) throw new Error(error.message);
+        this.items = data?.products ?? [];
+        // Only on success, so a transient failure doesn't block retries forever.
+        this.#loaded = true;
+      } catch (error) {
+        // biome-ignore lint/suspicious/noConsole: surface wishlist API errors
+        console.error("Failed to load favourites:", error);
+      } finally {
+        this.isLoading = false;
+      }
+    });
   }
 
   isInWishlist(productId: string, variantId?: string | null): boolean {
@@ -38,7 +50,10 @@ class WishlistStore {
     });
   }
 
+  /** Waits for the initial list so add-vs-remove isn't decided from an empty one. */
   async toggleWishlist(productId: string, variantId?: string | null) {
+    await this.load();
+
     if (this.isInWishlist(productId, variantId)) {
       await this.removeFromWishlist(productId, variantId);
     } else {
@@ -46,39 +61,36 @@ class WishlistStore {
     }
   }
 
-  async addToWishlist(productId: string, variantId?: string | null) {
-    const seq = ++this.#opSeq;
-    try {
-      const { data, error } = await getSdk().cart.addToWishlist({
-        product_id: productId,
-        variant_id: variantId ?? null,
-      });
-      if (error) throw new Error(error.message);
-      if (seq < this.#appliedSeq) return;
-      this.#appliedSeq = seq;
-      this.items = data?.products ?? this.items;
-      for (const listener of this.#addListeners) listener();
-    } catch (error) {
-      // biome-ignore lint/suspicious/noConsole: surface wishlist API errors
-      console.error("Failed to save to favourites:", error);
-    }
+  addToWishlist(productId: string, variantId?: string | null) {
+    return this.#mutate("add", productId, variantId);
   }
 
-  async removeFromWishlist(productId: string, variantId?: string | null) {
-    const seq = ++this.#opSeq;
-    try {
-      const { data, error } = await getSdk().cart.removeFromWishlist({
-        product_id: productId,
-        variant_id: variantId ?? null,
-      });
-      if (error) throw new Error(error.message);
-      if (seq < this.#appliedSeq) return;
-      this.#appliedSeq = seq;
-      this.items = data?.products ?? this.items;
-    } catch (error) {
-      // biome-ignore lint/suspicious/noConsole: surface wishlist API errors
-      console.error("Failed to remove from favourites:", error);
-    }
+  removeFromWishlist(productId: string, variantId?: string | null) {
+    return this.#mutate("remove", productId, variantId);
+  }
+
+  #mutate(action: "add" | "remove", productId: string, variantId?: string | null) {
+    return this.#enqueue(async () => {
+      const body = { product_id: productId, variant_id: variantId ?? null };
+      try {
+        const { data, error } =
+          action === "add"
+            ? await getSdk().cart.addToWishlist(body)
+            : await getSdk().cart.removeFromWishlist(body);
+        if (error) throw new Error(error.message);
+
+        this.items = data?.products ?? this.items;
+        if (action === "add") {
+          for (const listener of this.#addListeners) listener();
+        }
+      } catch (error) {
+        // biome-ignore lint/suspicious/noConsole: surface wishlist API errors
+        console.error(
+          action === "add" ? "Failed to save to favourites:" : "Failed to remove from favourites:",
+          error
+        );
+      }
+    });
   }
 
   onAdd(listener: () => void): () => void {

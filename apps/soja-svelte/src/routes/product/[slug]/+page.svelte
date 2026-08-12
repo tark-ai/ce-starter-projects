@@ -105,8 +105,25 @@ $effect(() => {
       next.set("variant", selectedVariant.slug);
       changed = true;
     }
+  } else if (variantFromUrl) {
+    // A valid slug with only some options set: complete the selection from it
+    // rather than discarding the variant the link pointed at.
+    const selection = getVariantOptionSelection(variantFromUrl, optionKeys);
+    let filled = false;
+    for (const key of optionKeys) {
+      const queryKey = optionQueryParamKey(key);
+      if (next.has(queryKey)) continue;
+      const value = selection[key];
+      if (!value) continue;
+      next.set(queryKey, value);
+      changed = true;
+      filled = true;
+    }
+    if (!filled && next.has("variant")) {
+      next.delete("variant");
+      changed = true;
+    }
   } else if (next.has("variant")) {
-    // The selection matches no variant, so drop the stale slug.
     next.delete("variant");
     changed = true;
   }
@@ -217,51 +234,39 @@ const jsonLd = $derived(
 	{#if productImage}
 		<meta property="og:image" content={productImage} />
 	{/if}
-	{#if !product}
-		<meta name="robots" content="noindex, follow" />
-	{/if}
 	{#each jsonLd as schema, index (index)}
 		{@html `<script type="application/ld+json">${safeJsonLd(schema)}</script>`}
 	{/each}
 </svelte:head>
 
-{#if !product}
-	<main class="mx-auto w-full max-w-[var(--container-soja)] px-3 py-32">
-		<h1 class="font-display text-[2rem] tracking-display">Not found</h1>
-		<p class="mt-6 max-w-[420px] text-meta leading-relaxed text-muted-foreground">
-			This formulation is no longer available.
-		</p>
-	</main>
-{:else}
-	<main>
-		<section
-			class="mx-auto w-full max-w-[var(--container-soja)] px-3 grid gap-12 pt-12 pb-20 tablet:grid-cols-2 tablet:gap-20 tablet:pt-20"
-		>
-			<!-- min-w-0 lets the thumbnail strip scroll rather than widening this cell. -->
-			<div class="min-w-0 tablet:sticky tablet:top-28 tablet:self-start">
-				{#key selectedVariant?.id ?? "base"}
-					<ProductImageGallery images={displayImages} productName={product.name} />
-				{/key}
-			</div>
+<main>
+	<section
+		class="mx-auto w-full max-w-[var(--container-soja)] px-3 grid gap-12 pt-12 pb-20 tablet:grid-cols-2 tablet:gap-20 tablet:pt-20"
+	>
+		<!-- min-w-0 lets the thumbnail strip scroll rather than widening this cell. -->
+		<div class="min-w-0 tablet:sticky tablet:top-28 tablet:self-start">
+			{#key selectedVariant?.id ?? "base"}
+				<ProductImageGallery images={displayImages} productName={product.name} />
+			{/key}
+		</div>
 
-			<div class="flex flex-col gap-14">
-				<Reveal>
-					<ProductInfo
-						{product}
-						selectedVariantId={selectedVariant?.id ?? null}
-						{selectedOptions}
-						{allOptionsSelected}
-						{onoptionchange}
-					/>
-				</Reveal>
-				<Reveal delay={90}>
-					<DetailAccordions {product} />
-				</Reveal>
-			</div>
-		</section>
+		<div class="flex flex-col gap-14">
+			<Reveal>
+				<ProductInfo
+					{product}
+					selectedVariantId={selectedVariant?.id ?? null}
+					{selectedOptions}
+					{allOptionsSelected}
+					{onoptionchange}
+				/>
+			</Reveal>
+			<Reveal delay={90}>
+				<DetailAccordions {product} />
+			</Reveal>
+		</div>
+	</section>
 
-		<HowToUse />
+	<HowToUse />
 
-		<RelatedProducts items={data.similarItems} />
-	</main>
-{/if}
+	<RelatedProducts items={data.similarItems} />
+</main>

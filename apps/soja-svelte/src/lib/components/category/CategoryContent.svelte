@@ -33,9 +33,12 @@ let page = $state(1);
 let sort = $state("");
 let fetched = $state<{ skus: Item[]; pagination?: Pagination } | null>(null);
 let isLoading = $state(false);
+// Only the newest request may commit results or clear the loading flag.
+let requestSeq = 0;
 
-// The loader already rendered page 1 in the default order.
-const usingInitialData = $derived(page === 1 && sort === "");
+// An empty initial set is indistinguishable from a failed loader read, so treat it
+// as missing and let the client request recover.
+const usingInitialData = $derived(initialSkus.length > 0 && page === 1 && sort === "");
 const skus = $derived(usingInitialData ? initialSkus : (fetched?.skus ?? []));
 const pagination = $derived(usingInitialData ? initialPagination : fetched?.pagination);
 
@@ -62,6 +65,7 @@ async function fetchPage() {
     return;
   }
 
+  const seq = ++requestSeq;
   isLoading = true;
   try {
     const filter = buildFilter({}, categoryName);
@@ -73,13 +77,15 @@ async function fetchPage() {
       ...(sort ? { sort: [sort] } : {}),
     });
     if (error) throw new Error(error.message);
+    if (seq !== requestSeq) return;
     fetched = { skus: data?.skus ?? [], pagination: data?.pagination };
   } catch (error) {
+    if (seq !== requestSeq) return;
     // biome-ignore lint/suspicious/noConsole: surface catalog failures
     console.error("Failed to load products:", error);
     fetched = { skus: [] };
   } finally {
-    isLoading = false;
+    if (seq === requestSeq) isLoading = false;
   }
 }
 
