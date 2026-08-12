@@ -349,6 +349,40 @@
         "typescript": "^6.0.2",
       },
     },
+    "apps/soja-tanstack": {
+      "name": "@ce/soja-tanstack",
+      "version": "0.0.0",
+      "dependencies": {
+        "@ce/soja-shared": "workspace:*",
+        "@ce/soja-ui": "workspace:*",
+        "@commercengine/checkout": "^0.3.1",
+        "@commercengine/storefront": "^0.1.6",
+        "@fontsource/average": "^5.3.0",
+        "@fontsource/averia-serif-libre": "^5.3.0",
+        "@tanstack/react-query": "^5.95.2",
+        "@tanstack/react-router": "^1.168.4",
+        "@tanstack/react-router-with-query": "^1.130.17",
+        "@tanstack/react-start": "^1.167.8",
+        "lucide-react": "^1.7.0",
+        "react": "^19.2.4",
+        "react-dom": "^19.2.4",
+        "tslib": "^2.8.1",
+        "tw-animate-css": "^1.4.0",
+      },
+      "devDependencies": {
+        "@cloudflare/vite-plugin": "^1.30.1",
+        "@tailwindcss/vite": "^4.2.2",
+        "@types/node": "^25.5.0",
+        "@types/react": "^19.2.14",
+        "@types/react-dom": "^19.2.3",
+        "@vitejs/plugin-react": "^6.0.1",
+        "nitro": "^3.0.260610-beta",
+        "tailwindcss": "^4.2.2",
+        "typescript": "^6.0.2",
+        "vite": "^8.0.2",
+        "wrangler": "^4.77.0",
+      },
+    },
     "packages/linea-shared": {
       "name": "@ce/linea-shared",
       "version": "0.0.0",
@@ -620,6 +654,8 @@
     "@ce/soja-next": ["@ce/soja-next@workspace:apps/soja-next"],
 
     "@ce/soja-shared": ["@ce/soja-shared@workspace:packages/soja-shared"],
+
+    "@ce/soja-tanstack": ["@ce/soja-tanstack@workspace:apps/soja-tanstack"],
 
     "@ce/soja-ui": ["@ce/soja-ui@workspace:packages/soja-ui"],
 
