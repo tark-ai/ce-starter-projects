@@ -1,3 +1,4 @@
+import { categoryTitleFromSlug, matchCategory } from "@ce/soja-shared/lib/category-slug";
 import { safeJsonLd } from "@ce/soja-ui/lib/json-ld";
 import type { Category, Item, Pagination } from "@commercengine/storefront";
 import { createFileRoute } from "@tanstack/react-router";
@@ -6,21 +7,6 @@ import { buildFilter } from "@/lib/build-filter";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
 import { PLP_COPY } from "@/lib/site-content";
 import { storefront } from "@/lib/storefront";
-
-/** Slugs are matched loosely because a store may not define one for a category. */
-function matchCategory(categories: Category[], slug: string) {
-  return categories.find(
-    (entry) =>
-      entry.slug === slug ||
-      entry.name.toLowerCase().replace(/\s+/g, "-") === slug ||
-      entry.id === slug
-  );
-}
-
-function titleCase(slug: string): string {
-  const decoded = decodeURIComponent(slug).replace(/-/g, " ");
-  return decoded.charAt(0).toUpperCase() + decoded.slice(1);
-}
 
 export const Route = createFileRoute("/category/$category")({
   loader: async ({ params }) => {
@@ -67,7 +53,7 @@ export const Route = createFileRoute("/category/$category")({
     return { categories, skus, pagination, categoryName, categoryDescription };
   },
   head: ({ params, loaderData }) => {
-    const displayName = loaderData?.categoryName ?? titleCase(params.category);
+    const displayName = loaderData?.categoryName ?? categoryTitleFromSlug(params.category);
     const description = loaderData?.categoryDescription || PLP_COPY.subtitle;
     const categoryUrl = `${SITE_URL}/category/${params.category}`;
     const skus = loaderData?.skus ?? [];

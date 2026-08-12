@@ -8,14 +8,11 @@ if (typeof window === "undefined") {
   const USER_AGENT = "soja-tanstack/1.0";
 
   globalThis.fetch = (input: RequestInfo | URL, init?: RequestInit) => {
-    if (input instanceof Request) {
-      if (!input.headers.has("User-Agent")) {
-        input.headers.set("User-Agent", USER_AGENT);
-      }
-      return originalFetch(input, init);
-    }
-
-    const headers = new Headers(init?.headers);
+    // init.headers replaces a Request's own headers, so the effective set has to
+    // be derived from whichever the call actually sends.
+    const headers = new Headers(
+      init?.headers ?? (input instanceof Request ? input.headers : undefined)
+    );
     if (!headers.has("User-Agent")) {
       headers.set("User-Agent", USER_AGENT);
     }

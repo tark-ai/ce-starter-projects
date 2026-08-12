@@ -28,10 +28,18 @@ export const Route = createFileRoute("/product/$slug")({
   loader: async ({ params }): Promise<{ product: SojaProductDetail | null }> => {
     try {
       const sdk = storefront.publicStorefront();
-      const { data } = await sdk.catalog.getProductDetail({ product_id: params.slug });
+      const { data, error, response } = await sdk.catalog.getProductDetail({
+        product_id: params.slug,
+      });
+
+      // Only a 404 is a real absence; anything else is transient and must not be
+      // presented as a permanently missing product.
+      if (error && response.status !== 404) {
+        throw new Error(error.message);
+      }
       return { product: data?.product ?? null };
-    } catch {
-      return { product: null };
+    } catch (cause) {
+      throw new Error("The catalog is unavailable right now.", { cause });
     }
   },
   head: ({ loaderData }) => {
@@ -217,8 +225,25 @@ function ProductDetailPage() {
         next.variant = selectedVariant.slug;
         changed = true;
       }
+    } else if (variantFromUrl) {
+      // A valid slug with only some options set: complete the selection from it
+      // rather than discarding the variant the link pointed at.
+      const selection = getVariantOptionSelection(variantFromUrl, optionKeys);
+      let filled = false;
+      for (const optionKey of optionKeys) {
+        const queryKey = optionQueryParamKey(optionKey);
+        if (next[queryKey] !== undefined) continue;
+        const value = selection[optionKey];
+        if (!value) continue;
+        next[queryKey] = value;
+        changed = true;
+        filled = true;
+      }
+      if (!filled && next.variant !== undefined) {
+        delete next.variant;
+        changed = true;
+      }
     } else if (next.variant !== undefined) {
-      // The selection matches no variant, so drop the stale slug.
       delete next.variant;
       changed = true;
     }

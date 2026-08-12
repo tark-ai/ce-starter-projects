@@ -1,8 +1,9 @@
 import { CategoryFilterRow, PLPHero, ProductGrid, SortSelect } from "@ce/soja-shared/category";
 import { BrandPillars } from "@ce/soja-shared/content";
+import { categoryTitleFromSlug, matchCategory } from "@ce/soja-shared/lib/category-slug";
 import type { SojaRoute } from "@ce/soja-shared/lib/routing";
 import type { Category, Item, Pagination } from "@commercengine/storefront";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { buildFilter } from "@/lib/build-filter";
 import { useCategories, useSearchProducts } from "@/lib/hooks";
 import { PLP_COPY, SHOP_CATEGORIES } from "@/lib/site-content";
@@ -32,11 +33,19 @@ export function CategoryView({
   const [sort, setSort] = useState("");
   const wishlist = useWishlist();
 
+  // The component is reused across category routes, so page survived the change.
+  const previousSlug = useRef(categorySlug);
+  useEffect(() => {
+    if (previousSlug.current !== categorySlug) {
+      previousSlug.current = categorySlug;
+      setPage(1);
+    }
+  }, [categorySlug]);
+
   const clientCategories = useCategories({ enabled: !loaderCategories?.length });
   const categories = loaderCategories?.length ? loaderCategories : clientCategories.categories;
 
-  const categoryName =
-    loaderCategoryName ?? categories.find((entry) => entry.slug === categorySlug)?.name;
+  const categoryName = loaderCategoryName ?? matchCategory(categories, categorySlug)?.name;
 
   const categoryPending = Boolean(categorySlug) && !categoryName;
 
@@ -61,7 +70,9 @@ export function CategoryView({
 
   const filter = useMemo(() => buildFilter({}, categoryName), [categoryName]);
 
-  const usingInitialData = page === 1 && sort === "";
+  // An empty initial set is indistinguishable from a failed loader read, so treat
+  // it as missing and let the client query recover.
+  const usingInitialData = initialSkus.length > 0 && page === 1 && sort === "";
 
   const searchResult = useSearchProducts({
     page,
@@ -75,12 +86,7 @@ export function CategoryView({
   const pagination = usingInitialData ? initialPagination : searchResult.pagination;
   const isLoading = usingInitialData ? false : searchResult.isLoading;
 
-  const slugDisplayName = categorySlug
-    ? (() => {
-        const decoded = decodeURIComponent(categorySlug).replace(/-/g, " ");
-        return decoded.charAt(0).toUpperCase() + decoded.slice(1);
-      })()
-    : undefined;
+  const slugDisplayName = categorySlug ? categoryTitleFromSlug(categorySlug) : undefined;
 
   const handlePageChange = (nextPage: number) => {
     setPage(nextPage);

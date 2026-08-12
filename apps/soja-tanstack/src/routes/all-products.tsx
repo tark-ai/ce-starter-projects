@@ -7,25 +7,24 @@ import { storefront } from "@/lib/storefront";
 
 export const Route = createFileRoute("/all-products")({
   loader: async () => {
-    try {
-      const sdk = storefront.publicStorefront();
-      const [skuResult, categoryResult] = await Promise.all([
-        sdk.catalog.searchProducts({ query: "", page: 1, limit: 12 }),
-        sdk.catalog.listCategories(),
-      ]);
+    // Settled, not all: a categories outage must not discard a successful product read.
+    const sdk = storefront.publicStorefront();
+    const [skuResult, categoryResult] = await Promise.allSettled([
+      sdk.catalog.searchProducts({ query: "", page: 1, limit: 12 }),
+      sdk.catalog.listCategories(),
+    ]);
 
-      return {
-        skus: skuResult.data?.skus ?? [],
-        pagination: skuResult.data?.pagination,
-        categories: categoryResult.data?.categories ?? [],
-      };
-    } catch {
-      return {
-        skus: [] as Item[],
-        pagination: undefined as Pagination | undefined,
-        categories: [] as Category[],
-      };
-    }
+    return {
+      skus: skuResult.status === "fulfilled" ? (skuResult.value.data?.skus ?? []) : ([] as Item[]),
+      pagination:
+        skuResult.status === "fulfilled"
+          ? skuResult.value.data?.pagination
+          : (undefined as Pagination | undefined),
+      categories:
+        categoryResult.status === "fulfilled"
+          ? (categoryResult.value.data?.categories ?? [])
+          : ([] as Category[]),
+    };
   },
   head: () => {
     const url = `${SITE_URL}/all-products`;

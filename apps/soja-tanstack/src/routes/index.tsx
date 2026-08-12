@@ -103,10 +103,10 @@ function IndexPage() {
             imageAlt: "Soja skincare formulations",
           },
           {
-            label: "Shop hair and body",
+            label: "Shop hand and body",
             route: { path: "/category/hand-and-body" },
             image: images.shopHairBody,
-            imageAlt: "Soja hair and body formulations",
+            imageAlt: "Soja hand and body formulations",
           },
         ]}
       />

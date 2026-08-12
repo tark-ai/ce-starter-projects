@@ -66,6 +66,11 @@ function RootComponent() {
         <HeadContent />
       </head>
       <body>
+        {/* The reveal entrance starts at opacity 0, so content would stay
+            invisible without hydration. */}
+        <noscript>
+          <style>{"[data-reveal]{opacity:1!important;transform:none!important}"}</style>
+        </noscript>
         <StorefrontInitializer />
         <TooltipProvider>
           <WishlistProvider>
