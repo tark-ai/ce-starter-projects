@@ -16,8 +16,10 @@ export async function getStaticPaths() {
       props: { categoryData: category, categories: data?.categories ?? [] },
     }));
   } catch (error) {
-    console.warn("[soja] Failed to list categories; category routes may be missing.", error);
-    return [];
+    // Shipping a storefront with no category routes is worse than failing here.
+    throw new Error(
+      `[soja] Category discovery failed, so no category routes would be generated: ${error}`
+    );
   }
 }
 

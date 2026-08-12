@@ -65,6 +65,9 @@ function ProductContentInner({ slug, serverProduct }: ProductContentProps) {
   const clientDetail = useProductDetail(slug, { enabled: !serverProduct });
   const product = serverProduct ?? clientDetail.product;
   const isLoading = serverProduct ? false : clientDetail.isLoading;
+  // A page only exists for a product the build saw, so a missing server product
+  // means the build-time read failed rather than the product being gone.
+  const loadFailed = !serverProduct && !clientDetail.product && clientDetail.isError;
 
   const { items: related } = useSimilarProducts(product?.id ?? "");
 
@@ -143,8 +146,25 @@ function ProductContentInner({ slug, serverProduct }: ProductContentProps) {
         next.set("variant", selectedVariant.slug);
         changed = true;
       }
+    } else if (variantFromUrl) {
+      // A valid slug with only some options set: complete the selection from it
+      // rather than discarding the variant the link pointed at.
+      const selection = getVariantOptionSelection(variantFromUrl, optionKeys);
+      let filled = false;
+      for (const optionKey of optionKeys) {
+        const queryKey = optionQueryParamKey(optionKey);
+        if (next.has(queryKey)) continue;
+        const value = selection[optionKey];
+        if (!value) continue;
+        next.set(queryKey, value);
+        changed = true;
+        filled = true;
+      }
+      if (!filled && next.has("variant")) {
+        next.delete("variant");
+        changed = true;
+      }
     } else if (next.has("variant")) {
-      // The selection matches no variant, so drop the stale slug.
       next.delete("variant");
       changed = true;
     }
@@ -184,6 +204,26 @@ function ProductContentInner({ slug, serverProduct }: ProductContentProps) {
           <div className="h-4 w-full animate-pulse bg-accent" />
           <div className="h-4 w-2/3 animate-pulse bg-accent" />
         </div>
+      </main>
+    );
+  }
+
+  if (loadFailed) {
+    return (
+      <main className="mx-auto w-full max-w-[var(--container-soja)] px-3 py-32">
+        <h1 className="font-display text-[2rem] tracking-display">
+          We couldn't load this formulation
+        </h1>
+        <p className="mt-6 max-w-[420px] text-meta leading-relaxed text-muted-foreground">
+          The catalog didn't respond. Please try again in a moment.
+        </p>
+        <button
+          type="button"
+          onClick={() => clientDetail.refetch()}
+          className="mt-10 h-12 bg-primary px-8 text-meta text-primary-foreground transition-colors duration-300 ease-soja hover:bg-primary-hover"
+        >
+          Try again
+        </button>
       </main>
     );
   }

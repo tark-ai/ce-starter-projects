@@ -10,16 +10,23 @@ let skus: Item[] = [];
 let pagination: Pagination | undefined;
 let categories: Category[] = [];
 
-try {
-  const [skuResult, categoryResult] = await Promise.all([
-    publicSdk.catalog.searchProducts({ query: "", page: 1, limit: 12 }),
-    publicSdk.catalog.listCategories(),
-  ]);
-  skus = skuResult.data?.skus ?? [];
-  pagination = skuResult.data?.pagination;
-  categories = categoryResult.data?.categories ?? [];
-} catch (error) {
-  console.warn("[soja] All-products page shipped without a catalog.", error);
+// Settled, not all: a categories outage must not discard a successful product read.
+const [skuResult, categoryResult] = await Promise.allSettled([
+  publicSdk.catalog.searchProducts({ query: "", page: 1, limit: 12 }),
+  publicSdk.catalog.listCategories(),
+]);
+
+if (skuResult.status === "fulfilled") {
+  skus = skuResult.value.data?.skus ?? [];
+  pagination = skuResult.value.data?.pagination;
+} else {
+  console.warn("[soja] All-products page shipped without products.", skuResult.reason);
+}
+
+if (categoryResult.status === "fulfilled") {
+  categories = categoryResult.value.data?.categories ?? [];
+} else {
+  console.warn("[soja] All-products page shipped without categories.", categoryResult.reason);
 }
 ---
 

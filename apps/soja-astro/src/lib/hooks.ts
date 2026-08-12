@@ -81,7 +81,7 @@ interface UseProductDetailResult {
 export function useProductDetail(
   slug: string,
   options: { enabled?: boolean } = {}
-): UseProductDetailResult {
+): UseProductDetailResult & { isError: boolean; refetch: () => void } {
   const { enabled = true } = options;
 
   const query = useQuery({
@@ -97,6 +97,10 @@ export function useProductDetail(
   return {
     product: query.data?.product,
     isLoading: query.isLoading,
+    isError: query.isError,
+    refetch: () => {
+      void query.refetch();
+    },
   };
 }
 
