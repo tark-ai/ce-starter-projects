@@ -1,5 +1,5 @@
 import { PLPHero, ProductGrid } from "@ce/soja-shared/category";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchProducts } from "@/lib/hooks";
 import { SojaLink } from "@/lib/soja-routing";
 import { useWishlist } from "@/lib/wishlist";
@@ -21,7 +21,6 @@ function SearchContentInner() {
   // then gates the empty-state copy so it can't flash before the URL is read.
   const [query, setQuery] = useState("");
   const [ready, setReady] = useState(false);
-  const [page, setPage] = useState(1);
   const wishlist = useWishlist();
 
   useEffect(() => {
@@ -29,13 +28,11 @@ function SearchContentInner() {
     setReady(true);
   }, []);
 
-  const previousQuery = useRef(query);
-  useEffect(() => {
-    if (previousQuery.current !== query) {
-      previousQuery.current = query;
-      setPage(1);
-    }
-  }, [query]);
+  // Keyed by query and reset while deriving it: resetting in an effect instead
+  // would leave one render pairing the new query with the old page.
+  const [paging, setPaging] = useState({ query, page: 1 });
+  const page = paging.query === query ? paging.page : 1;
+  const setPage = (next: number) => setPaging({ query, page: next });
 
   const { skus, pagination, isLoading } = useSearchProducts({
     query,
