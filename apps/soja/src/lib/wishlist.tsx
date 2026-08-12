@@ -1,3 +1,4 @@
+import { createSerialQueue } from "@ce/soja-shared/lib/async-queue";
 import type { SojaWishlistPanel } from "@ce/soja-shared/lib/wishlist";
 import { toast } from "@ce/soja-ui/components/ui/sonner";
 import type { Item } from "@commercengine/storefront";
@@ -21,17 +22,7 @@ const WishlistContext = createContext<WishlistContextValue | null>(null);
 
 const WISHLIST_KEY = ["wishlist"];
 
-/**
- * Each mutation returns the whole list, so overlapping requests could commit out of
- * order. Chaining them keeps the server as the single writer of that ordering.
- */
-let mutationQueue: Promise<unknown> = Promise.resolve();
-
-function enqueue<T>(operation: () => Promise<T>): Promise<T> {
-  const result = mutationQueue.then(operation, operation);
-  mutationQueue = result.catch(() => undefined);
-  return result;
-}
+const enqueue = createSerialQueue();
 
 interface WishlistTarget {
   productId: string;
@@ -54,11 +45,14 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
 
   const { data, error, isLoading } = useQuery({
     queryKey: WISHLIST_KEY,
-    queryFn: async () => {
-      const { data, error } = await sdk.cart.getWishlist();
-      if (error) throw new Error(error.message);
-      return data ?? { products: [] as Item[] };
-    },
+    // Through the queue as well: a mutation's fresh list would otherwise be
+    // overwritten by an initial read that started earlier and landed later.
+    queryFn: () =>
+      enqueue(async () => {
+        const { data, error } = await sdk.cart.getWishlist();
+        if (error) throw new Error(error.message);
+        return data ?? { products: [] as Item[] };
+      }),
   });
 
   const items = data?.products ?? [];

@@ -1,5 +1,5 @@
 import { PLPHero, ProductGrid } from "@ce/soja-shared/category";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { useSearchProducts } from "@/lib/hooks";
@@ -11,18 +11,14 @@ const PAGE_SIZE = 12;
 const Search = () => {
   const [searchParams] = useSearchParams();
   const query = searchParams.get("q") ?? "";
-  const [page, setPage] = useState(1);
   const wishlist = useWishlist();
 
-  // The route component stays mounted across searches, so a new query would
-  // otherwise open on the previous query's page.
-  const previousQuery = useRef(query);
-  useEffect(() => {
-    if (previousQuery.current !== query) {
-      previousQuery.current = query;
-      setPage(1);
-    }
-  }, [query]);
+  // The route component stays mounted across searches, so the page is keyed by
+  // query and reset while deriving it. Resetting in an effect instead would leave
+  // one render pairing the new query with the old page, firing a wasted request.
+  const [paging, setPaging] = useState({ query, page: 1 });
+  const page = paging.query === query ? paging.page : 1;
+  const setPage = (next: number) => setPaging({ query, page: next });
 
   const { skus, pagination, isLoading } = useSearchProducts({
     query,

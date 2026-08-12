@@ -2,7 +2,7 @@ import { PoweredByBadge } from "@ce/soja-ui/components/ui/powered-by-badge";
 import { Toaster as Sonner } from "@ce/soja-ui/components/ui/sonner";
 import { TooltipProvider } from "@ce/soja-ui/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
@@ -23,50 +23,66 @@ const queryClient = new QueryClient();
 
 type BootstrapState = "pending" | "ready" | "failed";
 
+const BOOTSTRAP_ATTEMPTS = 3;
+
+/** Cart and favourites need the session the bootstrap creates; browsing does not. */
+const SessionNotice = ({ onRetry }: { onRetry: () => void }) => (
+  <div
+    role="status"
+    className="fixed bottom-4 left-4 z-50 flex max-w-[320px] flex-col gap-3 bg-neutral-900 px-4 py-3 text-white shadow-md"
+  >
+    <p className="text-meta leading-relaxed">
+      We couldn't reach the store, so cart and favourites are unavailable.
+    </p>
+    <button
+      type="button"
+      onClick={onRetry}
+      className="h-9 w-fit bg-white px-4 text-meta text-neutral-900 transition-opacity duration-300 ease-soja hover:opacity-80"
+    >
+      Try again
+    </button>
+  </div>
+);
+
 const App = () => {
   const [bootstrap, setBootstrap] = useState<BootstrapState>("pending");
+  const mounted = useRef(true);
 
   const runBootstrap = useCallback(async () => {
-    setBootstrap("pending");
-    try {
-      await initStorefront();
-      setBootstrap("ready");
-    } catch (error) {
-      // biome-ignore lint/suspicious/noConsole: surface SDK init failures for debugging
-      console.error("Failed to initialize storefront:", error);
-      setBootstrap("failed");
+    for (let attempt = 0; attempt < BOOTSTRAP_ATTEMPTS; attempt += 1) {
+      try {
+        await initStorefront();
+        if (!mounted.current) return;
+        setBootstrap("ready");
+        return;
+      } catch (error) {
+        if (!mounted.current) return;
+        // Surface the storefront after the first failure: only cart and favourites
+        // need the session, so blocking the catalog and the legal pages too would
+        // cost more than the degraded state it prevents.
+        // biome-ignore lint/suspicious/noConsole: surface SDK init failures for debugging
+        console.error("Failed to initialize storefront:", error);
+        setBootstrap("failed");
+
+        if (attempt < BOOTSTRAP_ATTEMPTS - 1) {
+          await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** attempt));
+          if (!mounted.current) return;
+        }
+      }
     }
   }, []);
 
   useEffect(() => {
+    mounted.current = true;
     void runBootstrap();
-    return () => destroyCheckout();
+    return () => {
+      mounted.current = false;
+      destroyCheckout();
+    };
   }, [runBootstrap]);
 
   if (bootstrap === "pending") {
     return <div className="min-h-svh bg-background" />;
-  }
-
-  // Rendering the storefront without a checkout session leaves every cart control
-  // inert, so offer a retry rather than a silently unbuyable site.
-  if (bootstrap === "failed") {
-    return (
-      <main className="soja-container flex min-h-svh flex-col justify-center py-32">
-        <h1 className="font-display text-[2rem] tracking-display tablet:text-display">
-          We couldn't reach the store
-        </h1>
-        <p className="mt-6 max-w-[420px] text-meta leading-relaxed text-muted-foreground">
-          The connection to our catalog failed, so browsing and checkout are unavailable.
-        </p>
-        <button
-          type="button"
-          onClick={() => void runBootstrap()}
-          className="mt-10 h-12 w-fit bg-primary px-8 text-meta text-primary-foreground transition-colors duration-300 ease-soja hover:bg-primary-hover"
-        >
-          Try again
-        </button>
-      </main>
-    );
   }
 
   return (
@@ -75,6 +91,7 @@ const App = () => {
         <TooltipProvider>
           <Sonner />
           <PoweredByBadge />
+          {bootstrap === "failed" && <SessionNotice onRetry={() => void runBootstrap()} />}
           <BrowserRouter>
             <ScrollToTop />
             <ErrorBoundary>

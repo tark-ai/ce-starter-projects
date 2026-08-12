@@ -1,6 +1,6 @@
 import { CategoryFilterRow, PLPHero, ProductGrid, SortSelect } from "@ce/soja-shared/category";
 import { BrandPillars } from "@ce/soja-shared/content";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Layout } from "@/components/Layout";
 import { buildFilter } from "@/lib/build-filter";
@@ -15,17 +15,14 @@ const Category = () => {
   const { category: categorySlug } = useParams<{ category: string }>();
   const { categories } = useCategories();
   const wishlist = useWishlist();
-  const [page, setPage] = useState(1);
-  const [sort, setSort] = useState("");
+  // The route component is reused across categories, so the listing state is keyed
+  // by slug and reset while deriving it. Resetting in an effect instead would leave
+  // one render pairing the new category with the old page, firing a wasted request.
+  const [listing, setListing] = useState({ slug: categorySlug, page: 1, sort: "" });
+  const { page, sort } = listing.slug === categorySlug ? listing : { page: 1, sort: "" };
 
-  // The route component is reused across categories, so page survived the change.
-  const previousSlug = useRef(categorySlug);
-  useEffect(() => {
-    if (previousSlug.current !== categorySlug) {
-      previousSlug.current = categorySlug;
-      setPage(1);
-    }
-  }, [categorySlug]);
+  const setPage = (next: number) => setListing({ slug: categorySlug, page: next, sort });
+  const setSort = (next: string) => setListing({ slug: categorySlug, page: 1, sort: next });
 
   const activeCategory = useMemo(
     () => categories.find((entry) => entry.slug === categorySlug),
@@ -66,14 +63,7 @@ const Category = () => {
     <Layout>
       <PLPHero title={title} subtitle={subtitle} />
       <CategoryFilterRow items={filterItems} LinkComponent={SojaLink} />
-      <SortSelect
-        value={sort}
-        onChange={(next) => {
-          setSort(next);
-          setPage(1);
-        }}
-        count={pagination?.total_records}
-      />
+      <SortSelect value={sort} onChange={setSort} count={pagination?.total_records} />
       <ProductGrid
         skus={skus}
         isLoading={isLoading}
