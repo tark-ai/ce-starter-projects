@@ -1,5 +1,5 @@
 <script lang="ts">
-import { TABLET_MEDIA_QUERY } from "@ce/soja-ui/lib/breakpoints";
+import { subscribeToTabletUp } from "@ce/soja-ui/lib/breakpoints";
 import type { Category } from "@commercengine/storefront";
 import { Heart, Menu, Search, X } from "lucide-svelte";
 import { onMount } from "svelte";
@@ -73,17 +73,11 @@ $effect(() => {
   };
 });
 
-// The drawer and its toggle are hidden from `tablet` up, so growing past the
-// breakpoint would otherwise leave the scroll lock on with no way to clear it.
 $effect(() => {
   if (!menuOpen) return;
-  const mediaQuery = window.matchMedia(TABLET_MEDIA_QUERY);
-  const closeIfWide = () => {
-    if (mediaQuery.matches) menuOpen = false;
-  };
-  closeIfWide();
-  mediaQuery.addEventListener("change", closeIfWide);
-  return () => mediaQuery.removeEventListener("change", closeIfWide);
+  return subscribeToTabletUp(() => {
+    menuOpen = false;
+  });
 });
 
 function submitSearch(event: SubmitEvent) {

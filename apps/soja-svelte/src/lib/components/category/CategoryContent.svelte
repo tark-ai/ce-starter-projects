@@ -32,9 +32,15 @@ let {
 let page = $state(1);
 let sort = $state("");
 let fetched = $state<{ skus: Item[]; pagination?: Pagination } | null>(null);
-let isLoading = $state(false);
+// A failed loader read is indistinguishable from an empty catalog, so start in the
+// loading state the recovery request below is about to enter — otherwise the first
+// frame shows the empty-collection message.
+// svelte-ignore state_referenced_locally
+let isLoading = $state(initialSkus.length === 0);
 // Only the newest request may commit results or clear the loading flag.
 let requestSeq = 0;
+// Non-reactive so starting the recovery request can't re-trigger the effect below.
+let requested = false;
 
 // An empty initial set is indistinguishable from a failed loader read, so treat it
 // as missing and let the client request recover.
@@ -93,7 +99,8 @@ async function fetchPage() {
 // unavailable; here the request has to be started explicitly, or a failed loader
 // read would leave the grid permanently empty with no way to recover.
 $effect(() => {
-  if (usingInitialData || fetched !== null || isLoading) return;
+  if (usingInitialData || fetched !== null || requested) return;
+  requested = true;
   void fetchPage();
 });
 

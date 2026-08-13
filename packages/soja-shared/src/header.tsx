@@ -1,4 +1,4 @@
-import { TABLET_MEDIA_QUERY } from "@ce/soja-ui/lib/breakpoints";
+import { subscribeToTabletUp } from "@ce/soja-ui/lib/breakpoints";
 import { cn } from "@ce/soja-ui/lib/utils";
 import { Heart, Menu, Search, X } from "lucide-react";
 import * as React from "react";
@@ -55,17 +55,9 @@ export function Navigation({
   const registerOnAdd = wishlist?.registerOnAdd;
   React.useEffect(() => registerOnAdd?.(() => setFavouritesOpen(true)), [registerOnAdd]);
 
-  // The drawer and its toggle are hidden from `tablet` up, so growing past the
-  // breakpoint would otherwise leave the scroll lock on with no way to clear it.
   React.useEffect(() => {
     if (!menuOpen) return;
-    const query = window.matchMedia(TABLET_MEDIA_QUERY);
-    const closeIfWide = () => {
-      if (query.matches) setMenuOpen(false);
-    };
-    closeIfWide();
-    query.addEventListener("change", closeIfWide);
-    return () => query.removeEventListener("change", closeIfWide);
+    return subscribeToTabletUp(() => setMenuOpen(false));
   }, [menuOpen]);
 
   const locked = menuOpen || favouritesOpen;

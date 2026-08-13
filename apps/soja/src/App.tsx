@@ -47,16 +47,27 @@ const SessionNotice = ({ onRetry }: { onRetry: () => void }) => (
 const App = () => {
   const [bootstrap, setBootstrap] = useState<BootstrapState>("pending");
   const mounted = useRef(true);
+  const generation = useRef(0);
 
   const runBootstrap = useCallback(async () => {
+    // Retrying during the backoff supersedes the loop that is already running:
+    // without that, the older loop's failure can land after the newer one has
+    // succeeded and flip the notice back on over a live session.
+    generation.current += 1;
+    const run = generation.current;
+
     for (let attempt = 0; attempt < BOOTSTRAP_ATTEMPTS; attempt += 1) {
       try {
         await initStorefront();
-        if (!mounted.current) return;
+        if (!mounted.current || generation.current !== run) return;
+        // A read that ran while the session was missing stays errored on its own;
+        // nothing is cached under this key before the provider mounts, so on the
+        // first-attempt path this invalidates nothing.
+        void queryClient.invalidateQueries({ queryKey: ["wishlist"] });
         setBootstrap("ready");
         return;
       } catch (error) {
-        if (!mounted.current) return;
+        if (!mounted.current || generation.current !== run) return;
         // Surface the storefront after the first failure: only cart and favourites
         // need the session, so blocking the catalog and the legal pages too would
         // cost more than the degraded state it prevents.
@@ -66,7 +77,7 @@ const App = () => {
 
         if (attempt < BOOTSTRAP_ATTEMPTS - 1) {
           await new Promise((resolve) => setTimeout(resolve, 500 * 2 ** attempt));
-          if (!mounted.current) return;
+          if (!mounted.current || generation.current !== run) return;
         }
       }
     }

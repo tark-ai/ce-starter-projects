@@ -1,4 +1,5 @@
 <script lang="ts">
+import type { Item } from "@commercengine/storefront";
 import { page as pageState } from "$app/state";
 import { replaceState } from "$app/navigation";
 import DetailAccordions from "$lib/components/product/DetailAccordions.svelte";
@@ -8,7 +9,9 @@ import ProductInfo from "$lib/components/product/ProductInfo.svelte";
 import RelatedProducts from "$lib/components/product/RelatedProducts.svelte";
 import Reveal from "$lib/components/Reveal.svelte";
 import { safeJsonLd } from "$lib/json-ld";
+import type { SojaProductDetail } from "$lib/product-meta";
 import { SITE_NAME, SITE_URL } from "$lib/seo";
+import { getSdk } from "$lib/storefront";
 import {
   findVariantBySelection,
   getDefaultVariant,
@@ -19,8 +22,82 @@ import {
 
 let { data } = $props();
 
-const product = $derived(data.product);
+// The page is prerendered, so a catalog failure during the build bakes an empty
+// payload that no amount of waiting will fill — the client has to ask again.
+// SvelteKit reuses this component across slugs, so recovery state carries the slug
+// it belongs to and every read below checks it against the slug on screen.
+let recovered = $state<{
+  slug: string;
+  product: SojaProductDetail;
+  similarItems: Item[];
+} | null>(null);
+// The attempt covering `slug`, still open while `pending`.
+let attempt = $state<{ slug: string; seq: number; pending: boolean } | null>(null);
+// Only the newest attempt may commit: it holds the ticket this counter minted, so
+// a superseding request — or the slug change that retires the record — locks it out.
+let requestSeq = 0;
+
+const recoveredHere = $derived(recovered?.slug === data.slug ? recovered : null);
+const attemptHere = $derived(attempt?.slug === data.slug ? attempt : null);
+
+// Pending until the browser has actually tried this slug, so the prerendered HTML
+// bakes the loading state rather than the failure copy, and hydration agrees.
+const isRecovering = $derived(attemptHere?.pending ?? true);
+const product = $derived(data.product ?? recoveredHere?.product ?? null);
+const similarItems = $derived(
+  data.product ? data.similarItems : (recoveredHere?.similarItems ?? [])
+);
 const params = $derived(pageState.url.searchParams);
+
+async function recoverProduct(slug: string) {
+  const seq = ++requestSeq;
+  attempt = { slug, seq, pending: true };
+  // Another slug's payload can no longer render, but don't let it outlive the visit.
+  // A refresh of this slug keeps what it has, so there is no skeleton flash.
+  if (recovered?.slug !== slug) recovered = null;
+
+  try {
+    const sdk = getSdk();
+    const [detail, similar] = await Promise.allSettled([
+      sdk.catalog.getProductDetail({ product_id: slug }),
+      sdk.catalog.listSimilarProducts({ product_id: [slug] }),
+    ]);
+    if (attempt?.seq !== seq) return;
+
+    if (detail.status === "rejected") throw detail.reason;
+    const { data: detailData, error } = detail.value;
+    if (error) throw new Error(error.message);
+    const fetched: SojaProductDetail | null = detailData?.product ?? null;
+    if (!fetched) throw new Error(`Catalog has no product for "${slug}"`);
+
+    recovered = {
+      slug,
+      product: fetched,
+      similarItems: similar.status === "fulfilled" ? (similar.value.data?.products ?? []) : [],
+    };
+  } catch (error) {
+    if (attempt?.seq !== seq) return;
+    // biome-ignore lint/suspicious/noConsole: surface catalog failures
+    console.error("Failed to recover product detail:", error);
+  } finally {
+    // A landing whose record is gone leaves no verdict behind: the next visit to
+    // that slug starts clean rather than inheriting this one's outcome.
+    if (attempt?.seq === seq) attempt = { slug, seq, pending: false };
+  }
+}
+
+// Effects never run during prerender, so this is browser-only by construction.
+$effect(() => {
+  const slug = data.slug;
+  // The component survives a parameter change, its bookkeeping must not: retire an
+  // attempt made for the slug we came from, so returning here tries again.
+  if (attempt && attempt.slug !== slug) attempt = null;
+  if (data.product) return;
+  // recoverProduct claims the slug synchronously, so this never double-fires;
+  // a retry the reader asks for goes through the button instead.
+  if (attempt) return;
+  void recoverProduct(slug);
+});
 
 // A store may have no variants configured at all.
 const variants = $derived(product?.variants ?? []);
@@ -152,7 +229,11 @@ function onoptionchange(optionKey: string, optionValue: string) {
 }
 
 const title = $derived(
-  product ? `${product.name} | ${SITE_NAME}` : `Product unavailable | ${SITE_NAME}`
+  product
+    ? `${product.name} | ${SITE_NAME}`
+    : isRecovering
+      ? `Loading | ${SITE_NAME}`
+      : `Product unavailable | ${SITE_NAME}`
 );
 const description = $derived(
   product?.short_description ??
@@ -275,13 +356,53 @@ const jsonLd = $derived(
 
 		<HowToUse />
 
-		<RelatedProducts items={data.similarItems} />
+		<RelatedProducts items={similarItems} />
+	{:else if isRecovering}
+		<section
+			class="mx-auto w-full max-w-[var(--container-soja)] px-3 grid gap-12 py-16 tablet:grid-cols-2 tablet:gap-20"
+		>
+			<div class="aspect-2/3 animate-pulse bg-accent"></div>
+			<div class="flex flex-col gap-6 pt-8">
+				<div class="h-10 w-3/4 animate-pulse bg-accent"></div>
+				<div class="h-4 w-full animate-pulse bg-accent"></div>
+				<div class="h-4 w-2/3 animate-pulse bg-accent"></div>
+				<div class="mt-6 h-8 w-24 animate-pulse bg-accent"></div>
+			</div>
+		</section>
+		<noscript>
+			<!-- Nothing will resolve this skeleton without the client request. -->
+			<section class="mx-auto w-full max-w-[var(--container-soja)] px-3 pb-32">
+				<p class="max-w-[420px] text-meta leading-relaxed text-muted-foreground">
+					This page was built while the catalog was unreachable, and loading it again needs
+					JavaScript. <a href="/all-products" class="underline">Shop the collection</a> instead.
+				</p>
+			</section>
+		</noscript>
 	{:else}
 		<section class="mx-auto w-full max-w-[var(--container-soja)] px-3 py-32">
 			<h1 class="font-display text-[2rem] tracking-display">We couldn't load this formulation</h1>
 			<p class="mt-6 max-w-[420px] text-meta leading-relaxed text-muted-foreground">
-				The catalog didn't respond when this page was built. Please try again in a moment.
+				The catalog didn't respond when this page was built, and asking for it again just now
+				failed too.
 			</p>
+			<div class="mt-10 flex flex-wrap items-center gap-6">
+				<button
+					type="button"
+					onclick={() => {
+						void recoverProduct(data.slug);
+					}}
+					class="h-12 bg-primary px-8 text-meta text-primary-foreground transition-colors duration-300 ease-soja hover:bg-primary-hover"
+				>
+					Try again
+				</button>
+				<a
+					href="/all-products"
+					class="inline-flex items-center gap-2 text-meta transition-opacity duration-300 ease-soja hover:opacity-60"
+				>
+					Shop the collection
+					<span aria-hidden="true" class="h-1.5 w-1.5 bg-current"></span>
+				</a>
+			</div>
 		</section>
 	{/if}
 </main>

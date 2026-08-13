@@ -12,7 +12,7 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { sdk } from "./storefront";
+import { sdk, whenStorefrontReady } from "./storefront";
 
 interface WishlistContextValue extends SojaWishlistPanel {
   isLoading: boolean;
@@ -38,10 +38,32 @@ function errorMessage(error: unknown, fallback: string): string {
   return fallback;
 }
 
+function containsItem(items: Item[], productId: string, variantId?: string | null): boolean {
+  return items.some((item) => {
+    if (item.product_id !== productId) return false;
+    return variantId ? item.variant_id === variantId : true;
+  });
+}
+
+/** Carries the direction out of the queue: onError cannot tell which branch ran. */
+class WishlistToggleError extends Error {
+  constructor(
+    cause: unknown,
+    readonly adding: boolean
+  ) {
+    // Empty fallback so onError still picks the direction-specific message.
+    super(errorMessage(cause, ""));
+  }
+}
+
 export function WishlistProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient();
   const addListeners = useRef(new Set<() => void>());
   const reportedQueryError = useRef(false);
+  // The last list the server confirmed, written inside the queue so the next queued
+  // operation sees it. Reading react-query's cache here would race: setQueryData runs
+  // in onSuccess, which is not ordered against the queue handing off to the next op.
+  const confirmed = useRef<Item[] | null>(null);
 
   const { data, error, isLoading } = useQuery({
     queryKey: WISHLIST_KEY,
@@ -49,8 +71,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     // overwritten by an initial read that started earlier and landed later.
     queryFn: () =>
       enqueue(async () => {
+        await whenStorefrontReady();
         const { data, error } = await sdk.cart.getWishlist();
         if (error) throw new Error(error.message);
+        confirmed.current = data?.products ?? [];
         return data ?? { products: [] as Item[] };
       }),
   });
@@ -67,58 +91,98 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     toast.error(errorMessage(error, "We couldn't load your favourites."));
   }, [error]);
 
-  const addMutation = useMutation({
+  // Deciding add-vs-remove outside the queue reads a snapshot the pending operation
+  // has not updated yet, so two rapid clicks pick the same branch twice.
+  const toggleMutation = useMutation({
     mutationFn: ({ productId, variantId }: WishlistTarget) =>
       enqueue(async () => {
-        const { data, error } = await sdk.cart.addToWishlist({
-          product_id: productId,
-          variant_id: variantId ?? null,
-        });
-        if (error) throw new Error(error.message);
-        return data;
+        await whenStorefrontReady();
+
+        if (!confirmed.current) {
+          // Guessing the direction against an unknown list would send an add for an
+          // item that is already saved, leaving no way to remove it.
+          const { data, error } = await sdk.cart.getWishlist();
+          if (error) throw new Error(error.message);
+          confirmed.current = data?.products ?? [];
+        }
+
+        const adding = !containsItem(confirmed.current, productId, variantId);
+        const body = { product_id: productId, variant_id: variantId ?? null };
+        // Wrapping the call itself, not just a returned error, so a rejection still
+        // carries the direction out to onError.
+        try {
+          const { data, error } = adding
+            ? await sdk.cart.addToWishlist(body)
+            : await sdk.cart.removeFromWishlist(body);
+          if (error) throw error;
+
+          confirmed.current = data?.products ?? [];
+          return { data, adding };
+        } catch (cause) {
+          // A lost response may still have committed, so the snapshot can no longer
+          // pick the next direction; force a fresh read.
+          confirmed.current = null;
+          throw new WishlistToggleError(cause, adding);
+        }
       }),
-    onSuccess: (data) => {
+    onSuccess: ({ data, adding }) => {
       queryClient.setQueryData(WISHLIST_KEY, data);
+      if (!adding) return;
       for (const listener of addListeners.current) listener();
     },
     onError: (mutationError) => {
-      toast.error(errorMessage(mutationError, "We couldn't save this to your favourites."));
+      // The write may have landed anyway, so resync rather than leave the list diverged.
+      queryClient.invalidateQueries({ queryKey: WISHLIST_KEY });
+      const removing = mutationError instanceof WishlistToggleError && !mutationError.adding;
+      toast.error(
+        errorMessage(
+          mutationError,
+          removing
+            ? "We couldn't remove this from your favourites."
+            : "We couldn't save this to your favourites."
+        )
+      );
     },
   });
 
   const removeMutation = useMutation({
     mutationFn: ({ productId, variantId }: WishlistTarget) =>
       enqueue(async () => {
-        const { data, error } = await sdk.cart.removeFromWishlist({
-          product_id: productId,
-          variant_id: variantId ?? null,
-        });
-        if (error) throw new Error(error.message);
-        return data;
+        await whenStorefrontReady();
+        try {
+          const { data, error } = await sdk.cart.removeFromWishlist({
+            product_id: productId,
+            variant_id: variantId ?? null,
+          });
+          if (error) throw new Error(error.message);
+          confirmed.current = data?.products ?? [];
+          return data;
+        } catch (cause) {
+          // Same as the toggle: a lost response may still have removed the item.
+          confirmed.current = null;
+          throw cause;
+        }
       }),
     onSuccess: (data) => {
       queryClient.setQueryData(WISHLIST_KEY, data);
     },
     onError: (mutationError) => {
+      queryClient.invalidateQueries({ queryKey: WISHLIST_KEY });
       toast.error(errorMessage(mutationError, "We couldn't remove this from your favourites."));
     },
   });
 
+  // Display only: the rendered snapshot, never the toggle decision.
   const isInWishlist = useCallback(
-    (productId: string, variantId?: string | null) =>
-      items.some((item) => {
-        if (item.product_id !== productId) return false;
-        return variantId ? item.variant_id === variantId : true;
-      }),
+    (productId: string, variantId?: string | null) => containsItem(items, productId, variantId),
     [items]
   );
 
   const onToggleWishlist = useCallback(
     (productId: string, variantId?: string | null) => {
-      const mutation = isInWishlist(productId, variantId) ? removeMutation : addMutation;
-      mutation.mutate({ productId, variantId });
+      toggleMutation.mutate({ productId, variantId });
     },
-    [isInWishlist, addMutation, removeMutation]
+    [toggleMutation]
   );
 
   const removeFromWishlist = useCallback(

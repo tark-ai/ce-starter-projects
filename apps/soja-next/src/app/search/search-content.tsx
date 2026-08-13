@@ -14,9 +14,12 @@ export function SearchContent() {
   const query = searchParams.get("q") ?? "";
   const wishlist = useWishlist();
 
-  // Keyed by query and reset while deriving it: resetting in an effect instead
-  // would leave one render pairing the new query with the old page.
+  // Keyed by query and reset while rendering: an effect would leave one render pairing
+  // the new query with the old page, firing a request for a page that may not exist.
+  // Storing the reset instead of only deriving it is what stops a later return to an
+  // earlier query from restoring the page it was left on.
   const [paging, setPaging] = useState({ query, page: 1 });
+  if (paging.query !== query) setPaging({ query, page: 1 });
   const page = paging.query === query ? paging.page : 1;
   const setPage = (next: number) => setPaging({ query, page: next });
 

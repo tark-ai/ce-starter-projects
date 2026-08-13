@@ -15,10 +15,13 @@ const Category = () => {
   const { category: categorySlug } = useParams<{ category: string }>();
   const { categories } = useCategories();
   const wishlist = useWishlist();
-  // The route component is reused across categories, so the listing state is keyed
-  // by slug and reset while deriving it. Resetting in an effect instead would leave
-  // one render pairing the new category with the old page, firing a wasted request.
+  // The route component is reused across categories, so the listing state is keyed by
+  // slug and reset while rendering: an effect would leave one render pairing the new
+  // category with the old page, firing a request for a page that may not exist. Storing
+  // the reset instead of only deriving it is what stops a later return to an earlier
+  // category from restoring the page and sort it was left on.
   const [listing, setListing] = useState({ slug: categorySlug, page: 1, sort: "" });
+  if (listing.slug !== categorySlug) setListing({ slug: categorySlug, page: 1, sort: "" });
   const { page, sort } = listing.slug === categorySlug ? listing : { page: 1, sort: "" };
 
   const setPage = (next: number) => setListing({ slug: categorySlug, page: next, sort });
