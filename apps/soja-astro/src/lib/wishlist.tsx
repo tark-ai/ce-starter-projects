@@ -123,11 +123,13 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         const sdk = getSdk();
         if (generation !== sessionGeneration) confirmed = null;
 
-        if (!confirmed) {
+        while (!confirmed) {
           // Guessing the direction against an unknown list would send an add for an
           // item that is already saved, leaving no way to remove it.
+          const readGeneration = sessionGeneration;
           try {
             const { data, error } = await sdk.cart.getWishlist();
+            if (readGeneration !== sessionGeneration) continue;
             if (error) throw new Error(error.message);
             confirmed = data?.products ?? [];
           } catch (cause) {
