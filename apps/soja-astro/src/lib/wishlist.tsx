@@ -103,8 +103,10 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   useEffect(
     () =>
       onSessionChange(() => {
-        confirmed = null;
-        queryClient.removeQueries({ queryKey: WISHLIST_KEY });
+        void enqueue(async () => {
+          confirmed = null;
+        });
+        void queryClient.resetQueries({ queryKey: WISHLIST_KEY, exact: true });
       }),
     [queryClient]
   );

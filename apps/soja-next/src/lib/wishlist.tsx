@@ -60,9 +60,8 @@ function containsItem(items: Item[], productId: string, variantId?: string | nul
 class WishlistToggleError extends Error {
   constructor(
     cause: unknown,
-    readonly adding: boolean
+    readonly adding: boolean | null
   ) {
-    // Empty fallback so onError still picks the direction-specific message.
     super(errorMessage(cause, ""));
   }
 }
@@ -125,8 +124,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
             if (error) throw new Error(error.message);
             confirmed.current = data?.products ?? [];
           } catch (cause) {
-            const intended = !containsItem(items, productId, variantId);
-            throw new WishlistToggleError(cause, intended);
+            throw new WishlistToggleError(cause, null);
           }
         }
 
@@ -157,15 +155,14 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     onError: (mutationError) => {
       // The write may have landed anyway, so resync rather than leave the list diverged.
       queryClient.invalidateQueries({ queryKey: WISHLIST_KEY });
-      const removing = mutationError instanceof WishlistToggleError && !mutationError.adding;
-      toast.error(
-        errorMessage(
-          mutationError,
-          removing
-            ? "We couldn't remove this from your favourites."
-            : "We couldn't save this to your favourites."
-        )
-      );
+      const direction = mutationError instanceof WishlistToggleError ? mutationError.adding : null;
+      let fallback = "We couldn't update your favourites.";
+      if (direction !== null) {
+        fallback = direction
+          ? "We couldn't save this to your favourites."
+          : "We couldn't remove this from your favourites.";
+      }
+      toast.error(errorMessage(mutationError, fallback));
     },
   });
 

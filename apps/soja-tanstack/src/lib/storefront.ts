@@ -1,3 +1,4 @@
+import { createSessionChangeNotifier } from "@ce/soja-shared/lib/session-change";
 import { Environment } from "@commercengine/storefront";
 import { createTanStackStartStorefront } from "@commercengine/storefront/tanstack-start";
 
@@ -23,16 +24,8 @@ if (typeof window === "undefined") {
 
 const useStaging = import.meta.env.VITE_CE_ENV === "staging" || !import.meta.env.VITE_CE_ENV;
 
-const sessionListeners = new Set<() => void>();
-let seededUserId = false;
-let lastUserId: string | null = null;
-
-export function onSessionChange(listener: () => void): () => void {
-  sessionListeners.add(listener);
-  return () => {
-    sessionListeners.delete(listener);
-  };
-}
+const sessionChange = createSessionChangeNotifier();
+export const onSessionChange = sessionChange.subscribe;
 
 export const storefrontConfig = {
   storeId: import.meta.env.VITE_STORE_ID,
@@ -45,18 +38,12 @@ export const storefrontConfig = {
         getCheckout().updateTokens(accessToken, refreshToken);
       });
 
-      void (async () => {
-        const next = await storefront.clientStorefront().getUserId();
-        if (!seededUserId) {
-          seededUserId = true;
-          lastUserId = next;
-          return;
-        }
-        if (lastUserId === next) return;
-        lastUserId = next;
-        for (const listener of sessionListeners) listener();
-      })();
+      sessionChange.update(accessToken);
     }
+  },
+  onTokensCleared: () => {
+    if (typeof window === "undefined") return;
+    sessionChange.update(null);
   },
 };
 

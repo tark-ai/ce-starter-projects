@@ -6,8 +6,32 @@ import { PUBLIC_API_KEY, PUBLIC_CE_ENV, PUBLIC_STORE_ID } from "$env/static/publ
 const useStaging = PUBLIC_CE_ENV === "staging" || !PUBLIC_CE_ENV;
 
 const sessionListeners = new Set<() => void>();
-let seededUserId = false;
-let lastUserId: string | null = null;
+let sessionIdentity: string | null | undefined;
+
+function identityFromToken(accessToken: string | null): string | null {
+  if (!accessToken) return null;
+  try {
+    const payload = accessToken.split(".")[1];
+    if (!payload) return accessToken;
+    let base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+    base64 += "=".repeat((4 - (base64.length % 4)) % 4);
+    const claims = JSON.parse(atob(base64)) as { ulid?: unknown };
+    return typeof claims.ulid === "string" ? claims.ulid : accessToken;
+  } catch {
+    return accessToken;
+  }
+}
+
+function updateSession(accessToken: string | null) {
+  const next = identityFromToken(accessToken);
+  if (sessionIdentity === next) return;
+  sessionIdentity = next;
+  for (const listener of sessionListeners) {
+    try {
+      listener();
+    } catch {}
+  }
+}
 
 export function onSessionChange(listener: () => void): () => void {
   sessionListeners.add(listener);
@@ -33,17 +57,11 @@ export const storefront = createSvelteKitStorefront({
         console.error("Failed to update checkout tokens:", error);
       });
 
-    void (async () => {
-      const next = await getSdk().getUserId();
-      if (!seededUserId) {
-        seededUserId = true;
-        lastUserId = next;
-        return;
-      }
-      if (lastUserId === next) return;
-      lastUserId = next;
-      for (const listener of sessionListeners) listener();
-    })();
+    updateSession(accessToken);
+  },
+  onTokensCleared: () => {
+    if (!browser) return;
+    updateSession(null);
   },
 });
 

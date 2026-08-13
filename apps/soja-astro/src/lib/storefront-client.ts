@@ -1,19 +1,12 @@
+import { createSessionChangeNotifier } from "@ce/soja-shared/lib/session-change";
 import { getCheckout, initCheckout } from "@commercengine/checkout";
 import { Environment } from "@commercengine/storefront";
 import { createAstroStorefront } from "@commercengine/storefront/astro";
 
 const useStaging = import.meta.env.PUBLIC_CE_ENV === "staging" || !import.meta.env.PUBLIC_CE_ENV;
 
-const sessionListeners = new Set<() => void>();
-let seededUserId = false;
-let lastUserId: string | null = null;
-
-export function onSessionChange(listener: () => void): () => void {
-  sessionListeners.add(listener);
-  return () => {
-    sessionListeners.delete(listener);
-  };
-}
+const sessionChange = createSessionChangeNotifier();
+export const onSessionChange = sessionChange.subscribe;
 
 const storefront = createAstroStorefront({
   storeId: import.meta.env.PUBLIC_STORE_ID ?? "",
@@ -22,19 +15,10 @@ const storefront = createAstroStorefront({
   tokenStorageOptions: { prefix: "soja_" },
   onTokensUpdated: (accessToken, refreshToken) => {
     getCheckout().updateTokens(accessToken, refreshToken);
-
-    void (async () => {
-      if (typeof window === "undefined") return;
-      const next = await getSdk().getUserId();
-      if (!seededUserId) {
-        seededUserId = true;
-        lastUserId = next;
-        return;
-      }
-      if (lastUserId === next) return;
-      lastUserId = next;
-      for (const listener of sessionListeners) listener();
-    })();
+    if (typeof window !== "undefined") sessionChange.update(accessToken);
+  },
+  onTokensCleared: () => {
+    if (typeof window !== "undefined") sessionChange.update(null);
   },
 });
 

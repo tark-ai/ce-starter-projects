@@ -1,9 +1,11 @@
+import { createSessionChangeNotifier } from "@ce/soja-shared/lib/session-change";
 import { getCheckout, initCheckout } from "@commercengine/checkout";
 import { destroyCheckout as destroyCheckoutSingleton } from "@commercengine/checkout/react";
 import { BrowserTokenStorage, createStorefront, Environment } from "@commercengine/storefront";
 
 const tokenStorage = new BrowserTokenStorage("soja_");
-const sessionListeners = new Set<() => void>();
+const sessionChange = createSessionChangeNotifier();
+void tokenStorage.getAccessToken().then(sessionChange.update, () => undefined);
 
 const useStaging = import.meta.env.VITE_CE_ENV === "staging" || !import.meta.env.VITE_CE_ENV;
 
@@ -15,19 +17,15 @@ const storefront = createStorefront({
     tokenStorage,
     onTokensUpdated: (accessToken, refreshToken) => {
       getCheckout().updateTokens(accessToken, refreshToken);
-      for (const listener of sessionListeners) listener();
+      sessionChange.update(accessToken);
     },
+    onTokensCleared: () => sessionChange.update(null),
   },
 });
 
 export const sdk = storefront.session();
 
-export function onSessionChange(listener: () => void): () => void {
-  sessionListeners.add(listener);
-  return () => {
-    sessionListeners.delete(listener);
-  };
-}
+export const onSessionChange = sessionChange.subscribe;
 
 let initPromise: Promise<void> | null = null;
 // Prevent superseded attempts from initializing checkout or clearing the current memo.
