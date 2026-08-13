@@ -1,0 +1,123 @@
+---
+import type { SojaProductDetail } from "@ce/soja-shared/lib/product-meta";
+import ProductContent from "../../components/views/ProductContent";
+import Layout from "../../layouts/Layout.astro";
+import { SITE_NAME, SITE_URL } from "../../lib/constants";
+import { safeJsonLd } from "../../lib/json-ld";
+import { publicSdk } from "../../lib/storefront";
+
+export async function getStaticPaths() {
+  const paths: Array<{ params: { slug: string } }> = [];
+
+  try {
+    // Paginate the whole catalog: a single fixed page would 404 for any product
+    // only reachable through client-side pagination or search.
+    let page = 1;
+    // Safety valve against an unexpected pagination loop.
+    for (let guard = 0; guard < 200; guard++) {
+      const { data, error } = await publicSdk.catalog.listProducts({ page, limit: 100 });
+      if (error) {
+        console.warn("[soja] listProducts failed; product routes may be missing.", error);
+        break;
+      }
+
+      for (const product of data?.products ?? []) {
+        paths.push({ params: { slug: product.slug || product.id } });
+      }
+
+      const nextPage = data?.pagination?.next_page;
+      if (!nextPage || nextPage === page) break;
+      page = nextPage;
+    }
+  } catch (error) {
+    console.warn("[soja] listProducts threw; product routes may be missing.", error);
+  }
+
+  return paths;
+}
+
+const { slug } = Astro.params;
+
+let product: SojaProductDetail | undefined;
+try {
+  const { data } = await publicSdk.catalog.getProductDetail({ product_id: slug! });
+  product = data?.product;
+} catch (error) {
+  console.warn(`[soja] Failed to load product detail for "${slug}".`, error);
+}
+
+const siteUrl = import.meta.env.SITE || SITE_URL;
+const productUrl = `${siteUrl}/product/${slug}`;
+const productName = product?.name ?? "Product";
+const description =
+  product?.short_description ||
+  `${productName} from ${SITE_NAME} — hand-crafted bioformulations from Copenhagen.`;
+const productImage = product?.images?.[0]?.url_zoom || product?.images?.[0]?.url_standard || "";
+
+const jsonLd = product
+  ? [
+      {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.name,
+        description,
+        ...(productImage ? { image: productImage } : {}),
+        sku: product.sku ?? product.slug,
+        url: productUrl,
+        brand: { "@type": "Brand", name: SITE_NAME },
+        offers: {
+          "@type": "Offer",
+          url: productUrl,
+          priceCurrency: product.pricing.currency,
+          price: product.pricing.selling_price,
+          availability:
+            product.stock_available || product.backorder
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+        },
+        ...(product.reviews_count > 0
+          ? {
+              aggregateRating: {
+                "@type": "AggregateRating",
+                ratingValue: (product.reviews_rating_sum / product.reviews_count).toFixed(1),
+                reviewCount: product.reviews_count,
+              },
+            }
+          : {}),
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
+          ...(product.categories?.[0]
+            ? [
+                {
+                  "@type": "ListItem",
+                  position: 2,
+                  name: product.categories[0].name,
+                  item: `${siteUrl}/category/${product.categories[0].slug}`,
+                },
+              ]
+            : []),
+          { "@type": "ListItem", position: product.categories?.[0] ? 3 : 2, name: product.name },
+        ],
+      },
+    ]
+  : [];
+---
+
+<Layout
+  title={`${productName} | ${SITE_NAME}`}
+  description={description}
+  image={productImage || undefined}
+  ogType="product"
+  noindex={!product}
+>
+  {
+    jsonLd.map((schema) => (
+      <script is:inline slot="head" type="application/ld+json" set:html={safeJsonLd(schema)} />
+    ))
+  }
+  <ProductContent client:load slug={slug!} serverProduct={product} />
+</Layout>

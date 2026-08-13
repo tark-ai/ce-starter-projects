@@ -1,0 +1,26 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { SITE_NAME } from "../lib/constants";
+---
+
+<Layout
+  title={`Page not found | ${SITE_NAME}`}
+  description="The page you were looking for could not be found."
+  noindex={true}
+>
+  <main class="soja-container py-32 tablet:py-48">
+    <h1 class="font-display text-[2rem] tracking-display tablet:text-display">
+      This page has gone quiet
+    </h1>
+    <p class="mt-6 max-w-[420px] text-meta leading-relaxed text-muted-foreground">
+      The page you were looking for isn't here. Return to the collection.
+    </p>
+    <a
+      href="/all-products"
+      class="mt-10 inline-flex items-center gap-2 text-meta transition-opacity duration-300 ease-soja hover:opacity-60"
+    >
+      Shop the collection
+      <span aria-hidden="true" class="h-1.5 w-1.5 bg-current"></span>
+    </a>
+  </main>
+</Layout>

@@ -1,0 +1,12 @@
+---
+import FaqContent from "../components/views/FaqContent";
+import Layout from "../layouts/Layout.astro";
+import { SITE_NAME } from "../lib/constants";
+---
+
+<Layout
+  title={`FAQs | ${SITE_NAME}`}
+  description={`Frequently asked questions about ${SITE_NAME} — shipping, shelf life, sensitivities and use.`}
+>
+  <FaqContent client:load />
+</Layout>

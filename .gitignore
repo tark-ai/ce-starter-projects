@@ -40,3 +40,6 @@ build
 *.njsproj
 *.sln
 *.sw?
+
+# Astro writes a lastUpdateCheck timestamp here; it churns per machine.
+apps/*/.astro/settings.json

@@ -1,0 +1,14 @@
+---
+import AboutContent from "../components/views/AboutContent";
+import Layout from "../layouts/Layout.astro";
+import { SITE_NAME, SITE_URL } from "../lib/constants";
+import { ABOUT_COPY } from "../lib/site-content";
+---
+
+<Layout
+  title={`Behind the brand | ${SITE_NAME}`}
+  description={ABOUT_COPY.subtitle}
+  canonicalUrl={`${SITE_URL}/about`}
+>
+  <AboutContent client:load />
+</Layout>

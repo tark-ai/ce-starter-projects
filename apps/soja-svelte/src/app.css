@@ -1,0 +1,9 @@
+@import "@fontsource/averia-serif-libre/300.css";
+@import "@fontsource/averia-serif-libre/400.css";
+@import "@fontsource/average/400.css";
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@ce/soja-ui/theme.css";
+
+@source "../../../packages/soja-ui/src";
+@source "./";

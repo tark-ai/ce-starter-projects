@@ -1,0 +1,255 @@
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --font-sans: "Average", ui-serif, Georgia, "Times New Roman", serif;
+  --font-display: "Averia Serif Libre", ui-serif, Georgia, "Times New Roman", serif;
+
+  --text-meta: 0.875rem; /* 14px */
+  --text-body: 1rem; /* 16px */
+  --text-title: 1.75rem; /* 28px */
+  --text-display: 3rem; /* 48px */
+
+  --text-meta--line-height: 120%;
+  --text-body--line-height: 120%;
+  --text-title--line-height: 110%;
+  --text-display--line-height: 110%;
+
+  --tracking-display: -0.05em;
+
+  --container-soja: 1440px;
+  /* Must stay in rem: Tailwind orders breakpoints by value and cannot compare px
+     against its rem defaults. Mirrored by TABLET_BREAKPOINT in lib/breakpoints.ts. */
+  --breakpoint-tablet: 50.625rem;
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-primary-hover: hsl(var(--primary-hover));
+
+  --color-secondary: hsl(var(--secondary));
+  --color-secondary-foreground: hsl(var(--secondary-foreground));
+
+  --color-destructive: hsl(var(--destructive));
+  --color-destructive-foreground: hsl(var(--destructive-foreground));
+
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-popover: hsl(var(--popover));
+  --color-popover-foreground: hsl(var(--popover-foreground));
+
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+
+  --radius-lg: var(--radius);
+  --radius-md: var(--radius);
+  --radius-sm: var(--radius);
+
+  --animate-accordion-down: accordion-down 0.3s var(--ease-soja);
+  --animate-accordion-up: accordion-up 0.3s var(--ease-soja);
+  --animate-fade-in: fade-in 0.6s var(--ease-soja) both;
+  --animate-rise: rise 1s var(--ease-soja) both;
+  --animate-rise-slow: rise 1.4s var(--ease-soja) both;
+  --animate-veil: veil 1.6s var(--ease-soja) both;
+  --animate-drift: drift 24s ease-in-out infinite alternate;
+
+  --ease-soja: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(1.75rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes veil {
+  from {
+    clip-path: inset(100% 0 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+@keyframes drift {
+  from {
+    transform: scale(1.06) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.14) translate3d(-1.5%, -1.5%, 0);
+  }
+}
+
+:root {
+  --background: 40 27% 96%; /* #f8f7f3 */
+  --foreground: 0 0% 20%; /* #333333 */
+
+  --primary: 0 0% 20%;
+  --primary-foreground: 0 0% 100%;
+  --primary-hover: 0 0% 12%;
+
+  --secondary: 40 27% 96%;
+  --secondary-foreground: 0 0% 20%;
+
+  --muted: 40 27% 96%;
+  --muted-foreground: 0 0% 67%; /* #ababab */
+
+  --accent: 40 20% 92%;
+  --accent-foreground: 0 0% 20%;
+
+  --border: 0 0% 86%; /* #dadada, hairlines only */
+  --input: 0 0% 86%;
+  --ring: 0 0% 20%;
+
+  --card: 40 27% 96%;
+  --card-foreground: 0 0% 20%;
+
+  --popover: 40 27% 96%;
+  --popover-foreground: 0 0% 20%;
+
+  --destructive: 353 67% 55%;
+  --destructive-foreground: 0 0% 100%;
+
+  --radius: 0rem;
+}
+
+.dark {
+  --background: 0 0% 11%;
+  --foreground: 40 27% 96%;
+
+  --primary: 40 27% 96%;
+  --primary-foreground: 0 0% 11%;
+  --primary-hover: 40 20% 88%;
+
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 40 27% 96%;
+
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 60%;
+
+  --accent: 0 0% 18%;
+  --accent-foreground: 40 27% 96%;
+
+  --border: 0 0% 22%;
+  --input: 0 0% 22%;
+  --ring: 40 27% 96%;
+
+  --card: 0 0% 11%;
+  --card-foreground: 40 27% 96%;
+
+  --popover: 0 0% 11%;
+  --popover-foreground: 40 27% 96%;
+
+  --destructive: 353 67% 55%;
+  --destructive-foreground: 0 0% 100%;
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html,
+  body {
+    overflow-x: clip;
+    max-width: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-weight: 400;
+    font-feature-settings: "ss01", "ss02", "ss03", "ss04";
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 300;
+    letter-spacing: var(--tracking-display);
+    line-height: 110%;
+  }
+
+  ::selection {
+    background: hsl(var(--foreground));
+    color: hsl(var(--background));
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      /* biome-ignore-start lint/complexity/noImportantStyles: must override per-element animation utilities */
+      animation-duration: 0.01ms !important;
+      animation-delay: 0ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+      /* biome-ignore-end lint/complexity/noImportantStyles: must override per-element animation utilities */
+    }
+  }
+}
+
+@utility no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility soja-container {
+  width: 100%;
+  max-width: var(--container-soja);
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+@media (width >= 810px) {
+  .soja-container {
+    padding-inline: 3.75rem;
+  }
+}
