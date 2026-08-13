@@ -6,7 +6,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
-import { destroyCheckout, initStorefront } from "./lib/storefront";
+import { destroyCheckout, initStorefront, withTimeout } from "./lib/storefront";
 import { WishlistProvider } from "./lib/wishlist";
 import Index from "./pages/Index";
 
@@ -24,6 +24,7 @@ const queryClient = new QueryClient();
 type BootstrapState = "pending" | "ready" | "failed";
 
 const BOOTSTRAP_ATTEMPTS = 3;
+const BOOTSTRAP_TIMEOUT_MS = 10_000;
 
 /** Cart and favourites need the session the bootstrap creates; browsing does not. */
 const SessionNotice = ({ onRetry }: { onRetry: () => void }) => (
@@ -49,7 +50,7 @@ const App = () => {
   const mounted = useRef(true);
   const generation = useRef(0);
 
-  const runBootstrap = useCallback(async () => {
+  const runBootstrap = useCallback(async (force = false) => {
     // Retrying during the backoff supersedes the loop that is already running:
     // without that, the older loop's failure can land after the newer one has
     // succeeded and flip the notice back on over a live session.
@@ -58,7 +59,10 @@ const App = () => {
 
     for (let attempt = 0; attempt < BOOTSTRAP_ATTEMPTS; attempt += 1) {
       try {
-        await initStorefront();
+        await withTimeout(
+          initStorefront({ force: (force && attempt === 0) || attempt > 0 }),
+          BOOTSTRAP_TIMEOUT_MS
+        );
         if (!mounted.current || generation.current !== run) return;
         // A read that ran while the session was missing stays errored on its own;
         // nothing is cached under this key before the provider mounts, so on the
@@ -102,7 +106,7 @@ const App = () => {
         <TooltipProvider>
           <Sonner />
           <PoweredByBadge />
-          {bootstrap === "failed" && <SessionNotice onRetry={() => void runBootstrap()} />}
+          {bootstrap === "failed" && <SessionNotice onRetry={() => void runBootstrap(true)} />}
           <BrowserRouter>
             <ScrollToTop />
             <ErrorBoundary>

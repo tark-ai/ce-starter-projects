@@ -71,6 +71,7 @@ async function fetchPage() {
     return;
   }
 
+  requested = true;
   const seq = ++requestSeq;
   isLoading = true;
   try {
@@ -100,7 +101,6 @@ async function fetchPage() {
 // read would leave the grid permanently empty with no way to recover.
 $effect(() => {
   if (usingInitialData || fetched !== null || requested) return;
-  requested = true;
   void fetchPage();
 });
 

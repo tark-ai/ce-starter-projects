@@ -12,7 +12,7 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { getSdk, whenStorefrontReady } from "./storefront-client";
+import { getSdk, onSessionChange, whenStorefrontReady } from "./storefront-client";
 
 interface WishlistContextValue extends SojaWishlistPanel {
   isLoading: boolean;
@@ -100,6 +100,15 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     toast.error(errorMessage(error, "We couldn't load your favourites."));
   }, [error]);
 
+  useEffect(
+    () =>
+      onSessionChange(() => {
+        confirmed = null;
+        queryClient.removeQueries({ queryKey: WISHLIST_KEY });
+      }),
+    [queryClient]
+  );
+
   // Deciding add-vs-remove outside the queue reads a snapshot the pending operation
   // has not updated yet, so two rapid clicks pick the same branch twice.
   const toggleMutation = useMutation({
@@ -111,9 +120,14 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         if (!confirmed) {
           // Guessing the direction against an unknown list would send an add for an
           // item that is already saved, leaving no way to remove it.
-          const { data, error } = await sdk.cart.getWishlist();
-          if (error) throw new Error(error.message);
-          confirmed = data?.products ?? [];
+          try {
+            const { data, error } = await sdk.cart.getWishlist();
+            if (error) throw new Error(error.message);
+            confirmed = data?.products ?? [];
+          } catch (cause) {
+            const intended = !containsItem(items, productId, variantId);
+            throw new WishlistToggleError(cause, intended);
+          }
         }
 
         const adding = !containsItem(confirmed, productId, variantId);

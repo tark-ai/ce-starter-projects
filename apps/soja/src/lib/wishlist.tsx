@@ -12,7 +12,7 @@ import {
   useMemo,
   useRef,
 } from "react";
-import { sdk, whenStorefrontReady } from "./storefront";
+import { onSessionChange, sdk, whenStorefrontReady } from "./storefront";
 
 interface WishlistContextValue extends SojaWishlistPanel {
   isLoading: boolean;
@@ -71,11 +71,16 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     // overwritten by an initial read that started earlier and landed later.
     queryFn: () =>
       enqueue(async () => {
-        await whenStorefrontReady();
-        const { data, error } = await sdk.cart.getWishlist();
-        if (error) throw new Error(error.message);
-        confirmed.current = data?.products ?? [];
-        return data ?? { products: [] as Item[] };
+        try {
+          await whenStorefrontReady();
+          const { data, error } = await sdk.cart.getWishlist();
+          if (error) throw new Error(error.message);
+          confirmed.current = data?.products ?? [];
+          return data ?? { products: [] as Item[] };
+        } catch (cause) {
+          confirmed.current = null;
+          throw cause;
+        }
       }),
   });
 
@@ -91,6 +96,15 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
     toast.error(errorMessage(error, "We couldn't load your favourites."));
   }, [error]);
 
+  useEffect(
+    () =>
+      onSessionChange(() => {
+        confirmed.current = null;
+        void queryClient.resetQueries({ queryKey: WISHLIST_KEY, exact: true });
+      }),
+    [queryClient]
+  );
+
   // Deciding add-vs-remove outside the queue reads a snapshot the pending operation
   // has not updated yet, so two rapid clicks pick the same branch twice.
   const toggleMutation = useMutation({
@@ -101,9 +115,14 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
         if (!confirmed.current) {
           // Guessing the direction against an unknown list would send an add for an
           // item that is already saved, leaving no way to remove it.
-          const { data, error } = await sdk.cart.getWishlist();
-          if (error) throw new Error(error.message);
-          confirmed.current = data?.products ?? [];
+          try {
+            const { data, error } = await sdk.cart.getWishlist();
+            if (error) throw new Error(error.message);
+            confirmed.current = data?.products ?? [];
+          } catch (cause) {
+            const intended = !containsItem(items, productId, variantId);
+            throw new WishlistToggleError(cause, intended);
+          }
         }
 
         const adding = !containsItem(confirmed.current, productId, variantId);

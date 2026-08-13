@@ -1,5 +1,5 @@
 import type { Item } from "@commercengine/storefront";
-import { getSdk } from "./storefront";
+import { getSdk, onSessionChange } from "./storefront";
 
 /**
  * Every read and write goes through one promise chain, so each operation sees the
@@ -15,12 +15,21 @@ class WishlistStore {
   #addListeners = new Set<() => void>();
   #loaded = false;
   #queue: Promise<unknown> = Promise.resolve();
+  #generation = 0;
 
   /** Serializes an operation onto the queue, isolating callers from each other's failures. */
   #enqueue<T>(operation: () => Promise<T>): Promise<T> {
     const result = this.#queue.then(operation, operation);
     this.#queue = result.catch(() => undefined);
     return result;
+  }
+
+  reset() {
+    this.#generation += 1;
+    this.items = [];
+    this.#loaded = false;
+    this.isLoading = true;
+    void this.load();
   }
 
   /** Resolves to whether the list is known; a failed read leaves it unknown. */
@@ -31,10 +40,12 @@ class WishlistStore {
 
   async #read(): Promise<boolean> {
     if (this.#loaded) return true;
+    const generation = this.#generation;
 
     try {
       const { data, error } = await getSdk().cart.getWishlist();
       if (error) throw new Error(error.message);
+      if (generation !== this.#generation) return false;
       this.items = data?.products ?? [];
       // Only on success, so a transient failure doesn't block retries forever.
       this.#loaded = true;
@@ -42,7 +53,7 @@ class WishlistStore {
       // biome-ignore lint/suspicious/noConsole: surface wishlist API errors
       console.error("Failed to load favourites:", error);
     } finally {
-      this.isLoading = false;
+      if (generation === this.#generation) this.isLoading = false;
     }
 
     return this.#loaded;
@@ -56,16 +67,19 @@ class WishlistStore {
   }
 
   toggleWishlist(productId: string, variantId?: string | null) {
+    const generation = this.#generation;
     return this.#enqueue(async () => {
       // Guessing the direction against an unknown list would send an add for an
       // item that is already saved, leaving no way to remove it.
       if (!(await this.#read())) {
+        if (generation !== this.#generation) return;
         // biome-ignore lint/suspicious/noConsole: surface wishlist API errors
         console.error("Cannot update favourites: the list could not be loaded.");
         return;
       }
 
       await this.#mutate(
+        generation,
         this.isInWishlist(productId, variantId) ? "remove" : "add",
         productId,
         variantId
@@ -74,14 +88,22 @@ class WishlistStore {
   }
 
   addToWishlist(productId: string, variantId?: string | null) {
-    return this.#enqueue(() => this.#mutate("add", productId, variantId));
+    const generation = this.#generation;
+    return this.#enqueue(() => this.#mutate(generation, "add", productId, variantId));
   }
 
   removeFromWishlist(productId: string, variantId?: string | null) {
-    return this.#enqueue(() => this.#mutate("remove", productId, variantId));
+    const generation = this.#generation;
+    return this.#enqueue(() => this.#mutate(generation, "remove", productId, variantId));
   }
 
-  async #mutate(action: "add" | "remove", productId: string, variantId?: string | null) {
+  async #mutate(
+    generation: number,
+    action: "add" | "remove",
+    productId: string,
+    variantId?: string | null
+  ) {
+    if (generation !== this.#generation) return;
     const body = { product_id: productId, variant_id: variantId ?? null };
 
     try {
@@ -90,6 +112,7 @@ class WishlistStore {
           ? await getSdk().cart.addToWishlist(body)
           : await getSdk().cart.removeFromWishlist(body);
       if (error) throw new Error(error.message);
+      if (generation !== this.#generation) return;
 
       this.items = data?.products ?? this.items;
       if (action === "add") {
@@ -111,3 +134,5 @@ class WishlistStore {
 }
 
 export const wishlist = new WishlistStore();
+
+onSessionChange(() => wishlist.reset());

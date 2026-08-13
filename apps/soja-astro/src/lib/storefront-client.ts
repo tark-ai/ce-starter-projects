@@ -4,6 +4,17 @@ import { createAstroStorefront } from "@commercengine/storefront/astro";
 
 const useStaging = import.meta.env.PUBLIC_CE_ENV === "staging" || !import.meta.env.PUBLIC_CE_ENV;
 
+const sessionListeners = new Set<() => void>();
+let seededUserId = false;
+let lastUserId: string | null = null;
+
+export function onSessionChange(listener: () => void): () => void {
+  sessionListeners.add(listener);
+  return () => {
+    sessionListeners.delete(listener);
+  };
+}
+
 const storefront = createAstroStorefront({
   storeId: import.meta.env.PUBLIC_STORE_ID ?? "",
   apiKey: import.meta.env.PUBLIC_API_KEY ?? "",
@@ -11,6 +22,19 @@ const storefront = createAstroStorefront({
   tokenStorageOptions: { prefix: "soja_" },
   onTokensUpdated: (accessToken, refreshToken) => {
     getCheckout().updateTokens(accessToken, refreshToken);
+
+    void (async () => {
+      if (typeof window === "undefined") return;
+      const next = await getSdk().getUserId();
+      if (!seededUserId) {
+        seededUserId = true;
+        lastUserId = next;
+        return;
+      }
+      if (lastUserId === next) return;
+      lastUserId = next;
+      for (const listener of sessionListeners) listener();
+    })();
   },
 });
 

@@ -3,6 +3,7 @@ import { destroyCheckout as destroyCheckoutSingleton } from "@commercengine/chec
 import { BrowserTokenStorage, createStorefront, Environment } from "@commercengine/storefront";
 
 const tokenStorage = new BrowserTokenStorage("soja_");
+const sessionListeners = new Set<() => void>();
 
 const useStaging = import.meta.env.VITE_CE_ENV === "staging" || !import.meta.env.VITE_CE_ENV;
 
@@ -14,21 +15,37 @@ const storefront = createStorefront({
     tokenStorage,
     onTokensUpdated: (accessToken, refreshToken) => {
       getCheckout().updateTokens(accessToken, refreshToken);
+      for (const listener of sessionListeners) listener();
     },
   },
 });
 
 export const sdk = storefront.session();
 
-let initPromise: Promise<void> | null = null;
-// Bumped by teardown so an attempt started before it can neither resurrect the
-// checkout singleton nor clear a memo it no longer owns.
-let initGeneration = 0;
+export function onSessionChange(listener: () => void): () => void {
+  sessionListeners.add(listener);
+  return () => {
+    sessionListeners.delete(listener);
+  };
+}
 
-export function initStorefront() {
-  if (initPromise) return initPromise;
+let initPromise: Promise<void> | null = null;
+// Prevent superseded attempts from initializing checkout or clearing the current memo.
+let initGeneration = 0;
+let initInFlight = false;
+
+interface InitStorefrontOptions {
+  force?: boolean;
+}
+
+export function initStorefront({ force = false }: InitStorefrontOptions = {}) {
+  const supersede = force && initInFlight;
+  if (initPromise && !supersede) return initPromise;
+
+  if (supersede) initGeneration += 1;
 
   const generation = initGeneration;
+  initInFlight = true;
 
   initPromise = (async () => {
     const accessToken = await sdk.ensureAccessToken();
@@ -46,17 +63,30 @@ export function initStorefront() {
         void sdk.setTokens(accessToken, refreshToken);
       },
     });
-  })().catch((error) => {
-    // Cleared so a retry starts a fresh attempt instead of replaying the failure;
-    // overlapping callers meanwhile share the one in-flight init. Only while this
-    // attempt still owns the memo: a teardown, or the attempt that replaced it,
-    // must not have its own memo dropped by this older failure.
-    if (generation === initGeneration) initPromise = null;
-    throw error;
-  });
+  })().then(
+    () => {
+      if (generation === initGeneration) initInFlight = false;
+    },
+    (error) => {
+      if (generation === initGeneration) {
+        initInFlight = false;
+        initPromise = null;
+      }
+      throw error;
+    }
+  );
 
   return initPromise;
 }
+
+export function withTimeout(promise: Promise<void>, ms: number): Promise<void> {
+  return new Promise<void>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error("Storefront bootstrap timed out")), ms);
+    void promise.then(resolve, reject).finally(() => clearTimeout(timer));
+  });
+}
+
+const READINESS_TIMEOUT_MS = 10_000;
 
 /**
  * Readiness gate for session-bound calls. `sdk` is callable before
@@ -66,7 +96,7 @@ export function initStorefront() {
  */
 export async function whenStorefrontReady(): Promise<void> {
   try {
-    await initStorefront();
+    await withTimeout(initStorefront(), READINESS_TIMEOUT_MS);
   } catch {
     // Fall through to the on-demand session path.
   }
@@ -76,5 +106,6 @@ export function destroyCheckout() {
   // The memo describes the checkout being torn down, so it has to go with it.
   initGeneration += 1;
   initPromise = null;
+  initInFlight = false;
   destroyCheckoutSingleton();
 }

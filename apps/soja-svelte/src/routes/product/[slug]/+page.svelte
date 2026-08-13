@@ -58,23 +58,24 @@ async function recoverProduct(slug: string) {
 
   try {
     const sdk = getSdk();
-    const [detail, similar] = await Promise.allSettled([
-      sdk.catalog.getProductDetail({ product_id: slug }),
-      sdk.catalog.listSimilarProducts({ product_id: [slug] }),
-    ]);
+    const similar = sdk.catalog
+      .listSimilarProducts({ product_id: [slug] })
+      .then((response) => response.data?.products ?? [])
+      .catch(() => []);
+
+    const { data: detailData, error } = await sdk.catalog.getProductDetail({ product_id: slug });
     if (attempt?.seq !== seq) return;
 
-    if (detail.status === "rejected") throw detail.reason;
-    const { data: detailData, error } = detail.value;
     if (error) throw new Error(error.message);
     const fetched: SojaProductDetail | null = detailData?.product ?? null;
     if (!fetched) throw new Error(`Catalog has no product for "${slug}"`);
 
-    recovered = {
-      slug,
-      product: fetched,
-      similarItems: similar.status === "fulfilled" ? (similar.value.data?.products ?? []) : [],
-    };
+    recovered = { slug, product: fetched, similarItems: [] };
+
+    void similar.then((items) => {
+      if (attempt?.seq !== seq || items.length === 0) return;
+      recovered = { slug, product: fetched, similarItems: items };
+    });
   } catch (error) {
     if (attempt?.seq !== seq) return;
     // biome-ignore lint/suspicious/noConsole: surface catalog failures

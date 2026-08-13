@@ -23,6 +23,17 @@ if (typeof window === "undefined") {
 
 const useStaging = import.meta.env.VITE_CE_ENV === "staging" || !import.meta.env.VITE_CE_ENV;
 
+const sessionListeners = new Set<() => void>();
+let seededUserId = false;
+let lastUserId: string | null = null;
+
+export function onSessionChange(listener: () => void): () => void {
+  sessionListeners.add(listener);
+  return () => {
+    sessionListeners.delete(listener);
+  };
+}
+
 export const storefrontConfig = {
   storeId: import.meta.env.VITE_STORE_ID,
   apiKey: import.meta.env.VITE_API_KEY,
@@ -33,6 +44,18 @@ export const storefrontConfig = {
       void import("@commercengine/checkout").then(({ getCheckout }) => {
         getCheckout().updateTokens(accessToken, refreshToken);
       });
+
+      void (async () => {
+        const next = await storefront.clientStorefront().getUserId();
+        if (!seededUserId) {
+          seededUserId = true;
+          lastUserId = next;
+          return;
+        }
+        if (lastUserId === next) return;
+        lastUserId = next;
+        for (const listener of sessionListeners) listener();
+      })();
     }
   },
 };

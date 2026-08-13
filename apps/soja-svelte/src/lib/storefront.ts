@@ -5,6 +5,17 @@ import { PUBLIC_API_KEY, PUBLIC_CE_ENV, PUBLIC_STORE_ID } from "$env/static/publ
 
 const useStaging = PUBLIC_CE_ENV === "staging" || !PUBLIC_CE_ENV;
 
+const sessionListeners = new Set<() => void>();
+let seededUserId = false;
+let lastUserId: string | null = null;
+
+export function onSessionChange(listener: () => void): () => void {
+  sessionListeners.add(listener);
+  return () => {
+    sessionListeners.delete(listener);
+  };
+}
+
 export const storefront = createSvelteKitStorefront({
   storeId: PUBLIC_STORE_ID ?? "",
   apiKey: PUBLIC_API_KEY ?? "",
@@ -21,6 +32,18 @@ export const storefront = createSvelteKitStorefront({
         // biome-ignore lint/suspicious/noConsole: surface checkout import failures
         console.error("Failed to update checkout tokens:", error);
       });
+
+    void (async () => {
+      const next = await getSdk().getUserId();
+      if (!seededUserId) {
+        seededUserId = true;
+        lastUserId = next;
+        return;
+      }
+      if (lastUserId === next) return;
+      lastUserId = next;
+      for (const listener of sessionListeners) listener();
+    })();
   },
 });
 
