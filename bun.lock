@@ -381,6 +381,7 @@
       "name": "@ce/soja-svelte",
       "version": "0.0.1",
       "dependencies": {
+        "@ce/soja-shared": "workspace:*",
         "@ce/soja-ui": "workspace:*",
         "@commercengine/checkout": "^0.3.1",
         "@commercengine/storefront": "^0.1.6",

@@ -23,6 +23,7 @@ const WishlistContext = createContext<WishlistContextValue | null>(null);
 const WISHLIST_KEY = ["wishlist"];
 
 const enqueue = createSerialQueue();
+let sessionGeneration = 0;
 
 /**
  * Module-scoped: each island mounts its own provider, so a provider-local set would
@@ -103,6 +104,7 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   useEffect(
     () =>
       onSessionChange(() => {
+        sessionGeneration += 1;
         void enqueue(async () => {
           confirmed = null;
         });
@@ -114,10 +116,12 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
   // Deciding add-vs-remove outside the queue reads a snapshot the pending operation
   // has not updated yet, so two rapid clicks pick the same branch twice.
   const toggleMutation = useMutation({
-    mutationFn: ({ productId, variantId }: WishlistTarget) =>
-      enqueue(async () => {
+    mutationFn: ({ productId, variantId }: WishlistTarget) => {
+      const generation = sessionGeneration;
+      return enqueue(async () => {
         await whenStorefrontReady();
         const sdk = getSdk();
+        if (generation !== sessionGeneration) confirmed = null;
 
         if (!confirmed) {
           // Guessing the direction against an unknown list would send an add for an
@@ -150,7 +154,8 @@ export function WishlistProvider({ children }: { children: ReactNode }) {
           confirmed = null;
           throw new WishlistToggleError(cause, adding);
         }
-      }),
+      });
+    },
     onSuccess: ({ data, adding }) => {
       queryClient.setQueryData(WISHLIST_KEY, data);
       if (!adding) return;
