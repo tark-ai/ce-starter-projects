@@ -1,4 +1,4 @@
-export const SITE_URL = "https://soja-tanstack.demo.commercengine.io";
+export const SITE_URL = "https://soja-tanstack.demo.commercengine.com";
 export const SITE_NAME = "Soja";
 
 /** Absolute because scrapers resolve og:image against the origin, not the route. */

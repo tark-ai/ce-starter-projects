@@ -7,7 +7,7 @@ import { defineCommerceSeoConfig } from "@commercengine/seo/config";
 export const commerceSeo = defineCommerceSeoConfig({
   site: {
     name: "Soja",
-    url: "https://soja-svelte.demo.commercengine.io",
+    url: "https://soja-svelte.demo.commercengine.com",
     brandName: "Soja",
     description: "Plant-forward essentials for everyday living.",
     locale: "en_US",

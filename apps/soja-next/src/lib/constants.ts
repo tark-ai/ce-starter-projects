@@ -1,4 +1,4 @@
-export const SITE_URL = "https://soja-next.demo.commercengine.io";
+export const SITE_URL = "https://soja-next.demo.commercengine.com";
 export const SITE_NAME = "Soja";
 
 const OG_ALT = `${SITE_NAME} — rituals of natural skincare`;

@@ -1,7 +1,7 @@
 import type { FaqItem } from "@ce/soja-shared/faq";
 
 export const SITE_NAME = "Soja";
-export const SITE_URL = "https://soja.demo.commercengine.io";
+export const SITE_URL = "https://soja.demo.commercengine.com";
 
 export const HOME_COPY = {
   hero: {

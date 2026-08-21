@@ -1,4 +1,4 @@
-export const SITE_URL = "https://soja-svelte.demo.commercengine.io";
+export const SITE_URL = "https://soja-svelte.demo.commercengine.com";
 export const SITE_NAME = "Soja";
 export const FRAMEWORK = "SvelteKit";
 export const TWITTER_SITE = "@commerceengine";

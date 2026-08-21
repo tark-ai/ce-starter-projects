@@ -4,7 +4,7 @@ import { defineCommerceSeoConfig } from "@commercengine/seo/config";
 export const commerceSeo = defineCommerceSeoConfig({
   site: {
     name: "Little Things",
-    url: "https://little-things-tanstack.demo.commercengine.io",
+    url: "https://little-things-tanstack.demo.commercengine.com",
     brandName: "Little Things",
     description: "Small-batch goods, made to last.",
     locale: "en_US",

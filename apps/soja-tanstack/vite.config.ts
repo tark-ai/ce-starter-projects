@@ -1,17 +1,9 @@
 import { fileURLToPath } from "node:url";
-import { cloudflare } from "@cloudflare/vite-plugin";
 import tailwindcss from "@tailwindcss/vite";
 import { tanstackStart } from "@tanstack/react-start/plugin/vite";
 import react from "@vitejs/plugin-react";
 import { nitro } from "nitro/vite";
 import { defineConfig } from "vite";
-
-// The Cloudflare plugin registers interactive CLI shortcuts when stdin is a TTY,
-// which crashes Miniflare during prerender under Turborepo.
-// https://github.com/vercel/turborepo/issues/11412
-if (process.env.TURBO_HASH) process.env.CI = "true";
-
-const isVercel = process.env.VERCEL === "1";
 
 export default defineConfig({
   server: { port: 8101 },
@@ -24,7 +16,7 @@ export default defineConfig({
     },
   },
   plugins: [
-    ...(!isVercel ? [cloudflare({ viteEnvironment: { name: "ssr" } })] : []),
+    // TanStack Start needs a runtime adapter to emit deployable server output.
     tailwindcss(),
     tanstackStart({
       prerender: {
@@ -36,7 +28,7 @@ export default defineConfig({
         filter: ({ path }) => !path.startsWith("/search") && !path.endsWith(".xml"),
       },
     }),
-    ...(isVercel ? [nitro({ preset: "vercel" })] : []),
+    nitro({ preset: "vercel" }),
     react(),
   ],
 });
