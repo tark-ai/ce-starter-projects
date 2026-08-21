@@ -1,11 +1,13 @@
 /** biome-ignore-all lint/security/noDangerouslySetInnerHtml: JSON-LD at build time */
 /** biome-ignore-all lint/style/useComponentExportOnlyModules: Next.js page conventions */
 import { categoryTitleFromSlug, matchCategory } from "@ce/soja-shared/lib/category-slug";
+import { createCategoryMetadata } from "@commercengine/seo/nextjs";
 import type { Category, Item, Pagination } from "@commercengine/storefront";
 import type { Metadata } from "next";
 import { buildFilter } from "@/lib/build-filter";
-import { OG_IMAGES, SITE_NAME, SITE_URL, TWITTER_IMAGE } from "@/lib/constants";
+import { SITE_URL } from "@/lib/constants";
 import { safeJsonLd } from "@/lib/safe-json-ld";
+import { seo } from "@/lib/seo";
 import { PLP_COPY } from "@/lib/site-content";
 import { storefront } from "@/lib/storefront";
 import { CategoryContent } from "../../category-content";
@@ -31,33 +33,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category } = await params;
 
-  let displayName = categoryTitleFromSlug(category);
-  let description: string = PLP_COPY.subtitle;
-
   try {
     const sdk = storefront.publicStorefront();
-    const { data } = await sdk.catalog.listCategories();
+    // `nested_level` is what makes the response carry `child_categories`, which the
+    // canonical Category shape requires.
+    const { data } = await sdk.catalog.listCategories({ nested_level: 4 });
     const matched = matchCategory(data?.categories ?? [], category);
-    if (matched?.name) displayName = matched.name;
-    if (matched?.description) description = matched.description;
+    if (matched) return createCategoryMetadata(seo, matched);
   } catch {}
 
-  return {
-    title: displayName,
-    description,
-    openGraph: {
-      title: `${displayName} | ${SITE_NAME}`,
-      description,
-      type: "website",
-      url: `${SITE_URL}/category/${category}`,
-      images: OG_IMAGES,
-    },
-    twitter: {
-      title: `${displayName} | ${SITE_NAME}`,
-      description,
-      images: [TWITTER_IMAGE],
-    },
-  };
+  // No live catalog at build time: fall back to the slug, without inventing a canonical.
+  return { title: categoryTitleFromSlug(category), description: PLP_COPY.subtitle };
 }
 
 export default async function CategoryPage({ params }: { params: Promise<{ category: string }> }) {

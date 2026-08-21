@@ -3,6 +3,7 @@ import type {
   Item,
   Pagination,
   Product,
+  ProductDetail,
   SearchProductsBody,
 } from "@commercengine/storefront";
 import { useQuery } from "@tanstack/react-query";
@@ -169,7 +170,8 @@ export function useSimilarProducts(productId: string): UseSimilarProductsResult 
 // --- Product Detail (by slug or ID) ---
 
 interface UseProductDetailResult {
-  product: Product | undefined;
+  // `getProductDetail` returns the full detail shape, which is wider than the list `Product`.
+  product: ProductDetail | undefined;
   isLoading: boolean;
 }
 

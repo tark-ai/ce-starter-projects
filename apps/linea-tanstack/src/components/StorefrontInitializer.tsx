@@ -1,6 +1,10 @@
-import { initCheckout } from "@commercengine/checkout";
+import { createHostedCheckoutBridge } from "@commercengine/ai/checkout";
+import { registerCommerceWebMcp } from "@commercengine/ai/webmcp";
+import { getCheckout, initCheckout } from "@commercengine/checkout";
 import { destroyCheckout } from "@commercengine/checkout/react";
+import { useRouter } from "@tanstack/react-router";
 import { useEffect } from "react";
+import { routes, site } from "@/lib/commerce-seo.config";
 import { ensureClientSessionBootstrapped } from "@/lib/session-bootstrap";
 import { storefront, storefrontConfig } from "@/lib/storefront";
 
@@ -10,13 +14,17 @@ import { storefront, storefrontConfig } from "@/lib/storefront";
  * 1. Explicitly establishes the storefront session on first load.
  * 2. Initializes hosted checkout with the current SDK tokens.
  * 3. Keeps checkout and storefront tokens synchronized.
+ * 4. Registers WebMCP agent tools, a no-op in browsers without WebMCP.
  *
  * Public prerendered reads use `storefront.publicStorefront()`.
  * Session-bound flows should rely on this eager bootstrap before they trigger
  * server functions that depend on a persisted session cookie.
  */
 export function StorefrontInitializer() {
+  const router = useRouter();
+
   useEffect(() => {
+    let agentTools: AbortController | null = null;
     const init = async () => {
       await ensureClientSessionBootstrapped();
 
@@ -37,12 +45,21 @@ export function StorefrontInitializer() {
       });
     };
 
-    void init();
+    void init().then(async () => {
+      agentTools = await registerCommerceWebMcp({
+        storefront,
+        siteUrl: site.url,
+        routes,
+        checkout: createHostedCheckoutBridge({ getState: () => getCheckout() }),
+        navigation: { navigate: (url) => router.navigate({ href: url }) },
+      });
+    });
 
     return () => {
+      agentTools?.abort();
       destroyCheckout();
     };
-  }, []);
+  }, [router]);
 
   return null;
 }

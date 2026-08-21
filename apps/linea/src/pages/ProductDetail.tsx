@@ -21,13 +21,15 @@ import Header from "../components/header/Header";
 import ProductDescription from "../components/product/ProductDescription";
 import ProductImageGallery from "../components/product/ProductImageGallery";
 import ProductInfo from "../components/product/ProductInfo";
-import SEO, { SITE_NAME, SITE_URL } from "../components/Seo";
+import SEO from "../components/Seo";
 import { useProductDetail } from "../lib/hooks";
+import { useCommerceSeoHead } from "../lib/seo";
 
 const ProductDetail = () => {
   const { slug } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const { product, isLoading } = useProductDetail(slug || "");
+  const seoHead = useCommerceSeoHead(product, "product");
 
   const optionKeys = useMemo(() => {
     if (!product?.has_variant || !product.variant_options) return [];
@@ -200,70 +202,9 @@ const ProductDetail = () => {
     );
   }
 
-  const pricing = selectedVariant?.pricing ?? product.pricing;
-  const isPurchasable =
-    (selectedVariant?.stock_available ?? product.stock_available) ||
-    (selectedVariant?.backorder ?? product.backorder);
-  const productUrl = `${SITE_URL}/product/${product.slug}`;
-  const productImage = displayImages[0]?.url_zoom ?? displayImages[0]?.url_standard;
-  const productDescription = product.short_description ?? `Shop ${product.name} from ${SITE_NAME}`;
-
-  const breadcrumbSchema: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "BreadcrumbList",
-    itemListElement: [
-      { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-      ...(categoryName && categorySlug
-        ? [
-            {
-              "@type": "ListItem",
-              position: 2,
-              name: categoryName,
-              item: `${SITE_URL}/category/${categorySlug}`,
-            },
-          ]
-        : []),
-      { "@type": "ListItem", position: categoryName ? 3 : 2, name: product.name },
-    ],
-  };
-
-  const productSchema: Record<string, unknown> = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    name: product.name,
-    description: productDescription,
-    image: productImage,
-    sku: product.sku ?? product.slug,
-    url: productUrl,
-    brand: { "@type": "Brand", name: SITE_NAME },
-    offers: {
-      "@type": "Offer",
-      url: productUrl,
-      priceCurrency: pricing.currency,
-      price: pricing.selling_price,
-      availability: isPurchasable ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-    },
-    ...(product.reviews_count > 0
-      ? {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: (product.reviews_rating_sum / product.reviews_count).toFixed(1),
-            reviewCount: product.reviews_count,
-          },
-        }
-      : {}),
-  };
-
   return (
     <div className="min-h-screen bg-background">
-      <SEO
-        title={product.name}
-        description={productDescription}
-        canonical={productUrl}
-        ogImage={productImage}
-        ogType="product"
-        jsonLd={[productSchema, breadcrumbSchema]}
-      />
+      <SEO head={seoHead} />
       <Header />
 
       <main className="pt-6">

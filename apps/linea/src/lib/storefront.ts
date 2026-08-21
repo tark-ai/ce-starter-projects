@@ -7,7 +7,7 @@ const tokenStorage = new BrowserTokenStorage("linea_");
 /** Use staging when VITE_CE_ENV=staging (e.g. Vercel Preview) or when not production build. */
 const useStaging = import.meta.env.VITE_CE_ENV === "staging" || !import.meta.env.VITE_CE_ENV;
 
-const storefront = createStorefront({
+export const storefront = createStorefront({
   storeId: import.meta.env.VITE_STORE_ID,
   environment: useStaging ? Environment.Staging : Environment.Production,
   apiKey: import.meta.env.VITE_API_KEY,
@@ -21,6 +21,36 @@ const storefront = createStorefront({
 });
 
 export const sdk = storefront.session();
+
+let agentTools: AbortController | null = null;
+
+/**
+ * Registers this storefront's WebMCP tools. A no-op in browsers without WebMCP, and safe to
+ * call more than once — a previous registration is revoked first.
+ */
+export async function registerAgentTools(navigate: (url: string) => void) {
+  const [{ registerCommerceWebMcp }, { createHostedCheckoutBridge }, { routes, site }] =
+    await Promise.all([
+      import("@commercengine/ai/webmcp"),
+      import("@commercengine/ai/checkout"),
+      import("./seo-config"),
+    ]);
+  agentTools?.abort();
+  agentTools = await registerCommerceWebMcp({
+    storefront,
+    siteUrl: site.url,
+    routes,
+    checkout: createHostedCheckoutBridge({ getState: () => getCheckout() }),
+    navigation: { navigate },
+    // `unsupported` is the ordinary case in a browser without WebMCP.
+    diagnostics: import.meta.env.DEV
+      ? // biome-ignore lint/suspicious/noConsole: development diagnostic
+        (event) => console.info("[commerce-ai]", event.code, event.message ?? "")
+      : undefined,
+  });
+
+  return agentTools;
+}
 
 export async function initStorefront() {
   // 1. Ensure an anonymous/session token exists — SDK is the token owner

@@ -5,9 +5,15 @@ import "../styles/globals.css";
 import { PoweredByBadge } from "@ce/ui/components/ui/powered-by-badge";
 import Navigation from "../components/header/Navigation";
 import Footer from "../components/footer/Footer";
+import type { CommerceSeoHead } from "@commercengine/seo";
 import { publicSdk } from "../lib/storefront";
 
 interface Props {
+  /**
+   * Head data from @commercengine/seo. When supplied, its canonical, Open Graph, Markdown
+   * alternate and JSON-LD tags are rendered instead of the hand-built ones below.
+   */
+  seoHead?: CommerceSeoHead;
   title?: string;
   description?: string;
   image?: string;
@@ -17,6 +23,7 @@ interface Props {
 }
 
 const {
+  seoHead,
   title = "LINEA | Fine Jewelry",
   description = "Discover timeless elegance with LINEA's curated collection of fine jewelry.",
   image = "/og-image.jpg",
@@ -38,10 +45,20 @@ const categories = data?.categories ?? [];
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.svg" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex, follow" />}
+    <title>{seoHead?.title ?? title}</title>
+    {seoHead ? (
+      <>
+        {seoHead.meta.map((tag) => <meta {...tag} />)}
+        {seoHead.links.map((tag) => <link {...tag} />)}
+        {seoHead.scripts.map((tag) => (
+          <script type={tag.type} set:html={tag.content} />
+        ))}
+      </>
+    ) : (
+      <>
+        <meta name="description" content={description} />
+        <link rel="canonical" href={canonical} />
+        {noindex && <meta name="robots" content="noindex, follow" />}
     <meta property="og:type" content={ogType} />
     <meta property="og:url" content={canonical} />
     <meta property="og:title" content={title} />
@@ -50,11 +67,13 @@ const categories = data?.categories ?? [];
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
     <meta property="og:site_name" content="LINEA" />
-    <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={title} />
+        <meta name="twitter:description" content={description} />
+        <meta name="twitter:image" content={imageUrl} />
+      </>
+    )}
     <meta name="twitter:site" content="@commerceengine" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={imageUrl} />
     <slot name="head" />
     <ClientRouter />
   </head>

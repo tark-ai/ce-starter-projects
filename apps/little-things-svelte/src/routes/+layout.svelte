@@ -1,4 +1,6 @@
 <script lang="ts">
+import { page } from "$app/state";
+import { goto } from "$app/navigation";
 import "../app.css";
 import type { Snippet } from "svelte";
 import { onMount } from "svelte";
@@ -13,6 +15,8 @@ import type { LayoutData } from "./$types";
 
 let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
+let agentTools: AbortController | null = null;
+
 onMount(() => {
   initStorefront()
     .then(() => {
@@ -24,17 +28,42 @@ onMount(() => {
       // wishlist will simply be unavailable until the next successful init.
       console.error("Storefront bootstrap failed:", error);
     });
+    // WebMCP tools, once the session and checkout exist.
+    void (async () => {
+      const [{ registerCommerceWebMcp }, { createHostedCheckoutBridge }, { getCheckout }, { storefront }, { routes, site }] =
+        await Promise.all([
+          import("@commercengine/ai/webmcp"),
+          import("@commercengine/ai/checkout"),
+          import("@commercengine/checkout"),
+          import("$lib/storefront"),
+          import("$lib/commerce-seo.config"),
+        ]);
+      agentTools = await registerCommerceWebMcp({
+        storefront,
+        siteUrl: site.url,
+        routes,
+        checkout: createHostedCheckoutBridge({ getState: () => getCheckout() }),
+        navigation: { navigate: (url) => goto(url) },
+        diagnostics: import.meta.env.DEV
+          ? (event) => console.info("[commerce-ai]", event.code, event.message ?? "")
+          : undefined,
+      });
+    })();
+
+    return () => agentTools?.abort();
 });
 </script>
 
 <svelte:head>
-	<meta property="og:site_name" content={SITE_NAME} />
-	{#if OG_IMAGE}
-		<meta property="og:image" content={OG_IMAGE} />
-		<meta property="og:image:width" content="1200" />
-		<meta property="og:image:height" content="630" />
+	{#if !page.data.seoHead}
+		<meta property="og:site_name" content={SITE_NAME} />
+		{#if OG_IMAGE}
+			<meta property="og:image" content={OG_IMAGE} />
+			<meta property="og:image:width" content="1200" />
+			<meta property="og:image:height" content="630" />
+		{/if}
+		<meta name="twitter:card" content={OG_IMAGE ? 'summary_large_image' : 'summary'} />
 	{/if}
-	<meta name="twitter:card" content={OG_IMAGE ? 'summary_large_image' : 'summary'} />
 	<meta name="twitter:site" content={TWITTER_SITE} />
 </svelte:head>
 

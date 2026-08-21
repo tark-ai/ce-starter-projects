@@ -3,8 +3,10 @@ import { BrandPillars } from "@ce/soja-shared/content";
 import { useMemo, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Layout } from "@/components/Layout";
+import { Seo } from "@/components/Seo";
 import { buildFilter } from "@/lib/build-filter";
 import { useCategories, useSearchProducts } from "@/lib/hooks";
+import { useCommerceSeoHead } from "@/lib/seo";
 import { PLP_COPY, SHOP_CATEGORIES } from "@/lib/site-content";
 import { SojaLink } from "@/lib/soja-routing";
 import { useWishlist } from "@/lib/wishlist";
@@ -31,6 +33,8 @@ const Category = () => {
     () => categories.find((entry) => entry.slug === categorySlug),
     [categories, categorySlug]
   );
+
+  const seoHead = useCommerceSeoHead(activeCategory, "category");
 
   const filterItems = useMemo(() => {
     const referenceSlugs = new Set<string>(SHOP_CATEGORIES.map((entry) => entry.slug));
@@ -64,6 +68,7 @@ const Category = () => {
 
   return (
     <Layout>
+      <Seo head={seoHead} />
       <PLPHero title={title} subtitle={subtitle} />
       <CategoryFilterRow items={filterItems} LinkComponent={SojaLink} />
       <SortSelect value={sort} onChange={setSort} count={pagination?.total_records} />

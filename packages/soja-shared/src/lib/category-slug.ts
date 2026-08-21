@@ -5,10 +5,10 @@ import type { Category } from "@commercengine/storefront";
  * in that order of authority: one category's derived name can collide with another's
  * canonical slug, and a single pass would let whichever came first in the list win.
  */
-export function matchCategory(
-  categories: Category[],
+export function matchCategory<T extends Pick<Category, "id" | "name" | "slug">>(
+  categories: T[],
   slug: string | undefined
-): Category | undefined {
+): T | undefined {
   if (!slug) return undefined;
   return (
     categories.find((entry) => entry.slug === slug) ??

@@ -1,4 +1,5 @@
 ---
+import type { CommerceSeoHead } from "@commercengine/seo";
 import { ClientRouter } from "astro:transitions";
 import "@fontsource/averia-serif-libre/300.css";
 import "@fontsource/averia-serif-libre/400.css";
@@ -13,6 +14,7 @@ import { OG_IMAGE, SITE_NAME, SITE_URL } from "../lib/constants";
 import { publicSdk } from "../lib/storefront";
 
 interface Props {
+  seoHead?: CommerceSeoHead;
   title?: string;
   description?: string;
   image?: string;
@@ -22,6 +24,7 @@ interface Props {
 }
 
 const {
+  seoHead,
   title = `${SITE_NAME} — Rituals of natural skincare`,
   description = `${SITE_NAME} is a quiet-luxury Scandinavian skincare storefront. Hand-crafted bioformulations balanced with ethically-sourced ingredients from our laboratory in Copenhagen.`,
   image = OG_IMAGE,
@@ -50,22 +53,35 @@ try {
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonical} />
-    {noindex && <meta name="robots" content="noindex, follow" />}
-    <meta property="og:type" content={ogType} />
-    <meta property="og:url" content={canonical} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:site_name" content={SITE_NAME} />
-    <meta property="og:image" content={imageUrl} />
-    <meta property="og:image:alt" content={`${SITE_NAME} — rituals of natural skincare`} />
-    <meta name="twitter:card" content="summary_large_image" />
+    {seoHead ? (
+      <>
+        <title>{seoHead.title}</title>
+        {seoHead.meta.map((tag) => <meta {...tag} />)}
+        {seoHead.links.map((tag) => <link {...tag} />)}
+        {seoHead.scripts.map((tag) => (
+          <script is:inline type={tag.type} set:html={tag.content} />
+        ))}
+      </>
+    ) : (
+      <>
+      <title>{title}</title>
+      <meta name="description" content={description} />
+      <link rel="canonical" href={canonical} />
+      {noindex && <meta name="robots" content="noindex, follow" />}
+      <meta property="og:type" content={ogType} />
+      <meta property="og:url" content={canonical} />
+      <meta property="og:title" content={title} />
+      <meta property="og:description" content={description} />
+      <meta property="og:site_name" content={SITE_NAME} />
+      <meta property="og:image" content={imageUrl} />
+      <meta property="og:image:alt" content={`${SITE_NAME} — rituals of natural skincare`} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:title" content={title} />
+      <meta name="twitter:description" content={description} />
+      <meta name="twitter:image" content={imageUrl} />
+      </>
+    )}
     <meta name="twitter:site" content="@commerceengine" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={imageUrl} />
     <slot name="head" />
     <noscript>
       <!-- Page bodies are islands whose entrance animation starts at opacity 0. -->

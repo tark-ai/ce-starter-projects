@@ -1,7 +1,9 @@
 /** biome-ignore-all lint/security/noDangerouslySetInnerHtml: JSON-LD at build time */
 /** biome-ignore-all lint/style/useComponentExportOnlyModules: Next.js page conventions */
+import { createCategoryMetadata } from "@commercengine/seo/nextjs";
 import type { Metadata } from "next";
 import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { seo } from "@/lib/seo";
 import { storefront } from "@/lib/storefront";
 import { CategoryContent } from "./category-content";
 
@@ -21,25 +23,11 @@ export async function generateMetadata({
   params: Promise<{ category: string }>;
 }): Promise<Metadata> {
   const { category } = await params;
-  const decoded = decodeURIComponent(category);
-  const displayName = decoded.charAt(0).toUpperCase() + decoded.slice(1);
+  const { data } = await storefront.publicStorefront().catalog.listCategories({ nested_level: 4 });
+  const matched = data?.categories?.find((entry) => entry.slug === decodeURIComponent(category));
 
-  const description = `Shop ${displayName} from ${SITE_NAME}. Discover our curated collection of minimalist jewelry crafted for the modern individual.`;
-
-  return {
-    title: displayName,
-    description,
-    openGraph: {
-      title: `${displayName} | ${SITE_NAME}`,
-      description,
-      type: "website",
-      url: `${SITE_URL}/category/${category}`,
-    },
-    twitter: {
-      title: `${displayName} | ${SITE_NAME}`,
-      description,
-    },
-  };
+  if (!matched) return { title: decodeURIComponent(category) };
+  return createCategoryMetadata(seo, matched);
 }
 
 export default async function CategoryPage({ params }: { params: Promise<{ category: string }> }) {

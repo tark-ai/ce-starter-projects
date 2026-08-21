@@ -7,7 +7,7 @@ import { lazy, Suspense, useEffect, useState } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
-import { destroyCheckout, initStorefront } from "./lib/storefront";
+import { destroyCheckout, initStorefront, registerAgentTools } from "./lib/storefront";
 import { WishlistProvider } from "./lib/wishlist";
 import Index from "./pages/Index";
 
@@ -28,7 +28,14 @@ const App = () => {
 
   useEffect(() => {
     initStorefront()
-      .then(() => setReady(true))
+      .then(() => {
+        setReady(true);
+        // WebMCP agent tools; a no-op where the browser has no model context.
+        void registerAgentTools((url) => {
+          window.history.pushState({}, "", url);
+          window.dispatchEvent(new PopStateEvent("popstate"));
+        });
+      })
       .catch((err) => {
         // biome-ignore lint/suspicious/noConsole: surface SDK init failures for debugging
         console.error("Failed to initialize storefront:", err);

@@ -1,4 +1,6 @@
+import { createSvelteKitProductHead } from "@commercengine/seo/sveltekit";
 import { error } from "@sveltejs/kit";
+import { seo } from "$lib/commerce-seo";
 import type { SojaProductDetail } from "$lib/product-meta";
 import { serverStorefront } from "$lib/server/storefront";
 import type { EntryGenerator, PageServerLoad } from "./$types";
@@ -66,5 +68,10 @@ export const load: PageServerLoad = async ({ params }) => {
     error(404, "Product not found");
   }
 
-  return { product, similarItems, slug: params.slug };
+  return {
+    product,
+    similarItems,
+    slug: params.slug,
+    seoHead: await createSvelteKitProductHead(seo, product),
+  };
 };

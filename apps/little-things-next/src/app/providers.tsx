@@ -5,6 +5,7 @@ import { Toaster } from "@ce/little-things-ui/components/ui/toaster";
 import { TooltipProvider } from "@ce/little-things-ui/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
+import { AgentTools } from "@/components/AgentTools";
 import { StorefrontBootstrap } from "@/components/StorefrontBootstrap";
 import { WishlistProvider } from "@/lib/wishlist";
 
@@ -14,6 +15,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <QueryClientProvider client={queryClient}>
       <StorefrontBootstrap />
+      <AgentTools />
       <WishlistProvider>
         <TooltipProvider>
           <Toaster />

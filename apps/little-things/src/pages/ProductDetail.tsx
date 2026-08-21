@@ -7,7 +7,9 @@ import {
 } from "@ce/little-things-shared/lib/variants";
 import { useCallback, useEffect, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
+import { Seo } from "@/components/Seo";
 import { useProductDetail } from "@/lib/hooks";
+import { useCommerceSeoHead } from "@/lib/seo";
 import Footer from "../components/footer/Footer";
 import Header from "../components/header/Header";
 import DetailTabs from "../components/product/DetailTabs";
@@ -19,6 +21,7 @@ const ProductDetail = () => {
   const { slug } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const { product, isLoading } = useProductDetail(slug || "");
+  const seoHead = useCommerceSeoHead(product, "product");
 
   const optionKeys = useMemo(() => {
     if (!product?.has_variant || !product.variant_options) return [];
@@ -192,6 +195,7 @@ const ProductDetail = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <Seo head={seoHead} />
 
       <main className="pt-8 lg:pt-16">
         <section className="mx-auto w-full max-w-[1400px] px-6 lg:px-20">

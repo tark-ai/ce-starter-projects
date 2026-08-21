@@ -1,3 +1,4 @@
+import type { CommerceSeoHead } from "@commercengine/seo";
 import { useEffect } from "react";
 import { SITE_NAME, SITE_URL } from "../lib/constants";
 
@@ -8,6 +9,11 @@ const DEFAULT_DESCRIPTION =
   "LINEA is a production-ready e-commerce starter template built with Commerce Engine and React. A reference implementation featuring a minimalist jewelry storefront with full catalog, cart, checkout, and search.";
 
 interface SEOProps {
+  /**
+   * Head data from @commercengine/seo. When present it supersedes the props below, so a page
+   * that has it does not also hand-build a title, canonical, Open Graph block or JSON-LD.
+   */
+  head?: CommerceSeoHead | null;
   title?: string;
   description?: string;
   canonical?: string;
@@ -22,6 +28,7 @@ interface SEOProps {
  * Uses React 19 built-in metadata hoisting for title/meta/link tags.
  */
 const SEO = ({
+  head,
   title,
   description = DEFAULT_DESCRIPTION,
   canonical,
@@ -35,7 +42,13 @@ const SEO = ({
     : `${SITE_NAME} — Commerce Engine + ${FRAMEWORK} Starter Template`;
   const ogImageUrl = ogImage ?? `${SITE_URL}/og-image.jpg`;
 
-  const schemas = jsonLd ? (Array.isArray(jsonLd) ? jsonLd : [jsonLd]) : [];
+  const schemas = head
+    ? head.scripts.map((script) => JSON.parse(script.content) as Record<string, unknown>)
+    : jsonLd
+      ? Array.isArray(jsonLd)
+        ? jsonLd
+        : [jsonLd]
+      : [];
 
   useEffect(() => {
     if (schemas.length === 0) return;
@@ -55,6 +68,31 @@ const SEO = ({
       }
     };
   }, [schemas]);
+
+  // React 19 hoists these into <head>. When the package supplied head data it is rendered
+  // verbatim, so canonical, Open Graph and Twitter tags all come from one source.
+  if (head) {
+    return (
+      <>
+        <title>{head.title}</title>
+        {head.meta.map((tag) =>
+          tag.property ? (
+            <meta
+              key={`${tag.property}:${tag.content}`}
+              property={tag.property}
+              content={tag.content}
+            />
+          ) : (
+            <meta key={`${tag.name}:${tag.content}`} name={tag.name} content={tag.content} />
+          )
+        )}
+        {head.links.map((tag) => (
+          <link key={`${tag.rel}:${tag.href}`} rel={tag.rel} href={tag.href} type={tag.type} />
+        ))}
+        <meta name="twitter:site" content={TWITTER_SITE} />
+      </>
+    );
+  }
 
   return (
     <>

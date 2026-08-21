@@ -37,11 +37,53 @@ function onBeforeSwap(event: Event) {
   };
 }
 
+/**
+ * Register WebMCP tools once the storefront session exists.
+ *
+ * View Transitions replace the document, so the previous registration is aborted before
+ * re-registering — otherwise every navigation would install a duplicate tool set.
+ */
+let agentTools: AbortController | null = null;
+
+async function registerAgentTools() {
+  const [
+    { registerCommerceWebMcp },
+    { createHostedCheckoutBridge },
+    { getCheckout },
+    { storefront },
+    { routes, site },
+  ] = await Promise.all([
+    import("@commercengine/ai/webmcp"),
+    import("@commercengine/ai/checkout"),
+    import("@commercengine/checkout"),
+    import("./storefront-client"),
+    import("./commerce-seo.config"),
+  ]);
+
+  agentTools?.abort();
+  agentTools = await registerCommerceWebMcp({
+    storefront,
+    siteUrl: site.url,
+    routes,
+    checkout: createHostedCheckoutBridge({ getState: () => getCheckout() }),
+    navigation: {
+      navigate: (url) => {
+        window.location.href = url;
+      },
+    },
+    diagnostics: import.meta.env.DEV
+      ? // biome-ignore lint/suspicious/noConsole: development diagnostic
+        (event) => console.info("[commerce-ai]", event.code, event.message ?? "")
+      : undefined,
+  });
+}
+
 export function installSojaClientRuntime() {
   if (runtimeInstalled) return;
   runtimeInstalled = true;
 
   document.addEventListener("astro:page-load", bootstrapStorefront);
+  document.addEventListener("astro:page-load", () => void registerAgentTools());
   document.addEventListener("astro:before-swap", onBeforeSwap);
 
   bootstrapStorefront();

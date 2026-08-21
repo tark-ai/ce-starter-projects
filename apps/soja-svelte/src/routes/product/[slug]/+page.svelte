@@ -1,4 +1,5 @@
 <script lang="ts">
+import { breadcrumbJsonLd } from "@commercengine/seo";
 import type { Item } from "@commercengine/storefront";
 import { page as pageState } from "$app/state";
 import { replaceState } from "$app/navigation";
@@ -243,6 +244,20 @@ const description = $derived(
       : "")
 );
 const productUrl = $derived(`${SITE_URL}/product/${data.slug}`);
+const breadcrumb = $derived(
+  breadcrumbJsonLd([
+    { name: "Home", url: `${SITE_URL}/` },
+    ...(product?.categories?.[0]?.name && product?.categories?.[0]?.slug
+      ? [
+          {
+            name: product.categories[0].name,
+            url: `${SITE_URL}/category/${product.categories[0].slug}`,
+          },
+        ]
+      : []),
+    { name: product?.name ?? "Product", url: productUrl },
+  ])
+);
 const productImage = $derived(
   product?.images?.[0]?.url_zoom ?? product?.images?.[0]?.url_standard ?? ""
 );
@@ -308,23 +323,41 @@ const jsonLd = $derived(
 </script>
 
 <svelte:head>
-	<title>{title}</title>
-	<meta name="description" content={description} />
-	<link rel="canonical" href={productUrl} />
-	{#if !product}
-		<!-- A build-time catalog failure baked a placeholder; keep it out of the index. -->
-		<meta name="robots" content="noindex" />
+	{#if data.seoHead}
+		<title>{data.seoHead.title}</title>
+		{#each data.seoHead.meta as tag}
+			{#if tag.property}
+				<meta property={tag.property} content={tag.content} />
+			{:else}
+				<meta name={tag.name} content={tag.content} />
+			{/if}
+		{/each}
+		{#each data.seoHead.links as link}
+			<link rel={link.rel} href={link.href} type={link.type} />
+		{/each}
+		{#each data.seoHead.scripts as script}
+			{@html `<script type="${script.type}">${script.content}</script>`}
+		{/each}
+		{@html `<script type="application/ld+json">${safeJsonLd(breadcrumb)}</script>`}
+	{:else}
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={productUrl} />
+		{#if !product}
+			<!-- A build-time catalog failure baked a placeholder; keep it out of the index. -->
+			<meta name="robots" content="noindex" />
+		{/if}
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:type" content="product" />
+		<meta property="og:url" content={productUrl} />
+		{#if productImage}
+			<meta property="og:image" content={productImage} />
+		{/if}
+		{#each jsonLd as schema, index (index)}
+			{@html `<script type="application/ld+json">${safeJsonLd(schema)}</script>`}
+		{/each}
 	{/if}
-	<meta property="og:title" content={title} />
-	<meta property="og:description" content={description} />
-	<meta property="og:type" content="product" />
-	<meta property="og:url" content={productUrl} />
-	{#if productImage}
-		<meta property="og:image" content={productImage} />
-	{/if}
-	{#each jsonLd as schema, index (index)}
-		{@html `<script type="application/ld+json">${safeJsonLd(schema)}</script>`}
-	{/each}
 </svelte:head>
 
 <main>

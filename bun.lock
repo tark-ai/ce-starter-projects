@@ -17,7 +17,9 @@
       "dependencies": {
         "@ce/linea-shared": "workspace:*",
         "@ce/ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource-variable/dm-sans": "^5.2.8",
         "@tailwindcss/postcss": "^4.2.2",
@@ -45,7 +47,9 @@
         "@astrojs/react": "^5.0.1",
         "@ce/linea-shared": "workspace:*",
         "@ce/ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource-variable/dm-sans": "^5.2.8",
         "@imagekit/react": "^5.0.2",
@@ -72,7 +76,9 @@
       "dependencies": {
         "@ce/linea-shared": "workspace:*",
         "@ce/ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource-variable/dm-sans": "^5.2.8",
         "@tanstack/react-query": "^5.95.2",
@@ -97,7 +103,9 @@
       "version": "0.0.1",
       "dependencies": {
         "@ce/ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource-variable/dm-sans": "^5.2.8",
         "clsx": "^2.1.1",
@@ -123,7 +131,9 @@
       "dependencies": {
         "@ce/linea-shared": "workspace:*",
         "@ce/ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource-variable/dm-sans": "^5.2.8",
         "@tanstack/react-query": "^5.95.2",
@@ -155,7 +165,9 @@
       "dependencies": {
         "@ce/little-things-shared": "workspace:*",
         "@ce/little-things-ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource-variable/inter": "^5.0.0",
         "@fontsource/instrument-serif": "^5.0.0",
@@ -184,7 +196,9 @@
         "@astrojs/react": "^5.0.1",
         "@ce/little-things-shared": "workspace:*",
         "@ce/little-things-ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource-variable/inter": "^5.0.0",
         "@fontsource/instrument-serif": "^5.0.0",
@@ -212,7 +226,9 @@
       "dependencies": {
         "@ce/little-things-shared": "workspace:*",
         "@ce/little-things-ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource-variable/inter": "^5.0.0",
         "@fontsource/instrument-serif": "^5.0.0",
@@ -238,7 +254,9 @@
       "version": "0.0.1",
       "dependencies": {
         "@ce/little-things-ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource-variable/inter": "^5.0.0",
         "@fontsource/instrument-serif": "^5.0.0",
@@ -265,7 +283,9 @@
       "dependencies": {
         "@ce/little-things-shared": "workspace:*",
         "@ce/little-things-ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource-variable/inter": "^5.0.0",
         "@fontsource/instrument-serif": "^5.0.0",
@@ -299,7 +319,9 @@
       "dependencies": {
         "@ce/soja-shared": "workspace:*",
         "@ce/soja-ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource/average": "^5.3.0",
         "@fontsource/averia-serif-libre": "^5.3.0",
@@ -328,7 +350,9 @@
         "@astrojs/react": "^5.0.1",
         "@ce/soja-shared": "workspace:*",
         "@ce/soja-ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource/average": "^5.3.0",
         "@fontsource/averia-serif-libre": "^5.3.0",
@@ -356,7 +380,9 @@
       "dependencies": {
         "@ce/soja-shared": "workspace:*",
         "@ce/soja-ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource/average": "^5.3.0",
         "@fontsource/averia-serif-libre": "^5.3.0",
@@ -383,7 +409,9 @@
       "dependencies": {
         "@ce/soja-shared": "workspace:*",
         "@ce/soja-ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource/average": "^5.3.0",
         "@fontsource/averia-serif-libre": "^5.3.0",
@@ -410,7 +438,9 @@
       "dependencies": {
         "@ce/soja-shared": "workspace:*",
         "@ce/soja-ui": "workspace:*",
+        "@commercengine/ai": "^0.2.0",
         "@commercengine/checkout": "^0.3.1",
+        "@commercengine/seo": "^0.2.0",
         "@commercengine/storefront": "^0.1.6",
         "@fontsource/average": "^5.3.0",
         "@fontsource/averia-serif-libre": "^5.3.0",
@@ -739,9 +769,13 @@
 
     "@cloudflare/workerd-windows-64": ["@cloudflare/workerd-windows-64@1.20260317.1", "", { "os": "win32", "cpu": "x64" }, "sha512-MfZTz+7LfuIpMGTa3RLXHX8Z/pnycZLItn94WRdHr8LPVet+C5/1Nzei399w/jr3+kzT4pDKk26JF/tlI5elpQ=="],
 
+    "@commercengine/ai": ["@commercengine/ai@0.2.0", "", { "peerDependencies": { "@commercengine/checkout": ">=0.3.0", "@commercengine/storefront": ">=0.1.6", "@commercengine/storefront-sdk": ">=0.14.0" }, "optionalPeers": ["@commercengine/checkout", "@commercengine/storefront-sdk"] }, "sha512-Tim1eHKz4WL2hqK9xQpjYTHyoRv23SN3BG4aWu9yhwjz3b/sDOILXIyRzHWKNBoiVo8Z9XhF7P8i2ERlJq+xQQ=="],
+
     "@commercengine/checkout": ["@commercengine/checkout@0.3.1", "", { "dependencies": { "@commercengine/js": "0.5.1", "zustand": "^5.0.11" }, "peerDependencies": { "react": ">=18.0.0", "solid-js": ">=1.9.0", "svelte": ">=5.47.0", "vue": ">=3.5.0" }, "optionalPeers": ["react", "solid-js", "svelte", "vue"] }, "sha512-hK+8XniMuHhuf6hcMPhbvZ011g+LopeagbPiDe9EQ/uwn7dizrwBwqzuwJGQ3QjfuHubXJjIzxaV6Q8q5WITeQ=="],
 
     "@commercengine/js": ["@commercengine/js@0.5.1", "", {}, "sha512-vt0VFQW2D1K9fXTPQOEYusEum0W0heRC22x7fBauhIHA1wY7k18XDcM7+n9F6q+yfSXi3dP85NkkED8l6XoMow=="],
+
+    "@commercengine/seo": ["@commercengine/seo@0.2.0", "", { "peerDependencies": { "@commercengine/storefront": ">=0.1.6", "@commercengine/storefront-sdk": ">=0.14.0", "@sveltejs/kit": ">=2.0.0", "@tanstack/react-start": ">=1.0.0", "astro": ">=5.0.0", "next": ">=15.0.0" }, "optionalPeers": ["@commercengine/storefront-sdk", "@sveltejs/kit", "@tanstack/react-start", "astro", "next"] }, "sha512-EqrxL91yAbTxe7YpVaWHNBl+ZYXtZ1NJfB8GKVPwJ7mO28WQBr0ITNLd1epIrzr/n2NIu4iXe2d9dggjUnxoBQ=="],
 
     "@commercengine/ssr-utils": ["@commercengine/ssr-utils@0.3.0", "", {}, "sha512-FZ7ksn4ppVUXJs0uZbIEuQy1WPGPSvfgClOz+NkIMaqfvNpPvrVgIx7zJXNGMnq+/aoSe8O0Ez8B2xyd077bKg=="],
 

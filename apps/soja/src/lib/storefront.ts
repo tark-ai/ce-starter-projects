@@ -9,7 +9,7 @@ void tokenStorage.getAccessToken().then(sessionChange.update, () => undefined);
 
 const useStaging = import.meta.env.VITE_CE_ENV === "staging" || !import.meta.env.VITE_CE_ENV;
 
-const storefront = createStorefront({
+export const storefront = createStorefront({
   storeId: import.meta.env.VITE_STORE_ID,
   environment: useStaging ? Environment.Staging : Environment.Production,
   apiKey: import.meta.env.VITE_API_KEY,
@@ -34,6 +34,34 @@ let initInFlight = false;
 
 interface InitStorefrontOptions {
   force?: boolean;
+}
+
+let agentTools: AbortController | null = null;
+
+/**
+ * Registers this storefront's WebMCP tools. A no-op in browsers without WebMCP; the package
+ * reports which happened through `diagnostics`. Safe to call more than once.
+ */
+export async function registerAgentTools(navigate: (url: string) => void) {
+  const [{ registerCommerceWebMcp }, { createHostedCheckoutBridge }, { routes, site }] =
+    await Promise.all([
+      import("@commercengine/ai/webmcp"),
+      import("@commercengine/ai/checkout"),
+      import("./commerce-seo.config"),
+    ]);
+  agentTools?.abort();
+  agentTools = await registerCommerceWebMcp({
+    storefront,
+    siteUrl: site.url,
+    routes,
+    checkout: createHostedCheckoutBridge({ getState: () => getCheckout() }),
+    navigation: { navigate },
+    diagnostics: import.meta.env.DEV
+      ? // biome-ignore lint/suspicious/noConsole: development diagnostic
+        (event) => console.info("[commerce-ai]", event.code, event.message ?? "")
+      : undefined,
+  });
+  return agentTools;
 }
 
 export function initStorefront({ force = false }: InitStorefrontOptions = {}) {

@@ -1,5 +1,8 @@
 ---
+import { breadcrumbJsonLd } from "@commercengine/seo";
+import { createAstroProductHead } from "@commercengine/seo/astro";
 import Layout from "../../layouts/Layout.astro";
+import { seo, site } from "../../lib/seo";
 import ProductContent from "../../components/product/ProductContent";
 import { publicSdk } from "../../lib/storefront";
 
@@ -19,8 +22,8 @@ const [productResult, similarResult] = await Promise.all([
 
 const product = productResult.data?.product;
 const similarItems = similarResult.data?.products ?? [];
+const seoHead = product ? await createAstroProductHead(seo, product) : undefined;
 
-const siteUrl = import.meta.env.SITE || "https://linea-astro.demo.commercengine.com";
 
 const productName = product?.name ?? "Product";
 const productTitle = `${productName} | LINEA`;
@@ -33,54 +36,21 @@ const productImage =
   product?.images?.[0]?.url_thumbnail ||
   "/og-image.jpg";
 
-const categoryName = product?.categories?.[0]?.name;
-const categorySlug = product?.categories?.[0]?.slug;
+const origin = site.url.replace(/\/+$/, "");
+const category = product?.categories?.[0];
+const breadcrumb = breadcrumbJsonLd([
+  { name: "Home", url: `${origin}/` },
+  ...(category?.name && category?.slug
+    ? [{ name: category.name, url: `${origin}/category/${category.slug}` }]
+    : []),
+  { name: productName, url: `${origin}/product/${slug}` },
+]);
 
-const breadcrumbItems = [
-  { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
-];
-if (categoryName && categorySlug) {
-  breadcrumbItems.push({
-    "@type": "ListItem",
-    position: 2,
-    name: categoryName,
-    item: `${siteUrl}/category/${categorySlug}`,
-  });
-}
-breadcrumbItems.push({
-  "@type": "ListItem",
-  position: breadcrumbItems.length + 1,
-  name: productName,
-  item: `${siteUrl}/product/${slug}`,
-});
 
-const breadcrumbSchema = {
-  "@context": "https://schema.org",
-  "@type": "BreadcrumbList",
-  itemListElement: breadcrumbItems,
-};
-
-const productSchema = {
-  "@context": "https://schema.org",
-  "@type": "Product",
-  name: productName,
-  description: productDescription,
-  image: productImage.startsWith("http") ? productImage : `${siteUrl}${productImage}`,
-  url: `${siteUrl}/product/${slug}`,
-  ...(product?.pricing
-    ? {
-        offers: {
-          "@type": "Offer",
-          price: product.pricing.selling_price,
-          priceCurrency: product.pricing.currency || "USD",
-          availability: "https://schema.org/InStock",
-        },
-      }
-    : {}),
-};
 ---
 
 <Layout
+  seoHead={seoHead}
   title={productTitle}
   description={productDescription}
   image={productImage}
@@ -90,13 +60,7 @@ const productSchema = {
     is:inline
     slot="head"
     type="application/ld+json"
-    set:html={JSON.stringify(breadcrumbSchema)}
-  />
-  <script
-    is:inline
-    slot="head"
-    type="application/ld+json"
-    set:html={JSON.stringify(productSchema)}
+    set:html={JSON.stringify(breadcrumb)}
   />
   <ProductContent client:idle serverProduct={product} serverSimilarItems={similarItems} />
 </Layout>

@@ -6,7 +6,7 @@ import { lazy, Suspense, useCallback, useEffect, useRef, useState } from "react"
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import ScrollToTop from "./components/ScrollToTop";
-import { destroyCheckout, initStorefront, withTimeout } from "./lib/storefront";
+import { destroyCheckout, initStorefront, registerAgentTools, withTimeout } from "./lib/storefront";
 import { WishlistProvider } from "./lib/wishlist";
 import Index from "./pages/Index";
 
@@ -69,6 +69,11 @@ const App = () => {
         // first-attempt path this invalidates nothing.
         void queryClient.invalidateQueries({ queryKey: ["wishlist"] });
         setBootstrap("ready");
+        // WebMCP agent tools; a no-op where the browser has no model context.
+        void registerAgentTools((url) => {
+          window.history.pushState({}, "", url);
+          window.dispatchEvent(new PopStateEvent("popstate"));
+        });
         return;
       } catch (error) {
         if (!mounted.current || generation.current !== run) return;

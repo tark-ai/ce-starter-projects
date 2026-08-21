@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import { Seo } from "@/components/Seo";
 import { useCategories, useListSkus, useSearchProducts } from "@/lib/hooks";
+import { useCommerceSeoHead } from "@/lib/seo";
 import FilterSortBar from "../components/category/FilterSortBar";
 import PLPHero from "../components/category/PlpHero";
 import ProductGrid from "../components/category/ProductGrid";
@@ -53,6 +55,7 @@ const Category = () => {
   );
   const categoryId = matchedCategory?.id;
   const categoryName = matchedCategory?.name;
+  const seoHead = useCommerceSeoHead(matchedCategory, "category");
 
   const hasUserFilters = Object.keys(filters).length > 0;
 
@@ -124,6 +127,7 @@ const Category = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <Seo head={seoHead} />
 
       <main>
         <PLPHero

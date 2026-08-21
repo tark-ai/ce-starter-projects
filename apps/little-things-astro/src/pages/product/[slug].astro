@@ -1,9 +1,11 @@
 ---
-import type { Product } from "@commercengine/storefront";
+import type { ProductDetail } from "@commercengine/storefront";
 import ProductContent from "../../components/product/ProductContent";
+import { breadcrumbJsonLd } from "@commercengine/seo";
+import { createAstroProductHead } from "@commercengine/seo/astro";
 import Layout from "../../layouts/Layout.astro";
-import { SITE_NAME, SITE_URL } from "../../lib/constants";
-import { safeJsonLd } from "../../lib/json-ld";
+import { seo, site } from "../../lib/seo";
+import { SITE_NAME } from "../../lib/constants";
 import { publicSdk } from "../../lib/storefront";
 
 export async function getStaticPaths() {
@@ -47,7 +49,7 @@ export async function getStaticPaths() {
 
 const { slug } = Astro.params;
 
-let product: Product | undefined;
+let product: ProductDetail | undefined;
 try {
   const { data } = await publicSdk.catalog.getProductDetail({ product_id: slug! });
   product = data?.product;
@@ -56,7 +58,6 @@ try {
   console.warn(`[little-things] Failed to load product detail for "${slug}".`, error);
 }
 
-const siteUrl = import.meta.env.SITE || SITE_URL;
 
 const productName = product?.name ?? "Product";
 const productTitle = `${productName} | ${SITE_NAME}`;
@@ -68,85 +69,34 @@ const productImage =
   product?.images?.[0]?.url_thumbnail ||
   "";
 
-const jsonLd = product
-  ? [
-      {
-        "@context": "https://schema.org",
-        "@type": "Product",
-        name: product.name,
-        description: product.short_description ?? `Shop ${product.name} from ${SITE_NAME}`,
-        ...(productImage
-          ? {
-              image: productImage.startsWith("http")
-                ? productImage
-                : `${siteUrl}${productImage}`,
-            }
-          : {}),
-        sku: product.sku ?? product.slug,
-        url: `${siteUrl}/product/${slug}`,
-        brand: { "@type": "Brand", name: SITE_NAME },
-        offers: {
-          "@type": "Offer",
-          url: `${siteUrl}/product/${slug}`,
-          priceCurrency: product.pricing.currency,
-          price: product.pricing.selling_price,
-          availability:
-            product.stock_available || product.backorder
-              ? "https://schema.org/InStock"
-              : "https://schema.org/OutOfStock",
-        },
-        ...(product.reviews_count > 0
-          ? {
-              aggregateRating: {
-                "@type": "AggregateRating",
-                ratingValue: (product.reviews_rating_sum / product.reviews_count).toFixed(1),
-                reviewCount: product.reviews_count,
-              },
-            }
-          : {}),
-      },
-      {
-        "@context": "https://schema.org",
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          { "@type": "ListItem", position: 1, name: "Home", item: siteUrl },
-          ...(product.categories?.[0]
-            ? [
-                {
-                  "@type": "ListItem",
-                  position: 2,
-                  name: product.categories[0].name,
-                  item: `${siteUrl}/category/${product.categories[0].slug}`,
-                },
-              ]
-            : []),
-          {
-            "@type": "ListItem",
-            position: product.categories?.[0] ? 3 : 2,
-            name: product.name,
-          },
-        ],
-      },
-    ]
-  : [];
+const seoHead = product ? await createAstroProductHead(seo, product) : undefined;
+
+const origin = site.url.replace(/\/+$/, "");
+const breadcrumbCategory = product?.categories?.[0];
+// `productHead` emits the product schema only; the breadcrumb stays the page's job.
+const breadcrumb = breadcrumbJsonLd([
+  { name: "Home", url: `${origin}/` },
+  ...(breadcrumbCategory?.name && breadcrumbCategory?.slug
+    ? [{ name: breadcrumbCategory.name, url: `${origin}/category/${breadcrumbCategory.slug}` }]
+    : []),
+  { name: productName, url: `${origin}/product/${slug}` },
+]);
+
 ---
 
 <Layout
+  seoHead={seoHead}
   title={productTitle}
   description={productDescription}
   image={productImage}
   ogType="product"
   noindex={!product}
 >
-  {
-    jsonLd.map((schema) => (
-      <script
-        is:inline
-        slot="head"
-        type="application/ld+json"
-        set:html={safeJsonLd(schema)}
-      />
-    ))
-  }
+  <script
+    is:inline
+    slot="head"
+    type="application/ld+json"
+    set:html={JSON.stringify(breadcrumb)}
+  />
   <ProductContent client:idle serverProduct={product} />
 </Layout>

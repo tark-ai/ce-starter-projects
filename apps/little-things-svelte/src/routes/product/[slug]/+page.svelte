@@ -51,19 +51,37 @@ const jsonLd = $derived(
 </script>
 
 <svelte:head>
-	<title>{title}</title>
-	<meta name="description" content={description} />
-	<link rel="canonical" href={url} />
-	<meta property="og:title" content={title} />
-	<meta property="og:description" content={description} />
-	<meta property="og:url" content={url} />
-	<meta property="og:type" content="product" />
-	{#if image}
-		<meta property="og:image" content={image} />
+	{#if data.seoHead}
+		<title>{data.seoHead.title}</title>
+		{#each data.seoHead.meta as tag}
+			{#if tag.property}
+				<meta property={tag.property} content={tag.content} />
+			{:else}
+				<meta name={tag.name} content={tag.content} />
+			{/if}
+		{/each}
+		{#each data.seoHead.links as link}
+			<link rel={link.rel} href={link.href} type={link.type} />
+		{/each}
+		{#each data.seoHead.scripts as script}
+			{@html `<script type="${script.type}">${script.content}</script>`}
+		{/each}
+		{@html `<script type="application/ld+json">${data.breadcrumb}</script>`}
+	{:else}
+		<title>{title}</title>
+		<meta name="description" content={description} />
+		<link rel="canonical" href={url} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:url" content={url} />
+		<meta property="og:type" content="product" />
+		{#if image}
+			<meta property="og:image" content={image} />
+		{/if}
+		{#each jsonLd as schema}
+			{@html `<script type="application/ld+json">${safeJsonLd(schema)}</script>`}
+		{/each}
 	{/if}
-	{#each jsonLd as schema}
-		{@html `<script type="application/ld+json">${safeJsonLd(schema)}</script>`}
-	{/each}
 </svelte:head>
 
 {#if product}

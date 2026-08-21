@@ -16,7 +16,9 @@ import {
 import { useCallback, useEffect, useMemo } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/Layout";
+import { Seo } from "@/components/Seo";
 import { useProductDetail, useSimilarProducts } from "@/lib/hooks";
+import { useCommerceSeoHead } from "@/lib/seo";
 import { SojaLink } from "@/lib/soja-routing";
 import { useWishlist } from "@/lib/wishlist";
 
@@ -24,6 +26,7 @@ const ProductDetail = () => {
   const { slug } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
   const { product, isLoading } = useProductDetail(slug || "");
+  const seoHead = useCommerceSeoHead(product, "product");
   const { items: related } = useSimilarProducts(product?.id ?? "");
   const wishlist = useWishlist();
 
@@ -184,6 +187,7 @@ const ProductDetail = () => {
 
   return (
     <Layout>
+      <Seo head={seoHead} />
       <section className="mx-auto w-full max-w-[var(--container-soja)] px-3 grid gap-12 pt-12 pb-20 tablet:grid-cols-2 tablet:gap-20 tablet:pt-20">
         <div className="min-w-0 tablet:sticky tablet:top-28 tablet:self-start">
           <ProductImageGallery

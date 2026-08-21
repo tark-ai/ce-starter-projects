@@ -1,5 +1,8 @@
-import type { Item, Product } from "@commercengine/storefront";
+import { serializeJsonLd } from "@commercengine/seo";
+import { createSvelteKitProductHead } from "@commercengine/seo/sveltekit";
+import type { Item, ProductDetail } from "@commercengine/storefront";
 import { error } from "@sveltejs/kit";
+import { seo } from "$lib/commerce-seo";
 import { serverStorefront } from "$lib/server/storefront";
 import type { EntryGenerator, PageServerLoad } from "./$types";
 
@@ -37,8 +40,30 @@ export const entries: EntryGenerator = async () => {
   return slugs;
 };
 
+/**
+ * `productHead` emits the product schema only, so the breadcrumb is the page's job. URLs come
+ * from the route resolvers rather than string concatenation, so a custom `productBase` /
+ * `categoryBase` stays correct here.
+ */
+async function productBreadcrumb(product: ProductDetail) {
+  const category = product.categories?.[0];
+  const home = seo.config.site.url;
+  const [productUrl, categoryUrl] = await Promise.all([
+    seo.productUrl(product),
+    category ? seo.categoryUrl(category) : Promise.resolve(null),
+  ]);
+
+  return serializeJsonLd(
+    seo.breadcrumbJsonLd([
+      { name: "Home", url: home },
+      ...(category && categoryUrl ? [{ name: category.name, url: categoryUrl }] : []),
+      { name: product.name, url: productUrl ?? home },
+    ])
+  );
+}
+
 export const load: PageServerLoad = async ({ params }) => {
-  let product: Product | null = null;
+  let product: ProductDetail | null = null;
   let similarItems: Item[] = [];
 
   try {
@@ -55,10 +80,10 @@ export const load: PageServerLoad = async ({ params }) => {
     if (productResult.error && productResult.response?.status !== 404) {
       // biome-ignore lint/suspicious/noConsole: surface catalog fetch failures during build/prerender
       console.warn("[little-things] product detail request failed:", productResult.error);
-      return { product: null as Product | null, similarItems: [] as Item[] };
+      return { product: null as ProductDetail | null, similarItems: [] as Item[] };
     }
 
-    product = (productResult.data?.product ?? null) as Product | null;
+    product = productResult.data?.product ?? null;
     similarItems = (similarResult?.data?.products ?? []) as Item[];
   } catch (err) {
     // A fetch/network failure (e.g. transient error during prerender, or no
@@ -66,7 +91,7 @@ export const load: PageServerLoad = async ({ params }) => {
     // the page render its fallback with a 200.
     // biome-ignore lint/suspicious/noConsole: surface catalog fetch failures during build/prerender
     console.error("Failed to load product:", err);
-    return { product: null as Product | null, similarItems: [] as Item[] };
+    return { product: null as ProductDetail | null, similarItems: [] as Item[] };
   }
 
   // The request succeeded but there is genuinely no such product → real 404
@@ -75,5 +100,10 @@ export const load: PageServerLoad = async ({ params }) => {
     throw error(404, "Product not found");
   }
 
-  return { product, similarItems };
+  const [seoHead, breadcrumb] = await Promise.all([
+    createSvelteKitProductHead(seo, product),
+    productBreadcrumb(product),
+  ]);
+
+  return { product, similarItems, seoHead, breadcrumb };
 };

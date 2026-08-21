@@ -5,115 +5,64 @@ import {
   hasAllOptionsSelected,
   optionQueryParamKey,
 } from "@ce/little-things-shared/lib/variants";
-import { safeJsonLd } from "@ce/little-things-ui/lib/json-ld";
-import type { Product } from "@commercengine/storefront";
+import { serializeJsonLd } from "@commercengine/seo";
+import { createTanStackStartProductHead } from "@commercengine/seo/tanstack-start";
+import type { ProductDetail } from "@commercengine/storefront";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useCallback, useEffect, useMemo } from "react";
 import DetailTabs from "@/components/product/DetailTabs";
 import ProductImageGallery from "@/components/product/ProductImageGallery";
 import ProductInfo from "@/components/product/ProductInfo";
 import RelatedProducts from "@/components/product/RelatedProducts";
-import { SITE_NAME, SITE_URL } from "@/lib/constants";
+import { seo } from "@/lib/seo";
 import { storefront } from "@/lib/storefront";
+
+/**
+ * `productHead` emits the product schema only, so the breadcrumb is the page's job. URLs come
+ * from the route resolvers rather than string concatenation, so a custom `productBase` /
+ * `categoryBase` stays correct here.
+ */
+async function productHeadWithBreadcrumb(product: ProductDetail) {
+  const category = product.categories?.[0];
+  const home = seo.config.site.url;
+  const [head, productUrl, categoryUrl] = await Promise.all([
+    createTanStackStartProductHead(seo, product),
+    seo.productUrl(product),
+    category ? seo.categoryUrl(category) : Promise.resolve(null),
+  ]);
+
+  const breadcrumb = seo.breadcrumbJsonLd([
+    { name: "Home", url: home },
+    ...(category && categoryUrl ? [{ name: category.name, url: categoryUrl }] : []),
+    { name: product.name, url: productUrl ?? home },
+  ]);
+
+  return {
+    ...head,
+    scripts: [
+      ...head.scripts,
+      { type: "application/ld+json", children: serializeJsonLd(breadcrumb) },
+    ],
+  };
+}
 
 export const Route = createFileRoute("/product/$slug")({
   validateSearch: (search: Record<string, unknown>) => search as Record<string, string>,
-  loader: async ({ params }): Promise<{ product: Product | null }> => {
+  loader: async ({ params }) => {
     try {
       const sdk = storefront.publicStorefront();
       const { data } = await sdk.catalog.getProductDetail({ product_id: params.slug });
-      return { product: data?.product ?? null };
+      const product = data?.product ?? null;
+      // `head` is synchronous, so head data is built here and returned through loaderData.
+      return {
+        product,
+        seoHead: product ? await productHeadWithBreadcrumb(product) : undefined,
+      };
     } catch {
-      return { product: null };
+      return { product: null, seoHead: undefined };
     }
   },
-  head: ({ loaderData }) => {
-    const product = loaderData?.product;
-    if (!product) return { meta: [{ title: `Product Not Found | ${SITE_NAME}` }] };
-
-    const productUrl = `${SITE_URL}/product/${product.slug}`;
-    const productImage = product.images?.[0]?.url_zoom ?? product.images?.[0]?.url_standard;
-    const productDescription =
-      product.short_description ??
-      `Shop ${product.name} from ${SITE_NAME}. The good stuff, minus the fluff.`;
-    const fullTitle = `${product.name} | ${SITE_NAME}`;
-
-    return {
-      meta: [
-        { title: fullTitle },
-        { name: "description", content: productDescription },
-        { property: "og:title", content: fullTitle },
-        { property: "og:type", content: "product" },
-        { property: "og:image", content: productImage },
-        { property: "og:url", content: productUrl },
-        { name: "twitter:card", content: "summary_large_image" },
-        { name: "twitter:title", content: fullTitle },
-        { name: "twitter:description", content: productDescription },
-        { name: "twitter:image", content: productImage },
-      ],
-      links: [{ rel: "canonical", href: productUrl }],
-      scripts: [
-        {
-          type: "application/ld+json",
-          children: safeJsonLd({
-            "@context": "https://schema.org",
-            "@type": "Product",
-            name: product.name,
-            description: productDescription,
-            image: productImage,
-            sku: product.sku ?? product.slug,
-            url: productUrl,
-            brand: { "@type": "Brand", name: SITE_NAME },
-            offers: {
-              "@type": "Offer",
-              url: productUrl,
-              priceCurrency: product.pricing.currency,
-              price: product.pricing.selling_price,
-              availability:
-                product.stock_available || product.backorder
-                  ? "https://schema.org/InStock"
-                  : "https://schema.org/OutOfStock",
-            },
-            ...(product.reviews_count > 0
-              ? {
-                  aggregateRating: {
-                    "@type": "AggregateRating",
-                    ratingValue: (product.reviews_rating_sum / product.reviews_count).toFixed(1),
-                    reviewCount: product.reviews_count,
-                  },
-                }
-              : {}),
-          }),
-        },
-        {
-          type: "application/ld+json",
-          children: safeJsonLd({
-            "@context": "https://schema.org",
-            "@type": "BreadcrumbList",
-            itemListElement: [
-              { "@type": "ListItem", position: 1, name: "Home", item: SITE_URL },
-              ...(product.categories?.[0]
-                ? [
-                    {
-                      "@type": "ListItem",
-                      position: 2,
-                      name: product.categories[0].name,
-                      item: `${SITE_URL}/category/${product.categories[0].slug}`,
-                    },
-                  ]
-                : []),
-              {
-                "@type": "ListItem",
-                position: product.categories?.[0] ? 3 : 2,
-                name: product.name,
-                item: productUrl,
-              },
-            ],
-          }),
-        },
-      ],
-    };
-  },
+  head: ({ loaderData }) => loaderData?.seoHead ?? {},
   component: ProductDetailPage,
 });
 

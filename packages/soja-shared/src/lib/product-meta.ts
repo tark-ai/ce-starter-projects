@@ -1,8 +1,8 @@
-import type { Product, ProductAttribute } from "@commercengine/storefront";
+import type { ProductAttribute, ProductDetail } from "@commercengine/storefront";
 
-// getProductDetail returns `Product & AdditionalProductDetails`; the long-form
-// `description` lives on the latter.
-export type SojaProductDetail = Product & { description?: string | null };
+// `getProductDetail` returns the full entity. This used to be `Product & { description }`,
+// patching the one missing field onto the narrower list shape; `ProductDetail` is that type.
+export type SojaProductDetail = ProductDetail;
 
 export interface AttributeSwatch {
   name: string;
