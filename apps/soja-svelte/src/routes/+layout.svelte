@@ -46,32 +46,34 @@ onMount(() => {
     }
   })();
 
+  // WebMCP tools. Registered alongside the bootstrap rather than after it: registration
+  // only declares the tools, and each one reports a retryable failure if it is called
+  // before the session and checkout are ready.
+  void (async () => {
+    const [{ registerCommerceWebMcp }, { createHostedCheckoutBridge }, { getCheckout }, { storefront }, { routes, site }] =
+      await Promise.all([
+        import("@commercengine/ai/webmcp"),
+        import("@commercengine/ai/checkout"),
+        import("@commercengine/checkout"),
+        import("$lib/storefront"),
+        import("$lib/commerce-seo.config"),
+      ]);
+    agentTools = await registerCommerceWebMcp({
+      storefront,
+      siteUrl: site.url,
+      routes,
+      checkout: createHostedCheckoutBridge({ getState: () => getCheckout() }),
+      navigation: { navigate: (url) => goto(url) },
+      diagnostics: import.meta.env.DEV
+        ? (event) => console.info("[commerce-ai]", event.code, event.message ?? "")
+        : undefined,
+    });
+  })();
+
   return () => {
     cancelled = true;
+    agentTools?.abort();
   };
-    // WebMCP tools, once the session and checkout exist.
-    void (async () => {
-      const [{ registerCommerceWebMcp }, { createHostedCheckoutBridge }, { getCheckout }, { storefront }, { routes, site }] =
-        await Promise.all([
-          import("@commercengine/ai/webmcp"),
-          import("@commercengine/ai/checkout"),
-          import("@commercengine/checkout"),
-          import("$lib/storefront"),
-          import("$lib/commerce-seo.config"),
-        ]);
-      agentTools = await registerCommerceWebMcp({
-        storefront,
-        siteUrl: site.url,
-        routes,
-        checkout: createHostedCheckoutBridge({ getState: () => getCheckout() }),
-        navigation: { navigate: (url) => goto(url) },
-        diagnostics: import.meta.env.DEV
-          ? (event) => console.info("[commerce-ai]", event.code, event.message ?? "")
-          : undefined,
-      });
-    })();
-
-    return () => agentTools?.abort();
 });
 </script>
 

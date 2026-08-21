@@ -28,7 +28,9 @@ onMount(() => {
       // wishlist will simply be unavailable until the next successful init.
       console.error("Storefront bootstrap failed:", error);
     });
-    // WebMCP tools, once the session and checkout exist.
+    // WebMCP tools. Registered alongside the bootstrap rather than after it: registration
+  // only declares the tools, and each one reports a retryable failure if it is called
+  // before the session and checkout are ready.
     void (async () => {
       const [{ registerCommerceWebMcp }, { createHostedCheckoutBridge }, { getCheckout }, { storefront }, { routes, site }] =
         await Promise.all([

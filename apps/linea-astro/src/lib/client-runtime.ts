@@ -72,6 +72,12 @@ async function registerAgentTools() {
         window.location.href = url;
       },
     },
+    // The package reports the outcome; `unsupported` is the ordinary case in a browser
+    // without WebMCP, not a fault.
+    diagnostics: import.meta.env.DEV
+      ? // biome-ignore lint/suspicious/noConsole: development diagnostic
+        (event) => console.info("[commerce-ai]", event.code, event.message ?? "")
+      : undefined,
   });
 }
 
