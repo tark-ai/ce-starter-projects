@@ -14,10 +14,10 @@
   "dependencies": {
     "@ce/soja-shared": "workspace:*",
     "@ce/soja-ui": "workspace:*",
-    "@commercengine/ai": "^0.2.0",
+    "@commercengine/ai": "^0.2.1",
     "@commercengine/checkout": "^0.3.1",
     "@commercengine/storefront": "^0.1.6",
-    "@commercengine/seo": "^0.2.0",
+    "@commercengine/seo": "^0.2.1",
     "@fontsource/average": "^5.3.0",
     "@fontsource/averia-serif-libre": "^5.3.0",
     "@tanstack/react-query": "^5.95.2",

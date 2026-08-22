@@ -14,10 +14,10 @@
   "dependencies": {
     "@ce/ui": "workspace:*",
     "@fontsource-variable/dm-sans": "^5.2.8",
-    "@commercengine/ai": "^0.2.0",
+    "@commercengine/ai": "^0.2.1",
     "@commercengine/checkout": "^0.3.1",
     "@commercengine/storefront": "^0.1.6",
-    "@commercengine/seo": "^0.2.0",
+    "@commercengine/seo": "^0.2.1",
     "clsx": "^2.1.1",
     "lucide-svelte": "^1.0.1",
     "tailwind-merge": "^3.5.0",
