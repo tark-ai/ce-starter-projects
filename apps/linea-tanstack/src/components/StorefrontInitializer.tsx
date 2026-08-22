@@ -11,10 +11,10 @@ import { storefront, storefrontConfig } from "@/lib/storefront";
 /**
  * Canonical client bootstrap for the starter app.
  *
- * 1. Explicitly establishes the storefront session on first load.
- * 2. Initializes hosted checkout with the current SDK tokens.
- * 3. Keeps checkout and storefront tokens synchronized.
- * 4. Registers WebMCP agent tools, a no-op in browsers without WebMCP.
+ * 1. Registers WebMCP capabilities immediately; session-bound tools report not-ready until step 2.
+ * 2. Explicitly establishes the storefront session on first load.
+ * 3. Initializes hosted checkout with the current SDK tokens.
+ * 4. Keeps checkout and storefront tokens synchronized.
  *
  * Public prerendered reads use `storefront.publicStorefront()`.
  * Session-bound flows should rely on this eager bootstrap before they trigger
@@ -25,12 +25,38 @@ export function StorefrontInitializer() {
 
   useEffect(() => {
     let agentTools: AbortController | null = null;
+    let active = true;
+
+    void registerCommerceWebMcp({
+      storefront,
+      siteUrl: site.url,
+      routes,
+      checkout: createHostedCheckoutBridge({ getState: () => getCheckout() }),
+      navigation: { navigate: (url) => router.navigate({ href: url }) },
+      // The package reports the outcome; `unsupported` is the ordinary case in a browser
+      // without WebMCP, not a fault.
+      diagnostics: import.meta.env.DEV
+        ? // biome-ignore lint/suspicious/noConsole: development diagnostic
+          (event) => console.info("[commerce-ai]", event.code, event.message ?? "")
+        : undefined,
+    })
+      .then((controller) => {
+        if (!active) controller?.abort();
+        else agentTools = controller;
+      })
+      .catch((error) => {
+        // biome-ignore lint/suspicious/noConsole: surface registration failures
+        console.error("Failed to register Commerce Engine agent tools", error);
+      });
+
     const init = async () => {
       await ensureClientSessionBootstrapped();
+      if (!active) return;
 
       const sdk = storefront.clientStorefront();
       const accessToken = await sdk.getAccessToken();
       const refreshToken = await sdk.session.peekRefreshToken();
+      if (!active) return;
 
       initCheckout({
         storeId: storefrontConfig.storeId,
@@ -45,23 +71,13 @@ export function StorefrontInitializer() {
       });
     };
 
-    void init().then(async () => {
-      agentTools = await registerCommerceWebMcp({
-        storefront,
-        siteUrl: site.url,
-        routes,
-        checkout: createHostedCheckoutBridge({ getState: () => getCheckout() }),
-        navigation: { navigate: (url) => router.navigate({ href: url }) },
-        // The package reports the outcome; `unsupported` is the ordinary case in a browser
-        // without WebMCP, not a fault.
-        diagnostics: import.meta.env.DEV
-          ? // biome-ignore lint/suspicious/noConsole: development diagnostic
-            (event) => console.info("[commerce-ai]", event.code, event.message ?? "")
-          : undefined,
-      });
+    void init().catch((error) => {
+      // biome-ignore lint/suspicious/noConsole: surface bootstrap/checkout init failures
+      console.error("Failed to initialize hosted checkout", error);
     });
 
     return () => {
+      active = false;
       agentTools?.abort();
       destroyCheckout();
     };
