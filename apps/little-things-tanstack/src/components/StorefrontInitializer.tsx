@@ -11,9 +11,10 @@ import { storefront, storefrontConfig } from "@/lib/storefront";
 /**
  * Canonical client bootstrap for the starter app.
  *
- * 1. Explicitly establishes the storefront session on first load.
- * 2. Initializes hosted checkout with the current SDK tokens.
- * 3. Keeps checkout and storefront tokens synchronized.
+ * 1. Registers WebMCP capabilities immediately; session-bound tools report not-ready until step 2.
+ * 2. Explicitly establishes the storefront session on first load.
+ * 3. Initializes hosted checkout with the current SDK tokens.
+ * 4. Keeps checkout and storefront tokens synchronized.
  *
  * Public prerendered reads use `storefront.publicStorefront()`.
  * Session-bound flows should rely on this eager bootstrap before they trigger
@@ -25,6 +26,26 @@ export function StorefrontInitializer() {
   useEffect(() => {
     let agentTools: AbortController | null = null;
     let active = true;
+
+    void registerCommerceWebMcp({
+      storefront,
+      siteUrl: site.url,
+      routes,
+      checkout: createHostedCheckoutBridge({ getState: () => getCheckout() }),
+      navigation: { navigate: (url) => router.navigate({ href: url }) },
+      diagnostics: import.meta.env.DEV
+        ? // biome-ignore lint/suspicious/noConsole: development diagnostic
+          (event) => console.info("[commerce-ai]", event.code, event.message ?? "")
+        : undefined,
+    })
+      .then((controller) => {
+        if (!active) controller?.abort();
+        else agentTools = controller;
+      })
+      .catch((error) => {
+        // biome-ignore lint/suspicious/noConsole: surface registration failures
+        console.error("Failed to register Commerce Engine agent tools", error);
+      });
 
     const init = async () => {
       await ensureClientSessionBootstrapped();
@@ -48,25 +69,10 @@ export function StorefrontInitializer() {
       });
     };
 
-    void init()
-      .then(async () => {
-        if (!active) return;
-        agentTools = await registerCommerceWebMcp({
-          storefront,
-          siteUrl: site.url,
-          routes,
-          checkout: createHostedCheckoutBridge({ getState: () => getCheckout() }),
-          navigation: { navigate: (url) => router.navigate({ href: url }) },
-          diagnostics: import.meta.env.DEV
-            ? // biome-ignore lint/suspicious/noConsole: development diagnostic
-              (event) => console.info("[commerce-ai]", event.code, event.message ?? "")
-            : undefined,
-        });
-      })
-      .catch((err) => {
-        // biome-ignore lint/suspicious/noConsole: surface bootstrap/checkout init failures
-        console.error("Failed to initialize hosted checkout", err);
-      });
+    void init().catch((err) => {
+      // biome-ignore lint/suspicious/noConsole: surface bootstrap/checkout init failures
+      console.error("Failed to initialize hosted checkout", err);
+    });
 
     return () => {
       active = false;

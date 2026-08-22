@@ -27,21 +27,39 @@ const App = () => {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    initStorefront()
+    let active = true;
+    let agentTools: AbortController | null = null;
+
+    // Registration is independent of session/checkout readiness: public tools can be useful while
+    // bootstrap is still in flight, and session-bound tools already report retryable not-ready errors.
+    void registerAgentTools((url) => {
+      window.history.pushState({}, "", url);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    })
+      .then((controller) => {
+        if (!active) controller?.abort();
+        else agentTools = controller;
+      })
+      .catch((error) => {
+        // biome-ignore lint/suspicious/noConsole: surface registration failures for debugging
+        console.error("Failed to register Commerce Engine agent tools:", error);
+      });
+
+    void initStorefront()
       .then(() => {
-        setReady(true);
-        // WebMCP agent tools; a no-op where the browser has no model context.
-        void registerAgentTools((url) => {
-          window.history.pushState({}, "", url);
-          window.dispatchEvent(new PopStateEvent("popstate"));
-        });
+        if (active) setReady(true);
       })
       .catch((err) => {
         // biome-ignore lint/suspicious/noConsole: surface SDK init failures for debugging
         console.error("Failed to initialize storefront:", err);
-        setReady(true); // Still show the app so error boundary can catch render errors
+        if (active) setReady(true); // Still show the app so error boundary can catch render errors
       });
-    return () => destroyCheckout();
+
+    return () => {
+      active = false;
+      agentTools?.abort();
+      destroyCheckout();
+    };
   }, []);
 
   if (!ready) {
