@@ -69,11 +69,6 @@ const App = () => {
         // first-attempt path this invalidates nothing.
         void queryClient.invalidateQueries({ queryKey: ["wishlist"] });
         setBootstrap("ready");
-        // WebMCP agent tools; a no-op where the browser has no model context.
-        void registerAgentTools((url) => {
-          window.history.pushState({}, "", url);
-          window.dispatchEvent(new PopStateEvent("popstate"));
-        });
         return;
       } catch (error) {
         if (!mounted.current || generation.current !== run) return;
@@ -94,9 +89,29 @@ const App = () => {
 
   useEffect(() => {
     mounted.current = true;
+    let cancelled = false;
+    let agentTools: AbortController | null = null;
+
+    // WebMCP registration is not a session bootstrap. Register immediately so public catalog
+    // tools remain available even while cart/session initialization is retrying or degraded.
+    void registerAgentTools((url) => {
+      window.history.pushState({}, "", url);
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    })
+      .then((controller) => {
+        if (cancelled) controller?.abort();
+        else agentTools = controller;
+      })
+      .catch((error) => {
+        // biome-ignore lint/suspicious/noConsole: surface registration failures for debugging
+        console.error("Failed to register Commerce Engine agent tools:", error);
+      });
+
     void runBootstrap();
     return () => {
+      cancelled = true;
       mounted.current = false;
+      agentTools?.abort();
       destroyCheckout();
     };
   }, [runBootstrap]);
