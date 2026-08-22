@@ -24,7 +24,6 @@ const product = productResult.data?.product;
 const similarItems = similarResult.data?.products ?? [];
 const seoHead = product ? await createAstroProductHead(seo, product) : undefined;
 
-
 const productName = product?.name ?? "Product";
 const productTitle = `${productName} | LINEA`;
 const productDescription =
@@ -36,16 +35,18 @@ const productImage =
   product?.images?.[0]?.url_thumbnail ||
   "/og-image.jpg";
 
-const origin = site.url.replace(/\/+$/, "");
 const category = product?.categories?.[0];
+const [productUrl, categoryUrl] = product
+  ? await Promise.all([
+      seo.productUrl(product),
+      category ? seo.categoryUrl(category) : Promise.resolve(null),
+    ])
+  : [null, null];
 const breadcrumb = breadcrumbJsonLd([
-  { name: "Home", url: `${origin}/` },
-  ...(category?.name && category?.slug
-    ? [{ name: category.name, url: `${origin}/category/${category.slug}` }]
-    : []),
-  { name: productName, url: `${origin}/product/${slug}` },
+  { name: "Home", url: site.url },
+  ...(category?.name && categoryUrl ? [{ name: category.name, url: categoryUrl }] : []),
+  { name: productName, url: productUrl ?? site.url },
 ]);
-
 
 ---
 

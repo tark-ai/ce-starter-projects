@@ -58,7 +58,6 @@ try {
   console.warn(`[little-things] Failed to load product detail for "${slug}".`, error);
 }
 
-
 const productName = product?.name ?? "Product";
 const productTitle = `${productName} | ${SITE_NAME}`;
 const productDescription =
@@ -71,15 +70,21 @@ const productImage =
 
 const seoHead = product ? await createAstroProductHead(seo, product) : undefined;
 
-const origin = site.url.replace(/\/+$/, "");
 const breadcrumbCategory = product?.categories?.[0];
-// `productHead` emits the product schema only; the breadcrumb stays the page's job.
+const [productUrl, categoryUrl] = product
+  ? await Promise.all([
+      seo.productUrl(product),
+      breadcrumbCategory ? seo.categoryUrl(breadcrumbCategory) : Promise.resolve(null),
+    ])
+  : [null, null];
+// `productHead` emits the product schema only; the breadcrumb stays the page's job. Resolve every
+// entity through the same route contract so custom bases or CMS-owned URLs cannot diverge.
 const breadcrumb = breadcrumbJsonLd([
-  { name: "Home", url: `${origin}/` },
-  ...(breadcrumbCategory?.name && breadcrumbCategory?.slug
-    ? [{ name: breadcrumbCategory.name, url: `${origin}/category/${breadcrumbCategory.slug}` }]
+  { name: "Home", url: site.url },
+  ...(breadcrumbCategory?.name && categoryUrl
+    ? [{ name: breadcrumbCategory.name, url: categoryUrl }]
     : []),
-  { name: productName, url: `${origin}/product/${slug}` },
+  { name: productName, url: productUrl ?? site.url },
 ]);
 
 ---
