@@ -15,6 +15,28 @@ export function StorefrontInitializer() {
     let agentTools: AbortController | null = null;
     let active = true;
 
+    // Tool registration only declares capabilities. Session/cart tools already report a retryable
+    // not-ready state, so public catalog tools should not wait for anonymous-session bootstrap.
+    void registerCommerceWebMcp({
+      storefront,
+      siteUrl: site.url,
+      routes,
+      checkout: createHostedCheckoutBridge({ getState: () => getCheckout() }),
+      navigation: { navigate: (url) => router.navigate({ href: url }) },
+      diagnostics: import.meta.env.DEV
+        ? // biome-ignore lint/suspicious/noConsole: development diagnostic
+          (event) => console.info("[commerce-ai]", event.code, event.message ?? "")
+        : undefined,
+    })
+      .then((controller) => {
+        if (!active) controller?.abort();
+        else agentTools = controller;
+      })
+      .catch((error) => {
+        // biome-ignore lint/suspicious/noConsole: surface registration failures
+        console.error("Failed to register Commerce Engine agent tools", error);
+      });
+
     const init = async () => {
       await ensureClientSessionBootstrapped();
       if (!active) return;
@@ -37,25 +59,10 @@ export function StorefrontInitializer() {
       });
     };
 
-    void init()
-      .then(async () => {
-        if (!active) return;
-        agentTools = await registerCommerceWebMcp({
-          storefront,
-          siteUrl: site.url,
-          routes,
-          checkout: createHostedCheckoutBridge({ getState: () => getCheckout() }),
-          navigation: { navigate: (url) => router.navigate({ href: url }) },
-          diagnostics: import.meta.env.DEV
-            ? // biome-ignore lint/suspicious/noConsole: development diagnostic
-              (event) => console.info("[commerce-ai]", event.code, event.message ?? "")
-            : undefined,
-        });
-      })
-      .catch((error) => {
-        // biome-ignore lint/suspicious/noConsole: surface bootstrap/checkout init failures
-        console.error("Failed to initialize hosted checkout", error);
-      });
+    void init().catch((error) => {
+      // biome-ignore lint/suspicious/noConsole: surface bootstrap/checkout init failures
+      console.error("Failed to initialize hosted checkout", error);
+    });
 
     return () => {
       active = false;
