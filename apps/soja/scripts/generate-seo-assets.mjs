@@ -11,30 +11,35 @@ import { createCommerceSeo } from "@commercengine/seo";
 import { writeCommerceSeoAssets } from "@commercengine/seo/build";
 import { createStorefront, Environment } from "@commercengine/storefront";
 
-// A local checkout keeps credentials in .env.local; CI and Vercel inject them into the
-// process environment instead, where no such file exists. Prefer the file when present so a
-// local build matches the dev server, and fall back to the environment otherwise.
-const envFile = new URL("../.env.local", import.meta.url);
-const fileEnv = existsSync(envFile)
-  ? Object.fromEntries(
-      readFileSync(envFile, "utf8")
-        .split("\n")
-        .filter((line) => line.includes("=") && !line.trimStart().startsWith("#"))
-        .map((line) => {
-          const i = line.indexOf("=");
-          // Values may be quoted; a literal quote in the store id produces a 404 that looks
-          // like a credentials problem rather than a parsing one.
-          return [line.slice(0, i).trim(), line.slice(i + 1).trim().replace(/^["']|["']$/g, "")];
-        }),
-    )
-  : {};
+// The frameworks read .env first and let .env.local override it. Both are
+// honoured here for the same reason: `create-commercengine` writes .env, a
+// hand-configured checkout usually uses .env.local, and reading only one of
+// them reports the credentials missing while they sit in the other. CI and
+// Vercel have no file at all and inject the process environment instead.
+function readEnvFile(name) {
+  const path = new URL(`../${name}`, import.meta.url);
+  if (!existsSync(path)) return {};
+  return Object.fromEntries(
+    readFileSync(path, "utf8")
+      .split("\n")
+      .filter((line) => line.includes("=") && !line.trimStart().startsWith("#"))
+      .map((line) => {
+        const i = line.indexOf("=");
+        // Values may be quoted; a literal quote in the store id produces a 404 that looks
+        // like a credentials problem rather than a parsing one.
+        return [line.slice(0, i).trim(), line.slice(i + 1).trim().replace(/^["']|["']$/g, "")];
+      }),
+  );
+}
+
+const fileEnv = { ...readEnvFile(".env"), ...readEnvFile(".env.local") };
 const env = { ...process.env, ...fileEnv };
 
 // Without credentials the catalog calls fail and this would emit an empty sitemap that looks
 // valid — fail the build with the missing names instead.
 if (!env.VITE_STORE_ID || !env.VITE_API_KEY) {
   throw new Error(
-    "[seo] missing VITE_STORE_ID / VITE_API_KEY. Set them in .env.local for a local build, " +
+    "[seo] missing VITE_STORE_ID / VITE_API_KEY. Set them in .env or .env.local for a local build, " +
       "or in the deployment's environment variables.",
   );
 }

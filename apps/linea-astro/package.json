@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev --port 8083",
-    "build": "astro build",
+    "build": "node scripts/check-env.mjs && astro build",
     "preview": "astro preview",
     "check": "biome check ./src",
     "check:fix": "biome check --write ./src",
