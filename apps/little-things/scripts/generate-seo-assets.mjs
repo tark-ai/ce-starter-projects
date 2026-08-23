@@ -36,11 +36,14 @@ function readEnvFile(name) {
 
 // A production build resolves the mode-specific files as well, so a deployment
 // configured only through .env.production must not be told its credentials are
-// missing. Later entries win, matching how Next and Vite layer them.
+// missing. Later entries win. Vite ranks the mode file ABOVE .env.local
+// (.env, .env.local, .env.[mode], .env.[mode].local) — the opposite of Next —
+// and getting it backwards would let a stale .env.local satisfy this check
+// while the build compiled against a different store.
 const fileEnv = {
   ...readEnvFile(".env"),
-  ...readEnvFile(".env.production"),
   ...readEnvFile(".env.local"),
+  ...readEnvFile(".env.production"),
   ...readEnvFile(".env.production.local"),
 };
 
@@ -53,7 +56,7 @@ const env = { ...fileEnv, ...process.env };
 // valid — fail the build with the missing names instead.
 if (!env.VITE_STORE_ID || !env.VITE_API_KEY) {
   throw new Error(
-    "[seo] missing VITE_STORE_ID / VITE_API_KEY. Set them in .env or .env.local for a local build, " +
+    "[seo] missing VITE_STORE_ID / VITE_API_KEY. Set them in .env, .env.local, .env.production or .env.production.local for a local build, " +
       "or in the deployment's environment variables."
   );
 }

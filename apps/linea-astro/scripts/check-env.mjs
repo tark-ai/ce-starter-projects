@@ -45,11 +45,14 @@ function readEnvFile(name) {
 // Vercel have no file at all and inject the process environment instead.
 // A production build resolves the mode-specific files as well, so a deployment
 // configured only through .env.production must not be told its credentials are
-// missing. Later entries win, matching how Next and Vite layer them.
+// missing. Later entries win. Vite ranks the mode file ABOVE .env.local
+// (.env, .env.local, .env.[mode], .env.[mode].local) — the opposite of Next —
+// and getting it backwards would let a stale .env.local satisfy this check
+// while the build compiled against a different store.
 const fileEnv = {
   ...readEnvFile(".env"),
-  ...readEnvFile(".env.production"),
   ...readEnvFile(".env.local"),
+  ...readEnvFile(".env.production"),
   ...readEnvFile(".env.production.local"),
 };
 
@@ -60,7 +63,7 @@ const env = { ...fileEnv, ...process.env };
 
 if (!env.PUBLIC_STORE_ID || !env.PUBLIC_API_KEY) {
   throw new Error(
-    "[commerce] missing PUBLIC_STORE_ID / PUBLIC_API_KEY. Set them in .env or .env.local " +
+    "[commerce] missing PUBLIC_STORE_ID / PUBLIC_API_KEY. Set them in .env, .env.local, .env.production or .env.production.local " +
       "for a local build, or in the deployment's environment variables."
   );
 }
