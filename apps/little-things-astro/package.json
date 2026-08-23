@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "astro dev --port 8093",
-    "build": "node scripts/generate-seo-assets.mjs && astro build",
+    "build": "node scripts/check-env.mjs && node scripts/generate-seo-assets.mjs && astro build",
     "preview": "astro preview",
     "check": "biome check ./src",
     "check:fix": "biome check --write ./src",

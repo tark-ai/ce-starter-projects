@@ -5,8 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "node scripts/generate-seo-assets.mjs && vite build",
-    "build:dev": "vite build --mode development",
+    "build": "node scripts/check-env.mjs && node scripts/generate-seo-assets.mjs && vite build",
+    "build:dev": "node scripts/check-env.mjs development && vite build --mode development",
     "preview": "vite preview",
     "lint": "biome lint ./src",
     "lint:fix": "biome lint --write ./src",
