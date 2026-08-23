@@ -43,8 +43,20 @@ function readEnvFile(name) {
 // hand-configured checkout usually uses .env.local, and reading only one of
 // them reports the credentials missing while they sit in the other. CI and
 // Vercel have no file at all and inject the process environment instead.
-const fileEnv = { ...readEnvFile(".env"), ...readEnvFile(".env.local") };
-const env = { ...process.env, ...fileEnv };
+// A production build resolves the mode-specific files as well, so a deployment
+// configured only through .env.production must not be told its credentials are
+// missing. Later entries win, matching how Next and Vite layer them.
+const fileEnv = {
+  ...readEnvFile(".env"),
+  ...readEnvFile(".env.production"),
+  ...readEnvFile(".env.local"),
+  ...readEnvFile(".env.production.local"),
+};
+
+// Exported variables outrank every file. CI and Vercel supply the real
+// credentials that way, and a scaffolded .env left on disk would otherwise
+// point this step at a different store than the build itself compiles against.
+const env = { ...fileEnv, ...process.env };
 
 if (!env.VITE_STORE_ID || !env.VITE_API_KEY) {
   throw new Error(

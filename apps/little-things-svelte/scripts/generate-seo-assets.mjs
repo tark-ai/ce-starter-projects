@@ -11,11 +11,7 @@ import { createCommerceSeo } from "@commercengine/seo";
 import { writeCommerceSeoAssets } from "@commercengine/seo/build";
 import { createStorefront, Environment } from "@commercengine/storefront";
 
-// The frameworks read .env first and let .env.local override it. Both are
-// honoured here for the same reason: `create-commercengine` writes .env, a
-// hand-configured checkout usually uses .env.local, and reading only one of
-// them reports the credentials missing while they sit in the other. CI and
-// Vercel have no file at all and inject the process environment instead.
+/** Parses one dotenv file, tolerating comments, blanks and quoted values. */
 function readEnvFile(name) {
   const path = new URL(`../${name}`, import.meta.url);
   if (!existsSync(path)) return {};
@@ -27,20 +23,38 @@ function readEnvFile(name) {
         const i = line.indexOf("=");
         // Values may be quoted; a literal quote in the store id produces a 404 that looks
         // like a credentials problem rather than a parsing one.
-        return [line.slice(0, i).trim(), line.slice(i + 1).trim().replace(/^["']|["']$/g, "")];
-      }),
+        return [
+          line.slice(0, i).trim(),
+          line
+            .slice(i + 1)
+            .trim()
+            .replace(/^["']|["']$/g, ""),
+        ];
+      })
   );
 }
 
-const fileEnv = { ...readEnvFile(".env"), ...readEnvFile(".env.local") };
-const env = { ...process.env, ...fileEnv };
+// A production build resolves the mode-specific files as well, so a deployment
+// configured only through .env.production must not be told its credentials are
+// missing. Later entries win, matching how Next and Vite layer them.
+const fileEnv = {
+  ...readEnvFile(".env"),
+  ...readEnvFile(".env.production"),
+  ...readEnvFile(".env.local"),
+  ...readEnvFile(".env.production.local"),
+};
+
+// Exported variables outrank every file. CI and Vercel supply the real
+// credentials that way, and a scaffolded .env left on disk would otherwise
+// point this step at a different store than the build itself compiles against.
+const env = { ...fileEnv, ...process.env };
 
 // Without credentials the catalog calls fail and this would emit an empty sitemap that looks
 // valid — fail the build with the missing names instead.
 if (!env.PUBLIC_STORE_ID || !env.PUBLIC_API_KEY) {
   throw new Error(
     "[seo] missing PUBLIC_STORE_ID / PUBLIC_API_KEY. Set them in .env or .env.local for a local build, " +
-      "or in the deployment's environment variables.",
+      "or in the deployment's environment variables."
   );
 }
 
