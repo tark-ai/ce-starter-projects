@@ -1,0 +1,67 @@
+{
+  "$schema": "https://commercengine.io/schemas/starters.json",
+  "demoHost": "demo.commercengine.com",
+  "frameworks": [
+    {
+      "id": "react",
+      "name": "React",
+      "suffix": "",
+      "binding": "@commercengine/storefront",
+      "rendering": "Vite SPA, client rendering"
+    },
+    {
+      "id": "nextjs",
+      "name": "Next.js",
+      "suffix": "-next",
+      "binding": "@commercengine/storefront/nextjs",
+      "rendering": "App Router, server actions"
+    },
+    {
+      "id": "tanstack-start",
+      "name": "TanStack Start",
+      "suffix": "-tanstack",
+      "binding": "@commercengine/storefront/tanstack-start",
+      "rendering": "Full stack, file routes"
+    },
+    {
+      "id": "astro",
+      "name": "Astro",
+      "suffix": "-astro",
+      "binding": "@commercengine/storefront/astro",
+      "rendering": "Islands, content first"
+    },
+    {
+      "id": "sveltekit",
+      "name": "SvelteKit",
+      "suffix": "-svelte",
+      "binding": "@commercengine/storefront/sveltekit",
+      "rendering": "Server routes, form actions"
+    },
+    {
+      "id": "nodejs",
+      "name": "Node.js",
+      "binding": "@commercengine/storefront",
+      "rendering": "Server-side services and APIs"
+    }
+  ],
+  "templates": [
+    {
+      "slug": "linea",
+      "name": "Linea",
+      "category": "Jewellery & Luxury",
+      "description": "Editorial storytelling, refined PDP"
+    },
+    {
+      "slug": "little-things",
+      "name": "Little Things",
+      "category": "Electronics & Lifestyle",
+      "description": "Dense catalogue, bold merchandising"
+    },
+    {
+      "slug": "soja",
+      "name": "SOJA",
+      "category": "Beauty & Cosmetics",
+      "description": "Ritual-led storytelling, ingredients"
+    }
+  ]
+}
